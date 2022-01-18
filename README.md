@@ -1,9 +1,9 @@
 # webserv
 A lightweight HTTP server implemented in C++.
 
-# Resources
+## Resources
 
-## RFC
+### RFC
 
 - [2616: Hypertext Transfer Protocol](https://www.rfc-editor.org/rfc/pdfrfc/rfc2616.txt.pdf)
 - [3875: The Common Gateway Interface (CGI)](https://www.rfc-editor.org/rfc/pdfrfc/rfc3875.txt.pdf)
@@ -14,7 +14,7 @@ A lightweight HTTP server implemented in C++.
 - [7234: Caching](https://www.rfc-editor.org/rfc/pdfrfc/rfc7234.txt.pdf)
 - [7235: Authentication](https://www.rfc-editor.org/rfc/pdfrfc/rfc7235.txt.pdf)
 
-## Other
+### Other
 
 - [C++ Web Programming](https://www.tutorialspoint.com/cplusplus/cpp_web_programming.htm)
 - [How the web works: HTTP and CGI explained](https://www.garshol.priv.no/download/text/http-tut.html)
@@ -24,6 +24,6 @@ A lightweight HTTP server implemented in C++.
 - [tderwedu's random facts](https://github.com/tderwedu/42cursus/blob/main/12_Inception/RandomFacts.md)
 - [[Documentation Webserv (in French)](https://www.notion.so/etelcode/Documentation-Webserv-320727979ffd4176a7dd5ba41aaadf46)
 
-# License
+## License
 
 This repository is released under the [Unlicense](https://github.com/maxdesalle/webserv/blob/main/LICENSE).
