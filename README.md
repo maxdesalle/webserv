@@ -22,7 +22,7 @@ A lightweight HTTP server implemented in C++.
 - [Building a simple server with C++](https://ncona.com/2019/04/building-a-simple-server-with-cpp/)
 - [Understanding and Implementing FastCGI Proxying in Nginx](https://www.digitalocean.com/community/tutorials/understanding-and-implementing-fastcgi-proxying-in-nginx)
 - [tderwedu's random facts](https://github.com/tderwedu/42cursus/blob/main/12_Inception/RandomFacts.md)
-- [[Documentation Webserv (in French)](https://www.notion.so/etelcode/Documentation-Webserv-320727979ffd4176a7dd5ba41aaadf46)
+- [Documentation Webserv (in French)](https://www.notion.so/etelcode/Documentation-Webserv-320727979ffd4176a7dd5ba41aaadf46)
 
 ## License
 
