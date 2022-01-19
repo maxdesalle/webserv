@@ -1,20 +1,23 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   webserv.hpp                                        :+:      :+:    :+:   */
+/*   Config.hpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: maxdesalle <mdesalle@student.s19.be>       +#+  +:+       +#+        */
+/*   By: mdesalle <mdesalle@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2022/01/18 17:32:32 by maxdesall         #+#    #+#             */
-/*   Updated: 2022/01/18 18:06:19 by maxdesall        ###   ########.fr       */
+/*   Created: 2022/01/19 11:19:44 by mdesalle          #+#    #+#             */
+/*   Updated: 2022/01/19 12:21:59 by mdesalle         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef WEBSERV_HPP
-# define WEBSERV_HPP
+#ifndef CONFIG_HPP
+# define CONFIG_HPP
 
-# include <iostream>
+#include "../../include/Webserv.hpp"
+#include "ConfigReader.hpp"
 
-void	config_handler(char *str);
+#include <fstream>
+
+void	ConfigHandler(char *file_name);
 
 #endif

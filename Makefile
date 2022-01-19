@@ -6,7 +6,7 @@
 #    By: maxdesalle <mdesalle@student.s19.be>       +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2022/01/18 10:08:26 by maxdesall         #+#    #+#              #
-#    Updated: 2022/01/18 18:08:39 by maxdesall        ###   ########.fr        #
+#    Updated: 2022/01/19 12:25:46 by mdesalle         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -22,8 +22,9 @@ CFLAGS		:= -Wall -Wextra -Werror -std=c++98
 
 OBJ			:= $(SRC:.cpp=.o)
 
-MAIN		:= webserv.cpp
-CONFIG		:= config_handler.cpp
+MAIN		:= Webserv.cpp
+CONFIG		:= ConfigHandler.cpp \
+			   ConfigReader.cpp
 
 MAIN_DIR	:= $(addprefix src/, $(MAIN))
 CONFIG_DIR	:= $(addprefix src/config/, $(CONFIG))
