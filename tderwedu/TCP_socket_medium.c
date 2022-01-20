@@ -14,6 +14,7 @@ int main(int argc, char const *argv[])
 {
 	(void)argc;
 	(void)argv;
+	int opt = 1;
 	int server_fd, new_socket; long valread;
 	struct sockaddr_in address;
 	int addrlen = sizeof(address);
@@ -26,6 +27,14 @@ int main(int argc, char const *argv[])
 	if ((server_fd = socket(AF_INET, SOCK_STREAM, 0)) == 0)
 	{
 		perror("In socket");
+		exit(EXIT_FAILURE);
+	}
+
+	//set master socket to allow multiple connections , 
+	//this is just a good habit, it will work without this 
+	if(setsockopt(server_fd, SOL_SOCKET, SO_REUSEADDR, (char *)&opt, sizeof(opt)) < 0 )  
+	{
+		perror("setsockopt");
 		exit(EXIT_FAILURE);
 	}
 	
