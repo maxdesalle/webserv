@@ -51,8 +51,7 @@ int	main(void)
 		poll_lst[i].fd = -1;
 	nb_client = 0;
 
-	int	tmp = 0;
-	while (tmp < 3)
+	while (1)
 	{
 		printf("\n*** Waiting for new connection ***\n");
 		nb_poll = poll(poll_lst, nb_client + 1, -1);
@@ -110,6 +109,9 @@ int	main(void)
 			else if (revents & (POLLHUP | POLLNVAL))
 			{
 				printf("Error : connection HANGUP or socket not RDY\n");
+				poll_lst[i].fd = -1;
+				poll_lst[i].revents = 0;
+				nb_client -= (i == nb_client ? 1 : 0);
 				disconnect = 1;
 			}
 			else if (revents & POLLIN)
@@ -135,6 +137,5 @@ int	main(void)
 			if (disconnect)
 				shutdown(sockfd, SHUT_RDWR ); // BAD disconnect
 		}
-		++tmp;
 	}
 }
