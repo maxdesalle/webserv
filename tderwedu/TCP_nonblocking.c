@@ -33,7 +33,9 @@ int	main(void)
 	socklen_t	addr_len, err_size;
 	t_poll		poll_lst[OPEN_MAX];
 	t_addr_in	addr_client, addr_sock;
-	char		*hello = "Hello from server";
+
+	// char		*hello = "Hello from server";
+	char		*hello = "HTTP/1.1 200 OK\nContent-Type: text/plain\nContent-Length: 12\n\nHello world!";
 
 	fd_sock = socket(AF_INET, SOCK_STREAM, 0);
 	fcntl(fd_sock, F_SETFL, O_NONBLOCK);
@@ -62,7 +64,7 @@ int	main(void)
 	while (1)
 	{
 		printf("\n*** Waiting for new connection ***\n");
-		nb_poll = poll(poll_lst, nb_client + 1, 1000);
+		nb_poll = poll(poll_lst, nb_client + 1, -1);
 		printf("\t    Number of POLL: %i\n", nb_poll);
 		printf("\t Number of CLIENTS: %i\n", nb_client);
 		// New Connection
@@ -77,6 +79,7 @@ int	main(void)
 				if (poll_lst[i].fd < 0)
 				{
 					poll_lst[i].fd = new_fd;
+					// poll_lst[i].events = POLLIN | POLLOUT;
 					poll_lst[i].events = POLLIN;
 					nb_client += (i > nb_client ? 1 : 0);
 					break;
@@ -104,7 +107,7 @@ int	main(void)
 			printf("\t POLLOUT : %i\n", revents & POLLOUT);
 			if (sockfd < 0 || revents == POLLOUT)
 			{
-				printf("Nothing to do\n");
+				printf("Nothing to do : %i\n", sockfd);
 				continue;
 			}
 			if (revents & POLLERR)
@@ -132,7 +135,6 @@ int	main(void)
 				}
 				else if (nb_read == 0)
 				{
-					printf("Client disconnected\n");
 					disconnect = 1;
 				}
 				else
@@ -141,20 +143,22 @@ int	main(void)
 					printf("%s\n", buff);
 					send(sockfd, hello, strlen(hello), 0);
 					printf("------------------Hello message sent-------------------\n");
-					disconnect = 2; // Allow gracefull closing
+					disconnect = 1;
 				}
 			}
 			if (disconnect == 1)
 			{
-				shutdown(sockfd, SHUT_RD);
+				shutdown(sockfd, SHUT_RDWR);
 				close(sockfd); // Release ressources (make FD available)
+				printf("Client disconnected\n");
 				poll_lst[i].fd = -1;
+				poll_lst[i].revents = 0;
 				nb_client -= (i == nb_client ? 1 : 0);
 			}
-			else if (disconnect == 2)
-			{
-				shutdown(sockfd, SHUT_WR);
-			}
+			// else if (disconnect == 2)
+			// {
+			// 	shutdown(sockfd, SHUT_WR);
+			// }
 			if (--nb_poll <= 0)
 				break;
 		}
