@@ -1,0 +1,177 @@
+/*Read RFC2119 and RFC7230 Section 2.5 for a better comprehension of the error management*/
+/*Read RFC7230 Section 2.7 and Section 5.3 for a better comprehension of the URI*/
+
+/*The big questions : */
+/*What is case-sensitive and case-insensitive? (I might want to cmd+f to find all about that when I'll know)*/
+
+
+
+|-----------------------------------|
+|-----------REPRESENTATION----------|
+|-----------------------------------|
+
+A representation is information that is intended to reflect a past, current or desired state of a
+given resource, in a format easily read : a set of representation metadata and potentially an 
+unbounded stream of representation data.
+
+
+
+--------------------------------
+----REPRESENTATION	METADATA----
+--------------------------------
+
+/*A.PROCESSING REPRESENTATION DATA*/
+
+/*1.Media-type are used for the Content-Type and Accept header fields*/
+[RFC2046]
+Whitespaces are not allowed!
+media-type = type "/" subtype *( OWS ";" OWS parameter )
+type = token
+subtype = token
+The type/subtype MAY be followed by parameters in the form of name=value pairs.
+parameter = token "=" ( token / quoted-string )
+
+/*2.Charset*/
+[RFC6365] [RFC2978]
+HTTP uses charset names to indicate the character encoding scheme.
+charset = token
+
+/*3.Canonicalization and Text Defaults*/
+Basically text with CRLF as the text line break. (I think? More detail on 3.1.1.3)
+
+/*4.Multipart types*/
+[RFC2046] Section 5.1.1
+multipart/form-data -> [RFC2388]
+multipart/byteranges -> [RFC7233]
+Honestly I don't really understand for now.
+
+/*5.Content type*/
+Indicates the media-type of a representation 
+define the data-format and how this data is intended to be processed
+Content-Type = media-type
+Field example : "Content-type: text/html; charset=ISO-8859-4"
+If the sender generates a payload body he should create a Content-type header
+unless he doesn't know the media type of the representation.
+
+
+/*B.ENCODING FOR COMPRESSION OR INTEGRITY*/
+
+/*1.Content Codings*/
+Encoding transformation that has been or can be applied to a representation
+Primarly used for compression or transformation without losing media-type.
+content-coding = token
+The following content-coding values are defined :
+compress/x-compress [RFC7230] Section 4.2.1
+deflate [RFC7230] Section 4.2.2
+gzip [RFC7230] Section 4.2.3
+
+/*2.Content-Encoding*/
+This field indicates what content codings have been applied to the representation
+and which ones should be applied in order to obtain data in the media type referenced
+in the Content-type header field.
+Content-Encoding = 1#content-coding
+Example : "Content-Encoding: gzip"
+
+
+/*C.AUDIENCE LANGUAGE*/
+
+/*1.Language Tags*/
+[RFC5646]
+[RFC5646] Section 2.1
+language-tag = <Language-Tag>
+A language tag is a sequence of subtags separated by a ("-", %x2D)
+
+/*2.Content-Language*/
+This header fields describes the language of the intended audience.
+Content-Language = 1#language-tag
+Example with a single language : "Content-Language: da"
+Example with multiple languages : "Content-Language: mi, en"
+
+
+/*D.IDENTIFICATION*/
+
+/*1.Identifying a representation*/
+When a representation is transferred in a message payload the sender should supply
+an identifier for a resource corresponding to that representation.
+-For a request message:
+	-If the request has a Content-Location header field then the sender says that
+	the payload is a representation of the resource identified by this field value.
+	Such an assertion cannot be trusted if not verified!
+	-Otherwise the payload is unidentified.
+-For a response message:
+	-If the request method is GET or HEAD and the response status code is 200,204,
+	206 or 304, the payload is a representation of the resource identified by the
+	effective request URI [RFC7230] Section 5.5
+	-The same with status code 203 : the payload is a potentially modified representation
+	of the target resource.
+	-If the response has a Content-Location header field which is the same URI as the
+	effective request URI the payload is a representation of the resource identified
+	by the effective request URI.
+	-If the Content-Location header field's field-value is a reference to a different URI
+	the sender asserts that the payload is a representation of the resource identified on
+	this field value.
+	Such an assertion cannot be trusted if not verified!
+	-Otherwise the payload is unidentified.
+
+/*2.Content-Location*/
+This field references a URI that is an identifier for a specific resource.
+Content-Location = absolute-URI / partial-URI
+-If Content-Location is included in a 2xx response and its value refers to a URI that
+is the same as the effective request URI the recipient may consider the payload as a
+current representation of that resource.
+	-For a GET or HEAD request this is the same as having no Content-Location.
+	-For state-changing requests like PUT or POST it implies that the server's response
+	contains new representation of that resource, allowing applications to update their
+	local copies without the need of a GET request.
+-If Content-Location is included in a 2xx response and its field-value refers to a URI
+that differs from the effective request URI the server claims that the URI is an identifier
+for a different resource.
+Such a claim can only be trusted if both identifiers share the same resource owner,
+which cannot be programmatically determined via HTTP.
+	-For a response to GET or HEAD request the effective request URI refers to a resource
+	that is under content negotiation and the Content-Location field-value is a more specific
+	identifier for the representation.
+	-For a 201 response to a state-changing method, if the Content-Location field-value is
+	the same as the Location field-value this payload is a representation of the newly
+	created field value.
+	-Otherwise the Content-Location indicates that this payload is a representation
+	reporting on the requested action's status and that the same report is avaible (using GET)
+	at the given URI (example p16).
+More details on page 16 and 17.
+
+
+
+--------------------------------
+-------REPRESENTATION DATA------
+--------------------------------
+
+Associated with an HTTP message it is provided as the payload body of the message or refferred
+to by the message semantics and the effective requests URI. Its format and encoding are defined
+by the representation metadata header fields (see above and the line below).
+representation-data := Content-Encoding(Content-Type(bits))
+
+
+
+--------------------------------
+-------PAYLOAD	SEMANTICS-------
+--------------------------------
+
+Some HTTP messages transfer a representation as the message "payload".
+A payload might contain only the associated representation's header fields (as a reponse to HEAD)
+or only some part of the reprenseation data.
+In a request the payload's purpose is defined by the method (example at the end of page 17).
+In a respond the payload's purpose is defined by the request method and response status code
+(example at the beginning of page 18).
+Header fields describing the payload rather than associated representation are called "payload header fields":
+Content-Length [RFC7230] Section 3.3.2
+Content-Range [RFC7233] Section 4.2
+Trailer [RFC7230] Section 4.4
+Transfer-Encoding [RFC7230] Section 3.3.1
+
+
+
+--------------------------------
+-------CONTENT NEGOTIATION------
+--------------------------------
+
+Read from page 18 to page 20.
