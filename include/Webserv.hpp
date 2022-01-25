@@ -6,7 +6,7 @@
 /*   By: maxdesalle <mdesalle@student.s19.be>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/01/18 17:32:32 by maxdesall         #+#    #+#             */
-/*   Updated: 2022/01/19 12:22:31 by mdesalle         ###   ########.fr       */
+/*   Updated: 2022/01/21 14:30:57 by mdesalle         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,6 +15,7 @@
 
 # include <iostream>
 # include <vector>
+# include <map>
 # include <string>
 
 void	ConfigHandler(char *file_name);
