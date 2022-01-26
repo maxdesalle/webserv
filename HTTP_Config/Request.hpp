@@ -6,7 +6,7 @@
 /*   By: ldelmas <ldelmas@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/01/26 11:47:16 by ldelmas           #+#    #+#             */
-/*   Updated: 2022/01/26 11:49:30 by ldelmas          ###   ########.fr       */
+/*   Updated: 2022/01/26 16:08:42 by ldelmas          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,7 +18,7 @@
 class Request : public Header
 {
 	private:
-		std::map<std::string, std::string> headerFields;
+		static std::string const _fieldNames[22];
 	public:
 		Request(void);
 		Request(Request const &src);
