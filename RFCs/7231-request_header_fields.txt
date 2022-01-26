@@ -62,3 +62,59 @@ All about conditionnal header fields in [RFC7232].
 -------CONTENT NEGOTIATION------
 --------------------------------
 
+These header fields are sent to engage in a negotiation of the response content. The
+preferences sent is these fields apply to the content in the response, the representations
+of the target resource, representations of error, processing status or even the text that
+might appear in the protocol.
+	-Accept
+	-Accept-Charset
+	-Accept-Encoding
+	-Accept-language
+
+
+/*1.Quality values*/
+Many of these fields use a parameter "q" to assign a relative weight called "quality value"
+or "qvalue" to the preference for that associated kind of content.
+The weight is normalized between 0 and 1, where 0.001 is the least preferred and 1 is the most.
+A value of 0 means not acceptable at all. If no "q" parameter is present the default wieght is 1.
+weight = OWS ";" OWS "q=" qvalue
+qvalue = ( "0" [ "." 0*3DIGIT ] ) / ("1" [ "." 0*3("0") ] )
+A sender of qvalue mustn't generate more than 3 digits after decimal point.
+
+
+/*2.Accept*/
+This field can be used to specify acceptable response media types.
+Accept = # (media-range [ accept-params ] )
+media-range = ( "*/*" / ( type "/" "*" ) / ( type "/" subtype ) ) *( OWS ";" OWS parameter )
+accept-params = weight *( accept-ext )
+accept-ext = OWS ";" OWS token [ "=" ( token / quoted-string ) ]
+The asterisk "*" is used to group media types into ranges, with "*/*" indicating all media types
+and "type/*" indicating all subtypes of that type.
+Each media-range might be followed by zero or more applicable media type parameters, an optional "q"
+parameter, and zero or more extension parameters.
+Example :  "Accept: audio/*; q=0.2, audio/basic"
+Example :  "Accept: text/plain; q=0.5, text/html,
+ 					text/x-dvi; q=0.8, text/x-c"
+A request without any Accept field implies that the user will accept any media type in response.
+If the reponses doesn't have any media type that is listed as acceptable the server can send a 406
+reponse.
+Specific precisions at page 39 and 40.
+
+
+/*3.Accept-Charset*/
+This field is used to indicate what charsets are acceptable in textual responses.
+Accept-Charset = 1#( ( charset / "*" ) [ weight ] )
+A user can associate a qvalue with each charset.
+Example : "Accept-Charset: iso-8859-5, unicode-1-1;q=0.8"
+If a "*" is in this field it matches any charset that is not explicitely mentioned in it.
+If there is no "*" none of the not explicitely mentioned charset is acceptable.
+A request with no Accept-Charset field implies that the user will acept any charset in response.
+406 as response if no charset in the response as no acceptable charset.
+
+
+/*4.Accept-Encoding*/
+This field indicates what response content-codings are acceptable in the response.
+An "identity" token is used as a synonym for "no encoding" in order to communicate when no encoding
+is preferred.
+Accept-Encoding = #( codings [ weight ] )
+codings = content-coding / "identity" / "*"
