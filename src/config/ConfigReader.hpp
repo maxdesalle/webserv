@@ -6,7 +6,7 @@
 /*   By: mdesalle <mdesalle@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/01/19 11:38:06 by mdesalle          #+#    #+#             */
-/*   Updated: 2022/01/25 17:42:11 by mdesalle         ###   ########.fr       */
+/*   Updated: 2022/01/26 17:10:42 by mdesalle         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,6 +29,8 @@ class ConfigReader
 		std::vector<std::string>							GetLocations(size_t RequestedServerNumber)						const;
 		std::map<std::string, std::string>					GetLocationContent(size_t ServerNumber, std::string Location)	const;
 
+		void												ErrorChecker(void)												const;
+		void												RequiredMapKeysCheck(void)										const;
 		void												WriteErrorMessage(std::string message)							const;
 		bool												FirstCharIsAHashtag(std::string line)							const;
 		bool												CheckBrackets(void)												const;
@@ -40,6 +42,7 @@ class ConfigReader
 		void												SemiColonRemover(void);
 		void												LocationScopeAssembler(void);
 		bool												FindPrefix(std::string Prefix, size_t LineNumber)				const;
+		bool												OutOfServerContextCheck(void)									const;
 		std::pair<std::string, std::string>					PairMaker(std::string KeyValue)									const;
 
 	private:

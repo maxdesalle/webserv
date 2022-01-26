@@ -6,7 +6,7 @@
 /*   By: mdesalle <mdesalle@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/01/19 11:36:14 by mdesalle          #+#    #+#             */
-/*   Updated: 2022/01/25 17:42:46 by mdesalle         ###   ########.fr       */
+/*   Updated: 2022/01/26 17:18:43 by mdesalle         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,12 +35,12 @@ ConfigReader::ConfigReader(char *file_name)
 
 	file.close();
 	CommentEraser();
-	if (!CheckBrackets() || !LastCharIsASemiColon())
-		WriteErrorMessage("Error found when parsing file");
 	FrontSpaceEraser();
+	ErrorChecker();
 	SemiColonRemover();
 	LocationScopeAssembler();
 	ServerSaver();
+	RequiredMapKeysCheck();
 }
 
 ConfigReader::ConfigReader(ConfigReader const &ref)
@@ -118,6 +118,21 @@ std::map<std::string, std::string>					ConfigReader::GetLocationContent(size_t S
 }
 
 //================================ FUNCTIONS =================================//
+
+void												ConfigReader::ErrorChecker(void)	const
+{
+	if (!OutOfServerContextCheck() || !CheckBrackets() || !LastCharIsASemiColon())
+		WriteErrorMessage("Error found when parsing file");
+}
+
+void												ConfigReader::RequiredMapKeysCheck(void)	const
+{
+	for (size_t i = 0; i < GetServers().size(); i += 1)
+	{
+		if (!GetServers()[i].count("listen") || !GetServers()[i].count("server_name"))
+			WriteErrorMessage("Error when parsing file");
+	}
+}
 
 void												ConfigReader::WriteErrorMessage(std::string message)	const
 {
@@ -235,6 +250,28 @@ void												ConfigReader::CommentEraser(void)
 			}
 		}
 	}
+}
+
+/*
+ * Check if there are no configuration settings outside of a "server" context
+ */
+
+bool												ConfigReader::OutOfServerContextCheck(void)	const
+{
+	size_t											i = 0;
+
+	if (GetConfigFileContent()[0].rfind("server {", 0))
+		return (false);
+	while (i < GetConfigFileContent().size() - 1)
+	{
+		i = ReturnEndOfScopeLineNumber(i) + 1;
+		if (i != GetConfigFileContent().size())
+		{
+			if (GetConfigFileContent()[i].rfind("server {", 0))
+				return (false);
+		}
+	}
+	return (true);
 }
 
 /*
