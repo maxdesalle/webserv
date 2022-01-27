@@ -1,7 +1,37 @@
 # webserv
 A lightweight HTTP server implemented in C++.
 
-## Resources
+---
+
+## To-DO-List
+
+ - [ ] Webserv
+	- [x] Config file parsing
+	- [ ] Connection management
+	- [ ] Request processing (location, index, ...)
+	- [ ] Basic request handling (static content)
+	- [ ] CGI request handling
+	- [ ] Basic response sending
+	- [ ] CGI response sending
+ - [ ] Create a default error page
+ - [ ] Create a POC static website
+ - [ ] Create a POC CGI content
+
+## Change Requests
+
+### Config File
+ - [ ] Set up a default config file path if none is provided
+ - [ ] Add a HOST to a listening port
+### Connection Management
+### Request Common Core
+### Request Static Site
+### Request CGI
+### Response Static Site
+### Response CGI
+
+---
+
+## Ressources
 
 ### RFC
 
