@@ -8,7 +8,7 @@ A lightweight HTTP server implemented in C++.
  - [ ] Webserv
 	- [x] Config file parsing
 	- [ ] Connection management
-	- [ ] Request processing (location, index, ...)
+	- [ ] Request processing (Common Core)
 	- [ ] Basic request handling (static content)
 	- [ ] CGI request handling
 	- [ ] Basic response sending
