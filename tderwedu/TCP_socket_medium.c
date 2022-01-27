@@ -8,8 +8,9 @@
 #include <stdlib.h>
 #include <netinet/in.h>
 #include <string.h>
+#include <arpa/inet.h> // inet_ntop
 
-#define PORT 80
+#define PORT 8080
 int main(int argc, char const *argv[])
 {
 	(void)argc;
@@ -64,10 +65,15 @@ int main(int argc, char const *argv[])
 			perror("In accept");
 			exit(EXIT_FAILURE);
 		}
+		char addr_client[INET_ADDRSTRLEN];
+		
+		inet_ntop(AF_INET, (void *)&address.sin_addr.s_addr, addr_client, INET_ADDRSTRLEN);
 		
 		char buffer[30000] = {0};
 		valread = read( new_socket , buffer, 30000);
-		printf("%s\n",buffer );
+		write(new_socket , addr_client , strlen(addr_client));
+		write(new_socket, "\n", 1);
+		printf("%s\n", buffer );
 		write(new_socket , hello , strlen(hello));
 		printf("------------------Hello message sent-------------------\n");
 		// close(new_socket);
