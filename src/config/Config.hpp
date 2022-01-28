@@ -6,7 +6,7 @@
 /*   By: mdesalle <mdesalle@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/01/19 11:19:44 by mdesalle          #+#    #+#             */
-/*   Updated: 2022/01/19 12:21:59 by mdesalle         ###   ########.fr       */
+/*   Updated: 2022/01/28 17:34:39 by mdesalle         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,7 +14,8 @@
 # define CONFIG_HPP
 
 #include "../../include/Webserv.hpp"
-#include "ConfigReader.hpp"
+/* #include "Location.hpp" */
+#include "Server.hpp"
 
 #include <fstream>
 

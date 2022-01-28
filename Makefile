@@ -6,7 +6,7 @@
 #    By: maxdesalle <mdesalle@student.s19.be>       +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2022/01/18 10:08:26 by maxdesall         #+#    #+#              #
-#    Updated: 2022/01/19 12:25:46 by mdesalle         ###   ########.fr        #
+#    Updated: 2022/01/28 17:19:09 by mdesalle         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -24,7 +24,7 @@ OBJ			:= $(SRC:.cpp=.o)
 
 MAIN		:= Webserv.cpp
 CONFIG		:= ConfigHandler.cpp \
-			   ConfigReader.cpp
+			   Server.cpp
 
 MAIN_DIR	:= $(addprefix src/, $(MAIN))
 CONFIG_DIR	:= $(addprefix src/config/, $(CONFIG))
