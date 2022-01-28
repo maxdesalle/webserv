@@ -6,7 +6,7 @@
 /*   By: ldelmas <ldelmas@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/01/26 11:47:16 by ldelmas           #+#    #+#             */
-/*   Updated: 2022/01/26 16:08:42 by ldelmas          ###   ########.fr       */
+/*   Updated: 2022/01/28 14:04:21 by ldelmas          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,7 +24,10 @@ class Request : public Header
 		Request(Request const &src);
 		~Request(void);
 
-		Request const &operator=(Request const &right);
+		Request const	&operator=(Request const &right);
+
+		int				parseRequest(std::string const &request);
+		int				parseRequestLine(std::string const &line);
 };
 
 #endif
