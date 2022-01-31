@@ -6,7 +6,7 @@
 /*   By: maxdesalle <mdesalle@student.s19.be>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/01/18 18:04:43 by maxdesall         #+#    #+#             */
-/*   Updated: 2022/01/26 17:13:00 by mdesalle         ###   ########.fr       */
+/*   Updated: 2022/01/28 17:21:07 by mdesalle         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,7 +20,7 @@
 
 void	ConfigHandler(char *file_name)
 {
-	ConfigReader	config(file_name);
+	Server	config(file_name);
 	/* std::map<std::string, std::string>::iterator it; */
 	
 	/* for (size_t i = 0; i < config.GetConfigFileContent().size(); i += 1) */
