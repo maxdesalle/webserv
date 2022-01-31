@@ -6,7 +6,7 @@
 /*   By: tderwedu <tderwedu@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/01/31 10:19:04 by tderwedu          #+#    #+#             */
-/*   Updated: 2022/01/31 12:25:15 by tderwedu         ###   ########.fr       */
+/*   Updated: 2022/01/31 12:58:36 by tderwedu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -103,6 +103,8 @@ void	Webserv::addListenSocket(int port, int nbr_queue)
 	addr_sock.sin_addr.s_addr = htonl(INADDR_ANY);
 	addr_sock.sin_port = htons(port);
 	bind(fd_sock, (t_addr *) &addr_sock, sizeof(addr_sock));
+	if (nbr_queue > SOMAXCONN)
+		nbr_queue = SOMAXCONN;
 	listen(fd_sock, nbr_queue);
 	poll_fd.fd = fd_sock;
 	poll_fd.events = POLL_FLAGS;
