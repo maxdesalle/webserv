@@ -16,7 +16,7 @@
 #define OPEN_MAX		16
 #define MAXLINE			1024
 #define SERV_PORT		8080
-#define POLL_FLAGS		POLLIN | POLLOUT | POLLERR | POLLHUP | POLLNVAL
+#define POLL_FLAGS		POLLIN | POLLOUT	// POLLERR | POLLHUP | POLLNVAL allways set
 
 typedef struct sockaddr_in	t_addr_in;
 typedef struct sockaddr		t_addr;
