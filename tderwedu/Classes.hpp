@@ -50,15 +50,23 @@ class Location {
 };
 
 class Request {
-	Server	const&	_server;
-	t_poll			_poll_fd;
+	Server	const&					_server;
+	t_poll							_poll_fd;
+	String							_method;
+	String							_target;
+	String							_version;
+	std::map<const String, String>	_headers;
+	String							_body;
+	String							_effReqURI;	// effective request URI
+	int								_status;	// Parsing status while downloading the request
 	// ..
 };
 
 class Response {
-	Server	const&	_server;
-	t_poll			_poll_fd;
-	// ..
+private:
+	Server	const&				_server;
+	t_poll*						_poll_fd;
+
 public:
 	Response(Request const& req);
 };
