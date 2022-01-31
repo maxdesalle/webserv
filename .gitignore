@@ -1,4 +1,8 @@
 .DS_Store
+.vscode
+
 *.o
 *.out
 *.dSYM/
+
+**/test.cpp
