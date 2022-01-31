@@ -6,7 +6,7 @@
 /*   By: ldelmas <ldelmas@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/01/26 14:59:17 by ldelmas           #+#    #+#             */
-/*   Updated: 2022/01/28 14:10:04 by ldelmas          ###   ########.fr       */
+/*   Updated: 2022/01/31 16:16:09 by ldelmas          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,6 +41,25 @@ Request const	&Request::operator=(Request const &right)
 static bool		isSpace(unsigned char c)
 {
 	return (c == ' ' || c == '\t');
+}
+
+/*
+	Create and return a substring where leading and tailing spaces and tabs
+	have been deleted from the string taken as argument.
+	RETURN VALUE : The substring without leading and tailing whitespaces.
+	If the string was empty or only composed of  whitespaces the function
+	return an empty string.
+*/
+
+static std::string	trimSpaces(std::string str)
+{
+	std::string sub;
+	size_t sub_len = str.length();
+	size_t start, end;
+	for (start = 0; start < sub_len && isSpace(str[start]); start++);
+	for (end = sub_len-1; end >= 0 && isSpace(str[end]); end--);
+	sub = str.substr(start, 1+end-start);
+	return sub;
 }
 
 /*
@@ -90,14 +109,56 @@ int				Request::parseRequest(std::string const &request)
 {
 	std::string line;
 	while (getNextLine(request, line))
-		parseRequestLine(line);
-	return (parseRequestLine(line));
+		parseHeaderField(line);
+	return (parseHeaderField(line));
 }
 
-int				Request::parseRequestLine(std::string const &line)
+int				Request::parseRequestLine(std::string const &request)
 {
 	//`start-line` ::= `method` SP `request-target` SP `HTTP-version` CRLF
+	// 	HTTP-version = HTTP-name "/" DIGIT "." DIGIT
+	//  HTTP-name = %x48.54.54.50 ; "HTTP", case-sensitive
+	//	method = token
+	//  request-target = origin-form / absolute-form / authority-form / asterisk-form
+	//  -origin-form = absolute-path [ "?" query ]
+	//		absolute-path = 1*( "/" segment )
+	//		query = *( pchar / "/" / "?" )
+	//		segment = *pchar
+	//		pchar = unreserved / pct-encoded / sub-delims / ":" / "@"
+	//		unreserved = ALPHA / DIGIT / "-" / "." / "_" / "˜"
+	//		pct-encoded = "%" HEXDIG HEXDIG
+	//		sub-delims = "!" / "$" / "&" / "’" / "(" / ")" / "*" / "+" / "," / ";" / "="
+	//	-absolute-form = absolute-URI
+	//		absolute-URI = scheme ":" hier-part [ "?" query ]
+	//		scheme = ALPHA *( ALPHA / DIGIT / "+" / "-" / "." )
+	//		hier-part = "//" authority path-abempty / path-absolute / path-rootless / path-empty
+	//		authority = [ userinfo "@" ] host [ ":" port ]
+	//		userinfo = *( unreserved / pct-encoded / sub-delims / ":" )
+	//		host = IP-literal / IPv4address / reg-name
+	//		IP-literal = "[" ( IPv6address / IPvFuture ) "]"
+	//		IPvFuture = "v" 1*HEXDIG "." 1*( unreserved / sub-delims / ":" )
+	//		reg-name = *( unreserved / pct-encoded / sub-delims )
+	//		port = *DIGIT
+	//		path-abempty = *( "/" segment )
+	//		path-absolute = "/" [ segment-nz *( "/" segment ) ]
+	//		segment-nz = 1*pchar
+	//		path-rootless = segment-nz *( "/" segment )
+	//		path-empty = 0<pchar>
+	//	-authority-form = authority
+	//		authority = [ userinfo "@" ] host [ ":" port ]
+	//	-asterisk-form = "*"
+	return 0;
+}
+
+int				Request::parseHeaderField(std::string const &line)
+{
 	//`header-field` = `field-name` ":" OWS `field-value` OWS
+	// field-value = *( field-content / obs-fold )
+	// field-content = field-vchar [ 1*( SP / HTAB ) field-vchar ]
+	// field-vchar = VCHAR / obs-text
+	// obs-fold = CRLF 1*( SP / HTAB )
+	// VCHAR = any visible USASCII char
+	// obs-text = %x80-FF (UTF-8 chars written in hexa code, 80-FF refers to the char range outside ASCII)
 
 	size_t		pos = 0;
 	for (int j = 0; Request::_fieldNames[j][0]; j++)
@@ -112,8 +173,7 @@ int				Request::parseRequestLine(std::string const &line)
 		std::string const str = Request::_fieldNames[j] + ':';
 		if (!str.compare(name))
 		{
-			std::string s = line.substr(str.length());
-			s.erase(std::remove_if(s.begin(), s.end(), isSpace), s.end());
+			std::string s = trimSpaces(line.substr(str.length()));
 			if (this->headerFields[Request::_fieldNames[j]][0])
 				this->headerFields[Request::_fieldNames[j]] += ',' + s;
 			else
