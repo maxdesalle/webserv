@@ -1,0 +1,2 @@
+- Reads that can block the caller forever if data isn’t present with certain file types (pipes, terminal devices, and network devices)
+- Writes that can block the caller forever if the data can’t be accepted immediately by these same file types (e.g., no room in the pipe, network flow control)
