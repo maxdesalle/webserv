@@ -6,7 +6,7 @@
 /*   By: tderwedu <tderwedu@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/01/31 16:05:34 by tderwedu          #+#    #+#             */
-/*   Updated: 2022/01/31 17:10:38 by tderwedu         ###   ########.fr       */
+/*   Updated: 2022/02/01 10:10:37 by tderwedu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,8 +19,8 @@
 # include <sys/socket.h>
 # include <poll.h>
 
-typedef struct sockaddr_in	t_addr_in;	// Used by `bind` function
-typedef struct sockaddr		t_addr;		// Used by `bind` function
-typedef struct pollfd		t_poll;		// Used by `poll` function
+typedef struct sockaddr_in	t_sockaddr_in;	// Used by `bind` function
+typedef struct sockaddr		t_sockaddr;		// Used by `bind` function
+typedef struct pollfd		t_poll;			// Used by `poll` function
 
 #endif

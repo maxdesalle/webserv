@@ -18,8 +18,8 @@
 #define SERV_PORT		8080
 #define POLL_FLAGS		POLLIN | POLLOUT	// POLLERR | POLLHUP | POLLNVAL allways set
 
-typedef struct sockaddr_in	t_addr_in;
-typedef struct sockaddr		t_addr;
+typedef struct sockaddr_in	t_sockaddr_in;
+typedef struct sockaddr		t_sockaddr;
 typedef struct pollfd		t_poll;
 
 int	main(void)
@@ -32,7 +32,7 @@ int	main(void)
 	char		buff[MAXLINE];
 	socklen_t	addr_len, err_size;
 	t_poll		poll_lst[OPEN_MAX];
-	t_addr_in	addr_client, addr_sock;
+	t_sockaddr_in	addr_client, addr_sock;
 
 	// char		*hello = "Hello from server";
 	char		*hello = "HTTP/1.1 200 OK\nContent-Type: text/plain\nContent-Length: 12\n\nHello world!";
@@ -51,7 +51,7 @@ int	main(void)
 	addr_sock.sin_addr.s_addr = htonl(INADDR_ANY);
 	addr_sock.sin_port = htons(SERV_PORT);
 
-	bind(fd_sock, (t_addr *) &addr_sock, sizeof(addr_sock));
+	bind(fd_sock, (t_sockaddr *) &addr_sock, sizeof(addr_sock));
 
 	listen(fd_sock, OPEN_MAX - 1);
 
@@ -72,7 +72,7 @@ int	main(void)
 		{
 			printf("===> New connection\n");
 			addr_len = sizeof(addr_client);
-			new_fd = accept(fd_sock, (t_addr *) &addr_client, &addr_len);
+			new_fd = accept(fd_sock, (t_sockaddr *) &addr_client, &addr_len);
 			fcntl(new_fd, F_SETFL, O_NONBLOCK);
 			for (i = 1; i < OPEN_MAX; i++)
 			{
