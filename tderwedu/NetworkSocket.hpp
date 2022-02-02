@@ -6,7 +6,7 @@
 /*   By: tderwedu <tderwedu@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/01/31 15:54:27 by tderwedu          #+#    #+#             */
-/*   Updated: 2022/02/01 10:32:21 by tderwedu         ###   ########.fr       */
+/*   Updated: 2022/02/01 15:14:04 by tderwedu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,7 +45,7 @@ NetworkSocket::NetworkSocket(int fd, int port, in_addr_t addr, t_poll const& pol
 
 NetworkSocket::~NetworkSocket() {}
 
-void	NetworkSocket::gracefullClose(void)
+void		NetworkSocket::gracefullClose(void)
 {
 	if (status == OPEN)
 	{
@@ -60,7 +60,7 @@ void	NetworkSocket::gracefullClose(void)
 	}
 }
 
-void	NetworkSocket::errorClose(void)
+void		NetworkSocket::errorClose(void)
 {
 	shutdown(fd, SHUT_RDWR);
 	close(fd);

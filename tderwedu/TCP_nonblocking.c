@@ -14,8 +14,8 @@
 #include	<limits.h>	  /* for OPEN_MAX */
 
 #define OPEN_MAX		16
-#define MAXLINE			1024
-#define SERV_PORT		8080
+#define MAXLINE			256
+#define SERV_PORT		80
 #define POLL_FLAGS		POLLIN | POLLOUT	// POLLERR | POLLHUP | POLLNVAL allways set
 
 typedef struct sockaddr_in	t_sockaddr_in;
@@ -35,7 +35,7 @@ int	main(void)
 	t_sockaddr_in	addr_client, addr_sock;
 
 	// char		*hello = "Hello from server";
-	char		*hello = "HTTP/1.1 200 OK\nContent-Type: text/plain\nContent-Length: 12\n\nHello world!";
+	char		*hello = "HTTP/1.1 200 OK\nContent-Type: text/plain\nContent-Length: 12\n\nHello world!\n";
 
 	fd_sock = socket(AF_INET, SOCK_STREAM, 0);
 	fcntl(fd_sock, F_SETFL, O_NONBLOCK);
@@ -63,10 +63,10 @@ int	main(void)
 
 	while (1)
 	{
-		printf("\n*** Waiting for new connection ***\n");
+		printf("\e[34m \t Number of CLIENTS: %i \e[0m \n", nb_client);
+		printf("\e[34m  *** Waiting for new connection *** \e[0m \n");
 		nb_poll = poll(poll_lst, nb_client + 1, -1);
-		printf("\t    Number of POLL: %i\n", nb_poll);
-		printf("\t Number of CLIENTS: %i\n", nb_client);
+		printf("\e[34m \t    Number of POLL: %i \e[0m \n\n", nb_poll);
 		// New Connection
 		if (poll_lst[0].revents & POLLIN)
 		{
@@ -85,6 +85,8 @@ int	main(void)
 					break;
 				}
 			}
+			printf("\t Number of CLIENTS: %i \n", nb_client);
+			printf("\t                FD: %i \n", new_fd);
 			if (i == OPEN_MAX)
 				exit(EXIT_FAILURE);
 			if (--nb_poll <= 0)
@@ -97,14 +99,8 @@ int	main(void)
 			disconnect = 0;
 			sockfd = poll_lst[i].fd;
 			revents = poll_lst[i].revents;
-			printf("===> Client #%i\n", i);
-			printf("===>      FD %i\n", sockfd);
-			printf("REVENTS\n");
-			printf("\t POLLERR : %i\n", revents & POLLERR);
-			printf("\t POLLHUP : %i\n", revents & POLLHUP);
-			printf("\t POLLNVAL: %i\n", revents & POLLNVAL);
-			printf("\t POLLIN  : %i\n", revents & POLLIN);
-			printf("\t POLLOUT : %i\n", revents & POLLOUT);
+			printf("\e[33m ===> Client #%i \e[0m \n", i);
+			printf("\e[33m ===>      FD %i \e[0m \n", sockfd);
 			if (sockfd < 0 || revents == POLLOUT)
 			{
 				printf("Nothing to do : %i\n", sockfd);
@@ -120,46 +116,53 @@ int	main(void)
 						printf("Error : %i\nb_read", err);
 				disconnect = 1;
 			}
-			else if (revents & (POLLHUP | POLLNVAL))
-			{
-				printf("Error : connection HANGUP or socket not RDY\n");
-				disconnect = 1;
-			}
 			else if (revents & POLLIN)
 			{
 				nb_read = recv(sockfd, buff, MAXLINE, 0);
 				if (nb_read < 0)
 				{
-					printf("Error while getting socket error!\n");
+					printf("\e[31m Error while getting socket error! \e[0m \n");
 					disconnect = 1;
 				}
 				else if (nb_read == 0)
 				{
+					printf("\e[32m Client Disconnected \e[0m \n");
 					disconnect = 1;
 				}
 				else
 				{
-					printf("OK\n");
+					printf("\e[33m Msg Len: %li \e[0m \n", nb_read);
+					buff[nb_read] = '\0';
 					printf("%s\n", buff);
 					send(sockfd, hello, strlen(hello), 0);
 					printf("------------------Hello message sent-------------------\n");
-					disconnect = 1;
+					disconnect = 0;
 				}
+			}
+			else
+			{
+				printf("REVENTS\n");
+				printf("\t POLLERR : %i\n", revents & POLLERR);
+				printf("\t POLLHUP : %i\n", revents & POLLHUP);
+				printf("\t POLLNVAL: %i\n", revents & POLLNVAL);
+				printf("\t POLLIN  : %i\n", revents & POLLIN);
+				printf("\t POLLOUT : %i\n", revents & POLLOUT);
 			}
 			if (disconnect == 1)
 			{
 				shutdown(sockfd, SHUT_RDWR);
 				close(sockfd); // Release ressources (make FD available)
-				printf("Client disconnected\n");
+				printf("\e[32m Connection Closed \e[0m\n");
 				poll_lst[i].fd = -1;
 				poll_lst[i].revents = 0;
 				nb_client -= (i == nb_client ? 1 : 0);
 			}
-			// else if (disconnect == 2)
-			// {
-			// 	shutdown(sockfd, SHUT_WR);
-			// }
-			if (--nb_poll <= 0)
+			else if (disconnect == 2)
+			{
+				printf("\e[32m Gracefull Closing \e[0m\n");
+				shutdown(sockfd, SHUT_WR);
+			}
+			if (revents && --nb_poll <= 0)
 				break;
 		}
 	}
