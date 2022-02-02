@@ -14,7 +14,7 @@
 #include	<limits.h>	  /* for OPEN_MAX */
 
 #define OPEN_MAX		16
-#define MAXLINE			256
+#define MAXLINE			1024
 #define SERV_PORT		80
 #define POLL_FLAGS		POLLIN | POLLOUT	// POLLERR | POLLHUP | POLLNVAL allways set
 
@@ -155,7 +155,13 @@ int	main(void)
 				printf("\e[32m Connection Closed \e[0m\n");
 				poll_lst[i].fd = -1;
 				poll_lst[i].revents = 0;
-				nb_client -= (i == nb_client ? 1 : 0);
+				if (i == nb_client)
+				{
+					int j = i - 1;
+					while (poll_lst[j].fd < 0)
+						j--;
+					nb_client = j;
+				}
 			}
 			else if (disconnect == 2)
 			{
