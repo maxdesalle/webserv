@@ -6,11 +6,13 @@
 /*   By: ldelmas <ldelmas@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/01/26 14:59:17 by ldelmas           #+#    #+#             */
-/*   Updated: 2022/01/31 16:16:09 by ldelmas          ###   ########.fr       */
+/*   Updated: 2022/02/02 17:11:02 by ldelmas          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 # include "Request.hpp"
+
+/* Important static attributes*/
 
 std::string const Request::_fieldNames[22] = {"Cache-Control", "Expect", "Host", 
 										"Max-Forwards", "Pragma", "Range",
@@ -21,17 +23,73 @@ std::string const Request::_fieldNames[22] = {"Cache-Control", "Expect", "Host",
 										"Authorization", "Proxy-Authorization",
 										"From", "Referer", "User-Agent", ""};
 
+
+
+/*CONSTRUCTORS AND DESTRUCTORS*/
+
 Request::Request(void) : Header(Request::_fieldNames) {}
 
-Request::Request(Request const &src) {this->headerFields = src.headerFields;}
+Request::Request(Request const &src) {this->_headerFields = src._headerFields;}
 
 Request::~Request(void) {}
 
+
+
+/*OPERATOR OVERLOADS*/
+
 Request const	&Request::operator=(Request const &right)
 {
-	this->headerFields = right.headerFields;
+	this->_headerFields = right._headerFields;
 	return *this;
 }
+
+
+
+/*GETTERS AND SETTERS*/
+
+std::string const	&Request::getMethod(void) const
+{
+	return this->_method;
+}
+
+std::string const	&Request::getTarget(void) const
+{
+	return this->_target;
+}
+
+std::string const	&Request::getVersion(void) const
+{
+	return this->_version;
+}
+
+std::string const	&Request::getBody(void) const
+{
+	return this->_body;
+}
+
+void				Request::setMethod(std::string &method)
+{
+	this->_method = method;
+}
+
+void				Request::setTarget(std::string &target)
+{
+	this->_target = target;
+}
+
+void				Request::setVersion(std::string &version)
+{
+	this->_version = version;
+}
+
+void				Request::setBody(std::string &body)
+{
+	this->_body = body;
+}
+
+
+
+/*UTILS THAT WILL GO ELSEWHERE ONCE THIS FILE IS CLEANED UP*/
 
 /*
 	RETURN VALUE : Return true if the char 'c' is a space or a tab. Return
@@ -74,7 +132,7 @@ static int		getNextLine(std::string const &str, std::string &line)
 {
 	static size_t pos = 0;
 	static std::string const tmp;
-	size_t tmp_pos = str.find('\n', pos);
+	size_t tmp_pos = str.find("\r\n", pos);
 	if (tmp_pos == std::string::npos)
 	{
 		line = str.substr(pos);
@@ -82,7 +140,7 @@ static int		getNextLine(std::string const &str, std::string &line)
 		return 0;
 	}
 	line = str.substr(pos, tmp_pos-(pos));
-	pos = tmp_pos+1;
+	pos = tmp_pos+2;
 	return 1;
 }
 
@@ -105,9 +163,15 @@ static int		getFieldName(std::string const &line, std::string &name)
 	return 0;
 }
 
+
+
+/*NON-STATIC METHODS*/
+
 int				Request::parseRequest(std::string const &request)
 {
 	std::string line;
+	getNextLine(request, line);
+	parseRequestLine(line);
 	while (getNextLine(request, line))
 		parseHeaderField(line);
 	return (parseHeaderField(line));
@@ -116,38 +180,8 @@ int				Request::parseRequest(std::string const &request)
 int				Request::parseRequestLine(std::string const &request)
 {
 	//`start-line` ::= `method` SP `request-target` SP `HTTP-version` CRLF
-	// 	HTTP-version = HTTP-name "/" DIGIT "." DIGIT
-	//  HTTP-name = %x48.54.54.50 ; "HTTP", case-sensitive
-	//	method = token
-	//  request-target = origin-form / absolute-form / authority-form / asterisk-form
-	//  -origin-form = absolute-path [ "?" query ]
-	//		absolute-path = 1*( "/" segment )
-	//		query = *( pchar / "/" / "?" )
-	//		segment = *pchar
-	//		pchar = unreserved / pct-encoded / sub-delims / ":" / "@"
-	//		unreserved = ALPHA / DIGIT / "-" / "." / "_" / "˜"
-	//		pct-encoded = "%" HEXDIG HEXDIG
-	//		sub-delims = "!" / "$" / "&" / "’" / "(" / ")" / "*" / "+" / "," / ";" / "="
-	//	-absolute-form = absolute-URI
-	//		absolute-URI = scheme ":" hier-part [ "?" query ]
-	//		scheme = ALPHA *( ALPHA / DIGIT / "+" / "-" / "." )
-	//		hier-part = "//" authority path-abempty / path-absolute / path-rootless / path-empty
-	//		authority = [ userinfo "@" ] host [ ":" port ]
-	//		userinfo = *( unreserved / pct-encoded / sub-delims / ":" )
-	//		host = IP-literal / IPv4address / reg-name
-	//		IP-literal = "[" ( IPv6address / IPvFuture ) "]"
-	//		IPvFuture = "v" 1*HEXDIG "." 1*( unreserved / sub-delims / ":" )
-	//		reg-name = *( unreserved / pct-encoded / sub-delims )
-	//		port = *DIGIT
-	//		path-abempty = *( "/" segment )
-	//		path-absolute = "/" [ segment-nz *( "/" segment ) ]
-	//		segment-nz = 1*pchar
-	//		path-rootless = segment-nz *( "/" segment )
-	//		path-empty = 0<pchar>
-	//	-authority-form = authority
-	//		authority = [ userinfo "@" ] host [ ":" port ]
-	//	-asterisk-form = "*"
-	return 0;
+	// std::string start(Header::_parseMethod(request))
+	// return 0;
 }
 
 int				Request::parseHeaderField(std::string const &line)
@@ -174,10 +208,10 @@ int				Request::parseHeaderField(std::string const &line)
 		if (!str.compare(name))
 		{
 			std::string s = trimSpaces(line.substr(str.length()));
-			if (this->headerFields[Request::_fieldNames[j]][0])
-				this->headerFields[Request::_fieldNames[j]] += ',' + s;
+			if (this->_headerFields[Request::_fieldNames[j]][0])
+				this->_headerFields[Request::_fieldNames[j]] += ',' + s;
 			else
-				this->headerFields[Request::_fieldNames[j]] = s;
+				this->_headerFields[Request::_fieldNames[j]] = s;
 			return 0;
 		}
 	}
