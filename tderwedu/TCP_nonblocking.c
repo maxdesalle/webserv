@@ -35,7 +35,7 @@ int	main(void)
 	t_sockaddr_in	addr_client, addr_sock;
 
 	// char		*hello = "Hello from server";
-	char		*hello = "HTTP/1.1 200 OK\nContent-Type: text/plain\nContent-Length: 12\n\nHello world!\n";
+	char	*hello = "HTTP/1.1 200 OK\r\nContent-Type: text/plain\r\nContent-Length: 14\r\n\r\nHello world!\n.";
 
 	fd_sock = socket(AF_INET, SOCK_STREAM, 0);
 	fcntl(fd_sock, F_SETFL, O_NONBLOCK);
