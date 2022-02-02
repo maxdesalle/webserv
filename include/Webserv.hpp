@@ -6,7 +6,7 @@
 /*   By: maxdesalle <mdesalle@student.s19.be>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/01/18 17:32:32 by maxdesall         #+#    #+#             */
-/*   Updated: 2022/01/21 14:30:57 by mdesalle         ###   ########.fr       */
+/*   Updated: 2022/02/02 17:11:56 by mdesalle         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,8 +16,12 @@
 # include <iostream>
 # include <vector>
 # include <map>
+# include <array>
 # include <string>
+# include "../src/config/Config.hpp"
 
-void	ConfigHandler(char *file_name);
+class Server;
+
+std::vector<Server>	ConfigHandler(std::string ConfigFileName);
 
 #endif
