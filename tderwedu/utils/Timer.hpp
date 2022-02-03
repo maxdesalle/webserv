@@ -6,7 +6,7 @@
 /*   By: tderwedu <tderwedu@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/01/03 10:10:38 by tderwedu          #+#    #+#             */
-/*   Updated: 2022/01/05 12:04:36 by tderwedu         ###   ########.fr       */
+/*   Updated: 2022/02/03 15:23:20 by tderwedu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,6 +32,7 @@ public:
 	void		reset(void);
 
 	double		elapsedTime(void);
+	double		getElapsedTime(void);
 };
 
 #endif

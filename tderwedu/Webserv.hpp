@@ -6,7 +6,7 @@
 /*   By: tderwedu <tderwedu@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/01/31 10:19:04 by tderwedu          #+#    #+#             */
-/*   Updated: 2022/02/03 09:58:40 by tderwedu         ###   ########.fr       */
+/*   Updated: 2022/02/03 16:00:41 by tderwedu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -49,7 +49,8 @@ class Webserv
 {
 private:
 
-	typedef std::vector<NetworkSocket>::iterator	it_netSock;
+	typedef std::vector<NetworkSocket>::iterator	it_servSock;
+	typedef std::vector<ClientSocket>::iterator		it_clieSock;
 
 	int							_fdInUse;
 	std::vector<t_poll>			_pollfd;
@@ -127,7 +128,7 @@ void				Webserv::addServerSocket(int port, int nbr_queue)
 	_pollfd.push_back(pollfd);
 	++_fdInUse;
 
-	_serverSocks.push_back(NetworkSocket(port, fd_sock, htonl(INADDR_ANY), _pollfd.back()));
+	_serverSocks.push_back(NetworkSocket(fd_sock, htonl(INADDR_ANY), _pollfd.back()));
 }
 
 void				Webserv::checkServerSockets(void)
@@ -137,17 +138,21 @@ void				Webserv::checkServerSockets(void)
 	socklen_t		socklen;
 	t_sockaddr_in	sockaddr;
 
-	for (it_netSock it = _serverSocks.begin(); it != _serverSocks.end(); ++it)
+
+	for (it_servSock it = _serverSocks.begin(); it != _serverSocks.end(); ++it)
 	{
 		// TODO: check _fdInUse < open_max
-		if (it->pollfd.revents | POLLIN)
+		// TODO: check other values of revents
+		if (it->_pollfd.revents == POLLOUT)
+			continue ;
+		if (it->_pollfd.revents | POLLIN)
 		{
 			socklen = sizeof(sockaddr);
-			if ((fd_client = accept(it->fd, (t_sockaddr *) &sockaddr, &socklen)) < 0)
+			if ((fd_client = accept(it->_pollfd.fd, (t_sockaddr *) &sockaddr, &socklen)) < 0)
 				exit(EXIT_FAILURE);												//TODO: better error handling;
 			fcntl(fd_client, F_SETFL, O_NONBLOCK);
 			addr = sockaddr.sin_addr.s_addr;
-			_clientSocks.push_back(ClientSocket(fd_client, it->port, addr, addPollfd(fd_client)));
+			_clientSocks.push_back(ClientSocket(it->_port, addr, addPollfd(fd_client)));
 			if (_fdInUse == open_max)
 				break ;
 		}
@@ -159,13 +164,24 @@ Server const&		Webserv::findServer(NetworkSocket const& sock)
 	// After A whole request has been downloaded
 }
 
+/*
+** - POLLHUP: peer closed its end of the channel
+** - POLLNVAL: fd not open
+** - POLLERR: error
+*/
+
 void				Webserv::checkClientSockets(void)
 {
-	for (it_netSock it = _serverSocks.begin(); it != _serverSocks.end(); ++it)
+	ssize_t			n;
+	it_clieSock		client;
+
+	client = _clientSocks.begin();
+	while (client != _clientSocks.end())
 	{
-		// TODO: check _fdInUse < open_max
-		if (it->pollfd.revents | POLLIN)
-		{
+		client->getRequest();
+		// Handle Request's Stack - 
+		// Handle Response's Stack
+		++client;
 	}
 }
 

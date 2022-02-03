@@ -6,7 +6,7 @@
 /*   By: tderwedu <tderwedu@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/01/26 11:47:16 by ldelmas           #+#    #+#             */
-/*   Updated: 2022/02/03 10:00:54 by tderwedu         ###   ########.fr       */
+/*   Updated: 2022/02/03 15:44:27 by tderwedu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,14 +22,15 @@
 
 class Request : public Header
 {
-	private:
-		enum body {LEN, CHUNKED, NONE};
-		enum state {NONE, STARTLINE, HEADERS, BODY, PROCESSING, DONE};
+	public:
+		enum Body {LEN, CHUNKED, NONE};
+		enum State {NONE, DOWNLOADING, DOWNLOADED, PROCESSING, DONE};
 		
+	private:
 		static std::string const _fieldNames[22];
 		std::string		_method, _target, _version, _body;
-		body			_type;
-		state			_state;
+		Body			_type;
+		State			_state;
 	public:
 		Request(void);
 		Request(Request const &src);
@@ -44,14 +45,18 @@ class Request : public Header
 		void				setMethod(std::string &method);
 		void				setTarget(std::string &target);
 		void				setVersion(std::string &version);
-		void				setBody(std::string &body);
+		void				setBody(std::string &Body);
 
 		int					parseRequest(std::string const &request);
 		int					parseRequestLine(std::string const &r_line);
 		int					parseHeaderField(std::string const &line);
 
 		// Added by tderwedu
-		void				move()
+		void				move(Request& src);
+		void				clear(void);
+		void				stopRequest(void);
+		State				getState(void);
+		Body				getBodyType(void);
 };
 
 #endif

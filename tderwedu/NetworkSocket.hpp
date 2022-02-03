@@ -6,7 +6,7 @@
 /*   By: tderwedu <tderwedu@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/01/31 15:54:27 by tderwedu          #+#    #+#             */
-/*   Updated: 2022/02/01 15:14:04 by tderwedu         ###   ########.fr       */
+/*   Updated: 2022/02/03 15:22:07 by tderwedu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,58 +14,73 @@
 # define NETWORKSOCKET_HPP
 
 # include <unistd.h>
+# include <iostream>
 
 # include "NetworkIPC.hpp"
 # include "Timer.hpp"
 
-struct NetworkSocket
+# define	TIMEOUT			3 * 60 * 1000
+# define	TIMEOUT_NVAL	100
+
+class NetworkSocket
 {
 public:
-	enum Status {OPEN, HALF_CLOSED, CLOSED};
+	enum State {OPEN, HALF_CLOSED, CLOSED};
 
-	int				fd;
-	int				port;
-	in_addr_t		addr;
-	t_poll const&	pollfd;
-	Status			status;
-	Timer			timer;
+	int				_port;
+	in_addr_t		_addr;
+	t_poll&			_pollfd;
+	State			_state;
+	Timer			_timer;
 
-	NetworkSocket(int fd, int port, in_addr_t addr, t_poll const& pollfd);
+	NetworkSocket(int port, in_addr_t addr, t_poll& pollfd);
 	virtual ~NetworkSocket(void);
 
-	void	gracefullClose(void);
-	void	errorClose(void);
+	void	sockShutdown(void);
+	void	sockClose(void);
+	void	handlePOLLERR(void);
 };
 
-NetworkSocket::NetworkSocket(int fd, int port, in_addr_t addr, t_poll const& pollfd)
-: fd(fd), port(port), addr(addr), pollfd(pollfd), status(OPEN)
+NetworkSocket::NetworkSocket(int port, in_addr_t addr, t_poll& pollfd)
+:_port(port), _addr(addr), _pollfd(pollfd), _state(OPEN)
 {
-	timer.start();
+	_timer.start();
 }
 
 NetworkSocket::~NetworkSocket() {}
 
-void		NetworkSocket::gracefullClose(void)
+void		NetworkSocket::sockShutdown(void)
 {
-	if (status == OPEN)
+	if (_state == OPEN)
 	{
-		shutdown(fd, SHUT_WR);
-		status = HALF_CLOSED;
+		shutdown(_pollfd.fd, SHUT_WR);
+		_state = HALF_CLOSED;
 	}
 	else
-	{
-		shutdown(fd, SHUT_RDWR);
-		close(fd);
-		status = CLOSED;
-	}
+		sockClose();
 }
 
-void		NetworkSocket::errorClose(void)
+void		NetworkSocket::sockClose(void)
 {
-	shutdown(fd, SHUT_RDWR);
-	close(fd);
-	status = CLOSED;
+	shutdown(_pollfd.fd, SHUT_RDWR);
+	close(_pollfd.fd);
+	_pollfd.fd = -1;
+	_state = CLOSED;
 }
 
+void		NetworkSocket::handlePOLLERR(void)  // TODO: error handling
+{
+	int			err;
+	socklen_t	size;
+
+	size = sizeof(err);
+	std::cout << "Error with FD: " << _pollfd.fd << " and port " << _port << std::endl;
+	if (getsockopt(_pollfd.fd, SOL_SOCKET, SO_ERROR, &err, &size) < 0)
+		std::cout << "Error while getting socket error!" << std::endl;
+	else
+		std::cout << "SO_ERROR: " << err << std::endl;
+	sockClose();
+	// exit(EXIT_FAILURE);
+}
 
 #endif
