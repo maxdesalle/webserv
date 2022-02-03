@@ -6,7 +6,7 @@
 /*   By: tderwedu <tderwedu@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/01/31 10:19:04 by tderwedu          #+#    #+#             */
-/*   Updated: 2022/02/01 10:53:08 by tderwedu         ###   ########.fr       */
+/*   Updated: 2022/02/02 10:32:24 by tderwedu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,6 +34,7 @@
 # include "Request.hpp"
 # include "Response.hpp"
 # include "NetworkSocket.hpp"
+# include "ClientSocket.hpp"
 # include "Timer.hpp"
 
 # ifdef OPEN_MAX
@@ -53,16 +54,17 @@ private:
 	int							_fdInUse;
 	std::vector<t_poll>			_pollfd;
 	std::vector<Server>			_servers;
-	std::vector<NetworkSocket>	_serverSock;
-	std::vector<NetworkSocket>	_clientSock;
+	std::vector<NetworkSocket>	_serverSocks;
+	std::vector<ClientSocket>	_clientSocks;
 public:
 	Webserv(void);
 	~Webserv(void);
 
 	void			setOpenMax(void);
-	void			initServers(void);
+	Server const&	findServer(NetworkSocket const& sock);
 	void			addServerSocket(int port, int nbr_queue);
 	void			checkServerSockets(void);
+	void			checkClientSockets(void);
 	t_poll&			addPollfd(int fd_client);
 	void			popPollfd(t_poll& pollfd);
 };
@@ -73,11 +75,11 @@ Webserv::~Webserv(void)
 {
 	_pollfd.clear();
 	_servers.clear();
-	_serverSock.clear();
-	_clientSock.clear();
+	_serverSocks.clear();
+	_clientSocks.clear();
 }
 
-void	Webserv::setOpenMax(void)
+void				Webserv::setOpenMax(void)
 {
 	if (!open_max)
 	{
@@ -92,9 +94,8 @@ void	Webserv::setOpenMax(void)
 	}
 }
 
-void	Webserv::initServers(void) {}
 
-void	Webserv::addServerSocket(int port, int nbr_queue)
+void				Webserv::addServerSocket(int port, int nbr_queue)
 {
 	int			fd_sock;
 	int			opt;
@@ -126,33 +127,46 @@ void	Webserv::addServerSocket(int port, int nbr_queue)
 	_pollfd.push_back(pollfd);
 	++_fdInUse;
 
-	_serverSock.push_back(NetworkSocket(port, fd_sock, htonl(INADDR_ANY), _pollfd.back()));
+	_serverSocks.push_back(NetworkSocket(port, fd_sock, htonl(INADDR_ANY), _pollfd.back()));
 }
 
-void		Webserv::checkServerSockets(void)
+void				Webserv::checkServerSockets(void)
 {
 	int				fd_client;
 	in_addr_t		addr;
 	socklen_t		socklen;
 	t_sockaddr_in	sockaddr;
 
-	for (it_netSock it = _serverSock.begin(); it != _serverSock.end(); ++it)
+	for (it_netSock it = _serverSocks.begin(); it != _serverSocks.end(); ++it)
 	{
 		if (it->pollfd.revents | POLLIN)
 		{
 			socklen = sizeof(sockaddr);
 			if ((fd_client = accept(it->fd, (t_sockaddr *) &sockaddr, &socklen)) < 0)
 				exit(EXIT_FAILURE);												//TODO: better error handling;
-			addr = sockaddr.sin_addr.s_addr;
 			fcntl(fd_client, F_SETFL, O_NONBLOCK);
-			_clientSock.push_back(NetworkSocket(fd_client, it->port, addr, addPollfd(fd_client)));
+			addr = sockaddr.sin_addr.s_addr;
+			_clientSocks.push_back(ClientSocket(fd_client, it->port, addr, addPollfd(fd_client)));
 			if (_fdInUse == open_max)
 				break ;
 		}
 	}
 }
 
-t_poll&		Webserv::addPollfd(int fd_client)
+Server const&		Webserv::findServer(NetworkSocket const& sock)
+{
+	// After A whole request has been downloaded
+}
+
+void				Webserv::checkClientSockets(void)
+{
+	for (it_netSock it = _serverSocks.begin(); it != _serverSocks.end(); ++it)
+	{
+		
+	}
+}
+
+t_poll&				Webserv::addPollfd(int fd_client)
 {
 	t_poll		new_pollfd;
 
@@ -183,7 +197,7 @@ t_poll&		Webserv::addPollfd(int fd_client)
 	}
 }
 
-void	Webserv::popPollfd(t_poll&	pollfd)
+void				Webserv::popPollfd(t_poll&	pollfd)
 {
 	pollfd.fd = -1;
 	--_fdInUse;

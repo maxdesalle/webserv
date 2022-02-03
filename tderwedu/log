@@ -1,0 +1,999 @@
+
+*** Waiting for new connection ***
+	    Number of POLL: 1
+	 Number of CLIENTS: 0
+===> New connection
+
+*** Waiting for new connection ***
+	    Number of POLL: 1
+	 Number of CLIENTS: 1
+===> Client #1
+===>      FD 4
+REVENTS
+	 POLLERR : 0
+	 POLLHUP : 0
+	 POLLNVAL: 0
+	 POLLIN  : 1
+	 POLLOUT : 0
+[33m ====>> FD: 4 [0m 
+GET / HTTP/1.1
+Host: example.com
+User-Agent: curl/7.68.0
+Accept: */*
+
+3
+------------------Hello message sent-------------------
+[32m Gracefull Closing [0m
+
+*** Waiting for new connection ***
+	    Number of POLL: 1
+	 Number of CLIENTS: 1
+===> Client #1
+===>      FD 4
+REVENTS
+	 POLLERR : 0
+	 POLLHUP : 16
+	 POLLNVAL: 0
+	 POLLIN  : 1
+	 POLLOUT : 0
+[32m Client Disconnected [0m 
+[32m Connection Closed [0m
+
+*** Waiting for new connection ***
+	    Number of POLL: 1
+	 Number of CLIENTS: 0
+===> New connection
+
+*** Waiting for new connection ***
+	    Number of POLL: 1
+	 Number of CLIENTS: 1
+===> Client #1
+===>      FD 4
+REVENTS
+	 POLLERR : 0
+	 POLLHUP : 0
+	 POLLNVAL: 0
+	 POLLIN  : 1
+	 POLLOUT : 0
+[33m ====>> FD: 4 [0m 
+GET / HTTP/1.1
+Host: example.be
+User-Agent: curl/7.68.0
+Accept: */*
+
+
+3
+------------------Hello message sent-------------------
+[32m Gracefull Closing [0m
+
+*** Waiting for new connection ***
+	    Number of POLL: 1
+	 Number of CLIENTS: 1
+===> Client #1
+===>      FD 4
+REVENTS
+	 POLLERR : 0
+	 POLLHUP : 16
+	 POLLNVAL: 0
+	 POLLIN  : 1
+	 POLLOUT : 0
+[32m Client Disconnected [0m 
+[32m Connection Closed [0m
+
+*** Waiting for new connection ***
+	    Number of POLL: 1
+	 Number of CLIENTS: 0
+===> New connection
+
+*** Waiting for new connection ***
+	    Number of POLL: 1
+	 Number of CLIENTS: 1
+===> Client #1
+===>      FD 4
+REVENTS
+	 POLLERR : 0
+	 POLLHUP : 0
+	 POLLNVAL: 0
+	 POLLIN  : 1
+	 POLLOUT : 0
+[33m ====>> FD: 4 [0m 
+GET / HTTP/1.1
+Host: example.com
+User-Agent: curl/7.68.0
+Accept: */*
+
+3
+------------------Hello message sent-------------------
+[32m Gracefull Closing [0m
+
+*** Waiting for new connection ***
+	    Number of POLL: 1
+	 Number of CLIENTS: 1
+===> Client #1
+===>      FD 4
+REVENTS
+	 POLLERR : 0
+	 POLLHUP : 16
+	 POLLNVAL: 0
+	 POLLIN  : 1
+	 POLLOUT : 0
+[32m Client Disconnected [0m 
+[32m Connection Closed [0m
+
+*** Waiting for new connection ***
+	    Number of POLL: 1
+	 Number of CLIENTS: 0
+===> New connection
+
+*** Waiting for new connection ***
+	    Number of POLL: 1
+	 Number of CLIENTS: 1
+===> Client #1
+===>      FD 4
+REVENTS
+	 POLLERR : 0
+	 POLLHUP : 0
+	 POLLNVAL: 0
+	 POLLIN  : 1
+	 POLLOUT : 0
+[33m ====>> FD: 4 [0m 
+GET / HTTP/1.1
+Host: example.be
+User-Agent: curl/7.68.0
+Accept: */*
+
+
+3
+------------------Hello message sent-------------------
+[32m Gracefull Closing [0m
+
+*** Waiting for new connection ***
+	    Number of POLL: 1
+	 Number of CLIENTS: 1
+===> Client #1
+===>      FD 4
+REVENTS
+	 POLLERR : 0
+	 POLLHUP : 16
+	 POLLNVAL: 0
+	 POLLIN  : 1
+	 POLLOUT : 0
+[32m Client Disconnected [0m 
+[32m Connection Closed [0m
+
+*** Waiting for new connection ***
+	    Number of POLL: 1
+	 Number of CLIENTS: 0
+===> New connection
+
+*** Waiting for new connection ***
+	    Number of POLL: 1
+	 Number of CLIENTS: 1
+===> Client #1
+===>      FD 4
+REVENTS
+	 POLLERR : 0
+	 POLLHUP : 0
+	 POLLNVAL: 0
+	 POLLIN  : 1
+	 POLLOUT : 0
+[33m ====>> FD: 4 [0m 
+GET / HTTP/1.1
+Host: example.com
+User-Agent: curl/7.68.0
+Accept: */*
+
+3
+------------------Hello message sent-------------------
+[32m Gracefull Closing [0m
+
+*** Waiting for new connection ***
+	    Number of POLL: 1
+	 Number of CLIENTS: 1
+===> Client #1
+===>      FD 4
+REVENTS
+	 POLLERR : 0
+	 POLLHUP : 16
+	 POLLNVAL: 0
+	 POLLIN  : 1
+	 POLLOUT : 0
+[32m Client Disconnected [0m 
+[32m Connection Closed [0m
+
+*** Waiting for new connection ***
+	    Number of POLL: 1
+	 Number of CLIENTS: 0
+===> New connection
+
+*** Waiting for new connection ***
+	    Number of POLL: 1
+	 Number of CLIENTS: 1
+===> Client #1
+===>      FD 4
+REVENTS
+	 POLLERR : 0
+	 POLLHUP : 0
+	 POLLNVAL: 0
+	 POLLIN  : 1
+	 POLLOUT : 0
+[33m ====>> FD: 4 [0m 
+GET / HTTP/1.1
+Host: example.be
+User-Agent: curl/7.68.0
+Accept: */*
+
+
+3
+------------------Hello message sent-------------------
+[32m Gracefull Closing [0m
+
+*** Waiting for new connection ***
+	    Number of POLL: 1
+	 Number of CLIENTS: 1
+===> Client #1
+===>      FD 4
+REVENTS
+	 POLLERR : 0
+	 POLLHUP : 16
+	 POLLNVAL: 0
+	 POLLIN  : 1
+	 POLLOUT : 0
+[32m Client Disconnected [0m 
+[32m Connection Closed [0m
+
+*** Waiting for new connection ***
+	    Number of POLL: 1
+	 Number of CLIENTS: 0
+===> New connection
+
+*** Waiting for new connection ***
+	    Number of POLL: 1
+	 Number of CLIENTS: 1
+===> Client #1
+===>      FD 4
+REVENTS
+	 POLLERR : 0
+	 POLLHUP : 0
+	 POLLNVAL: 0
+	 POLLIN  : 1
+	 POLLOUT : 0
+[33m ====>> FD: 4 [0m 
+GET / HTTP/1.1
+Host: example.com
+User-Agent: curl/7.68.0
+Accept: */*
+
+3
+------------------Hello message sent-------------------
+[32m Gracefull Closing [0m
+
+*** Waiting for new connection ***
+	    Number of POLL: 1
+	 Number of CLIENTS: 1
+===> Client #1
+===>      FD 4
+REVENTS
+	 POLLERR : 0
+	 POLLHUP : 16
+	 POLLNVAL: 0
+	 POLLIN  : 1
+	 POLLOUT : 0
+[32m Client Disconnected [0m 
+[32m Connection Closed [0m
+
+*** Waiting for new connection ***
+	    Number of POLL: 1
+	 Number of CLIENTS: 0
+===> New connection
+
+*** Waiting for new connection ***
+	    Number of POLL: 1
+	 Number of CLIENTS: 1
+===> Client #1
+===>      FD 4
+REVENTS
+	 POLLERR : 0
+	 POLLHUP : 0
+	 POLLNVAL: 0
+	 POLLIN  : 1
+	 POLLOUT : 0
+[33m ====>> FD: 4 [0m 
+GET / HTTP/1.1
+Host: example.be
+User-Agent: curl/7.68.0
+Accept: */*
+
+
+3
+------------------Hello message sent-------------------
+[32m Gracefull Closing [0m
+
+*** Waiting for new connection ***
+	    Number of POLL: 1
+	 Number of CLIENTS: 1
+===> Client #1
+===>      FD 4
+REVENTS
+	 POLLERR : 0
+	 POLLHUP : 16
+	 POLLNVAL: 0
+	 POLLIN  : 1
+	 POLLOUT : 0
+[32m Client Disconnected [0m 
+[32m Connection Closed [0m
+
+*** Waiting for new connection ***
+	    Number of POLL: 1
+	 Number of CLIENTS: 0
+===> New connection
+
+*** Waiting for new connection ***
+	    Number of POLL: 1
+	 Number of CLIENTS: 1
+===> Client #1
+===>      FD 4
+REVENTS
+	 POLLERR : 0
+	 POLLHUP : 0
+	 POLLNVAL: 0
+	 POLLIN  : 1
+	 POLLOUT : 0
+[33m ====>> FD: 4 [0m 
+GET / HTTP/1.1
+Host: localhost
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:96.0) Gecko/20100101 Firefox/96.0
+Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8
+Accept-Language: fr-BE,en;q=0.8,fr;q=0.6,fr-FR;q=0.4,en-US;q=0.2
+Accept-Encoding: gzip, deflate
+DNT: 1
+Connection: keep-alive
+Upgrade-Insecure-Requests: 1
+Sec-Fetch-Dest: document
+Sec-Fetch-Mode: navigate
+Sec-Fetch-Site: none
+Sec-Fetch-User: ?1
+
+
+------------------Hello message sent-------------------
+[32m Gracefull Closing [0m
+
+*** Waiting for new connection ***
+	    Number of POLL: 1
+	 Number of CLIENTS: 1
+===> Client #1
+===>      FD 4
+REVENTS
+	 POLLERR : 0
+	 POLLHUP : 16
+	 POLLNVAL: 0
+	 POLLIN  : 1
+	 POLLOUT : 0
+[32m Client Disconnected [0m 
+[32m Connection Closed [0m
+
+*** Waiting for new connection ***
+	    Number of POLL: 1
+	 Number of CLIENTS: 0
+===> New connection
+
+*** Waiting for new connection ***
+	    Number of POLL: 1
+	 Number of CLIENTS: 1
+===> Client #1
+===>      FD 4
+REVENTS
+	 POLLERR : 0
+	 POLLHUP : 0
+	 POLLNVAL: 0
+	 POLLIN  : 1
+	 POLLOUT : 0
+[32m Client Disconnected [0m 
+[32m Connection Closed [0m
+
+*** Waiting for new connection ***
+	    Number of POLL: 1
+	 Number of CLIENTS: 0
+===> New connection
+
+*** Waiting for new connection ***
+	    Number of POLL: 1
+	 Number of CLIENTS: 1
+===> Client #1
+===>      FD 4
+REVENTS
+	 POLLERR : 0
+	 POLLHUP : 0
+	 POLLNVAL: 0
+	 POLLIN  : 1
+	 POLLOUT : 0
+[33m ====>> FD: 4 [0m 
+GET / HTTP/1.1
+Host: example.com
+User-Agent: curl/7.68.0
+Accept: */*
+
+Win64; x64; rv:96.0) Gecko/20100101 Firefox/96.0
+Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8
+Accept-Language: fr-BE,en;q=0.8,fr;q=0.6,fr-FR;q=0.4,en-US;q=0.2
+Accept-Encoding: gzip, deflate
+DNT: 1
+Connection: keep-alive
+Upgrade-Insecure-Requests: 1
+Sec-Fetch-Dest: document
+Sec-Fetch-Mode: navigate
+Sec-Fetch-Site: none
+Sec-Fetch-User: ?1
+
+
+------------------Hello message sent-------------------
+[32m Gracefull Closing [0m
+
+*** Waiting for new connection ***
+	    Number of POLL: 1
+	 Number of CLIENTS: 1
+===> Client #1
+===>      FD 4
+REVENTS
+	 POLLERR : 0
+	 POLLHUP : 16
+	 POLLNVAL: 0
+	 POLLIN  : 1
+	 POLLOUT : 0
+[32m Client Disconnected [0m 
+[32m Connection Closed [0m
+
+*** Waiting for new connection ***
+	    Number of POLL: 1
+	 Number of CLIENTS: 0
+===> New connection
+
+*** Waiting for new connection ***
+	    Number of POLL: 1
+	 Number of CLIENTS: 1
+===> Client #1
+===>      FD 4
+REVENTS
+	 POLLERR : 0
+	 POLLHUP : 0
+	 POLLNVAL: 0
+	 POLLIN  : 1
+	 POLLOUT : 0
+[33m ====>> FD: 4 [0m 
+GET / HTTP/1.1
+Host: example.be
+User-Agent: curl/7.68.0
+Accept: */*
+
+
+Win64; x64; rv:96.0) Gecko/20100101 Firefox/96.0
+Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8
+Accept-Language: fr-BE,en;q=0.8,fr;q=0.6,fr-FR;q=0.4,en-US;q=0.2
+Accept-Encoding: gzip, deflate
+DNT: 1
+Connection: keep-alive
+Upgrade-Insecure-Requests: 1
+Sec-Fetch-Dest: document
+Sec-Fetch-Mode: navigate
+Sec-Fetch-Site: none
+Sec-Fetch-User: ?1
+
+
+------------------Hello message sent-------------------
+[32m Gracefull Closing [0m
+
+*** Waiting for new connection ***
+	    Number of POLL: 1
+	 Number of CLIENTS: 1
+===> Client #1
+===>      FD 4
+REVENTS
+	 POLLERR : 0
+	 POLLHUP : 16
+	 POLLNVAL: 0
+	 POLLIN  : 1
+	 POLLOUT : 0
+[32m Client Disconnected [0m 
+[32m Connection Closed [0m
+
+*** Waiting for new connection ***
+	    Number of POLL: 1
+	 Number of CLIENTS: 0
+===> New connection
+
+*** Waiting for new connection ***
+	    Number of POLL: 1
+	 Number of CLIENTS: 1
+===> Client #1
+===>      FD 4
+REVENTS
+	 POLLERR : 0
+	 POLLHUP : 0
+	 POLLNVAL: 0
+	 POLLIN  : 1
+	 POLLOUT : 0
+[33m ====>> FD: 4 [0m 
+GET / HTTP/1.1
+Host: example.com
+User-Agent: curl/7.68.0
+Accept: */*
+
+Win64; x64; rv:96.0) Gecko/20100101 Firefox/96.0
+Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8
+Accept-Language: fr-BE,en;q=0.8,fr;q=0.6,fr-FR;q=0.4,en-US;q=0.2
+Accept-Encoding: gzip, deflate
+DNT: 1
+Connection: keep-alive
+Upgrade-Insecure-Requests: 1
+Sec-Fetch-Dest: document
+Sec-Fetch-Mode: navigate
+Sec-Fetch-Site: none
+Sec-Fetch-User: ?1
+
+
+------------------Hello message sent-------------------
+[32m Gracefull Closing [0m
+
+*** Waiting for new connection ***
+	    Number of POLL: 1
+	 Number of CLIENTS: 1
+===> Client #1
+===>      FD 4
+REVENTS
+	 POLLERR : 0
+	 POLLHUP : 16
+	 POLLNVAL: 0
+	 POLLIN  : 1
+	 POLLOUT : 0
+[32m Client Disconnected [0m 
+[32m Connection Closed [0m
+
+*** Waiting for new connection ***
+	    Number of POLL: 1
+	 Number of CLIENTS: 0
+===> New connection
+
+*** Waiting for new connection ***
+	    Number of POLL: 1
+	 Number of CLIENTS: 1
+===> Client #1
+===>      FD 4
+REVENTS
+	 POLLERR : 0
+	 POLLHUP : 0
+	 POLLNVAL: 0
+	 POLLIN  : 1
+	 POLLOUT : 0
+[33m ====>> FD: 4 [0m 
+GET / HTTP/1.1
+Host: example.be
+User-Agent: curl/7.68.0
+Accept: */*
+
+
+Win64; x64; rv:96.0) Gecko/20100101 Firefox/96.0
+Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8
+Accept-Language: fr-BE,en;q=0.8,fr;q=0.6,fr-FR;q=0.4,en-US;q=0.2
+Accept-Encoding: gzip, deflate
+DNT: 1
+Connection: keep-alive
+Upgrade-Insecure-Requests: 1
+Sec-Fetch-Dest: document
+Sec-Fetch-Mode: navigate
+Sec-Fetch-Site: none
+Sec-Fetch-User: ?1
+
+
+------------------Hello message sent-------------------
+[32m Gracefull Closing [0m
+
+*** Waiting for new connection ***
+	    Number of POLL: 1
+	 Number of CLIENTS: 1
+===> Client #1
+===>      FD 4
+REVENTS
+	 POLLERR : 0
+	 POLLHUP : 16
+	 POLLNVAL: 0
+	 POLLIN  : 1
+	 POLLOUT : 0
+[32m Client Disconnected [0m 
+[32m Connection Closed [0m
+
+*** Waiting for new connection ***
+	    Number of POLL: 1
+	 Number of CLIENTS: 0
+===> New connection
+
+*** Waiting for new connection ***
+	    Number of POLL: 1
+	 Number of CLIENTS: 1
+===> Client #1
+===>      FD 4
+REVENTS
+	 POLLERR : 0
+	 POLLHUP : 0
+	 POLLNVAL: 0
+	 POLLIN  : 1
+	 POLLOUT : 0
+[33m ====>> FD: 4 [0m 
+GET / HTTP/1.1
+Host: example.com
+User-Agent: curl/7.68.0
+Accept: */*
+
+Win64; x64; rv:96.0) Gecko/20100101 Firefox/96.0
+Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8
+Accept-Language: fr-BE,en;q=0.8,fr;q=0.6,fr-FR;q=0.4,en-US;q=0.2
+Accept-Encoding: gzip, deflate
+DNT: 1
+Connection: keep-alive
+Upgrade-Insecure-Requests: 1
+Sec-Fetch-Dest: document
+Sec-Fetch-Mode: navigate
+Sec-Fetch-Site: none
+Sec-Fetch-User: ?1
+
+
+------------------Hello message sent-------------------
+[32m Gracefull Closing [0m
+
+*** Waiting for new connection ***
+	    Number of POLL: 1
+	 Number of CLIENTS: 1
+===> Client #1
+===>      FD 4
+REVENTS
+	 POLLERR : 0
+	 POLLHUP : 16
+	 POLLNVAL: 0
+	 POLLIN  : 1
+	 POLLOUT : 0
+[32m Client Disconnected [0m 
+[32m Connection Closed [0m
+
+*** Waiting for new connection ***
+	    Number of POLL: 1
+	 Number of CLIENTS: 0
+===> New connection
+
+*** Waiting for new connection ***
+	    Number of POLL: 1
+	 Number of CLIENTS: 1
+===> Client #1
+===>      FD 4
+REVENTS
+	 POLLERR : 0
+	 POLLHUP : 0
+	 POLLNVAL: 0
+	 POLLIN  : 1
+	 POLLOUT : 0
+[33m ====>> FD: 4 [0m 
+GET / HTTP/1.1
+Host: example.be
+User-Agent: curl/7.68.0
+Accept: */*
+
+
+Win64; x64; rv:96.0) Gecko/20100101 Firefox/96.0
+Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8
+Accept-Language: fr-BE,en;q=0.8,fr;q=0.6,fr-FR;q=0.4,en-US;q=0.2
+Accept-Encoding: gzip, deflate
+DNT: 1
+Connection: keep-alive
+Upgrade-Insecure-Requests: 1
+Sec-Fetch-Dest: document
+Sec-Fetch-Mode: navigate
+Sec-Fetch-Site: none
+Sec-Fetch-User: ?1
+
+
+------------------Hello message sent-------------------
+[32m Gracefull Closing [0m
+
+*** Waiting for new connection ***
+	    Number of POLL: 1
+	 Number of CLIENTS: 1
+===> Client #1
+===>      FD 4
+REVENTS
+	 POLLERR : 0
+	 POLLHUP : 16
+	 POLLNVAL: 0
+	 POLLIN  : 1
+	 POLLOUT : 0
+[32m Client Disconnected [0m 
+[32m Connection Closed [0m
+
+*** Waiting for new connection ***
+	    Number of POLL: 1
+	 Number of CLIENTS: 0
+===> New connection
+
+*** Waiting for new connection ***
+	    Number of POLL: 1
+	 Number of CLIENTS: 1
+===> Client #1
+===>      FD 4
+REVENTS
+	 POLLERR : 0
+	 POLLHUP : 0
+	 POLLNVAL: 0
+	 POLLIN  : 1
+	 POLLOUT : 0
+[33m ====>> FD: 4 [0m 
+GET / HTTP/1.1
+Host: example.com
+User-Agent: curl/7.68.0
+Accept: */*
+
+Win64; x64; rv:96.0) Gecko/20100101 Firefox/96.0
+Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8
+Accept-Language: fr-BE,en;q=0.8,fr;q=0.6,fr-FR;q=0.4,en-US;q=0.2
+Accept-Encoding: gzip, deflate
+DNT: 1
+Connection: keep-alive
+Upgrade-Insecure-Requests: 1
+Sec-Fetch-Dest: document
+Sec-Fetch-Mode: navigate
+Sec-Fetch-Site: none
+Sec-Fetch-User: ?1
+
+
+------------------Hello message sent-------------------
+[32m Gracefull Closing [0m
+
+*** Waiting for new connection ***
+	    Number of POLL: 1
+	 Number of CLIENTS: 1
+===> Client #1
+===>      FD 4
+REVENTS
+	 POLLERR : 0
+	 POLLHUP : 16
+	 POLLNVAL: 0
+	 POLLIN  : 1
+	 POLLOUT : 0
+[32m Client Disconnected [0m 
+[32m Connection Closed [0m
+
+*** Waiting for new connection ***
+	    Number of POLL: 1
+	 Number of CLIENTS: 0
+===> New connection
+
+*** Waiting for new connection ***
+	    Number of POLL: 1
+	 Number of CLIENTS: 1
+===> Client #1
+===>      FD 4
+REVENTS
+	 POLLERR : 0
+	 POLLHUP : 0
+	 POLLNVAL: 0
+	 POLLIN  : 1
+	 POLLOUT : 0
+[33m ====>> FD: 4 [0m 
+GET / HTTP/1.1
+Host: example.be
+User-Agent: curl/7.68.0
+Accept: */*
+
+
+Win64; x64; rv:96.0) Gecko/20100101 Firefox/96.0
+Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8
+Accept-Language: fr-BE,en;q=0.8,fr;q=0.6,fr-FR;q=0.4,en-US;q=0.2
+Accept-Encoding: gzip, deflate
+DNT: 1
+Connection: keep-alive
+Upgrade-Insecure-Requests: 1
+Sec-Fetch-Dest: document
+Sec-Fetch-Mode: navigate
+Sec-Fetch-Site: none
+Sec-Fetch-User: ?1
+
+
+------------------Hello message sent-------------------
+[32m Gracefull Closing [0m
+
+*** Waiting for new connection ***
+	    Number of POLL: 1
+	 Number of CLIENTS: 1
+===> Client #1
+===>      FD 4
+REVENTS
+	 POLLERR : 0
+	 POLLHUP : 16
+	 POLLNVAL: 0
+	 POLLIN  : 1
+	 POLLOUT : 0
+[32m Client Disconnected [0m 
+[32m Connection Closed [0m
+
+*** Waiting for new connection ***
+	    Number of POLL: 1
+	 Number of CLIENTS: 0
+===> New connection
+
+*** Waiting for new connection ***
+	    Number of POLL: 1
+	 Number of CLIENTS: 1
+===> Client #1
+===>      FD 4
+REVENTS
+	 POLLERR : 0
+	 POLLHUP : 0
+	 POLLNVAL: 0
+	 POLLIN  : 1
+	 POLLOUT : 0
+[33m ====>> FD: 4 [0m 
+GET / HTTP/1.1
+Host: example.com
+User-Agent: curl/7.68.0
+Accept: */*
+
+Win64; x64; rv:96.0) Gecko/20100101 Firefox/96.0
+Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8
+Accept-Language: fr-BE,en;q=0.8,fr;q=0.6,fr-FR;q=0.4,en-US;q=0.2
+Accept-Encoding: gzip, deflate
+DNT: 1
+Connection: keep-alive
+Upgrade-Insecure-Requests: 1
+Sec-Fetch-Dest: document
+Sec-Fetch-Mode: navigate
+Sec-Fetch-Site: none
+Sec-Fetch-User: ?1
+
+
+------------------Hello message sent-------------------
+[32m Gracefull Closing [0m
+
+*** Waiting for new connection ***
+	    Number of POLL: 1
+	 Number of CLIENTS: 1
+===> Client #1
+===>      FD 4
+REVENTS
+	 POLLERR : 0
+	 POLLHUP : 16
+	 POLLNVAL: 0
+	 POLLIN  : 1
+	 POLLOUT : 0
+[32m Client Disconnected [0m 
+[32m Connection Closed [0m
+
+*** Waiting for new connection ***
+	    Number of POLL: 1
+	 Number of CLIENTS: 0
+===> New connection
+
+*** Waiting for new connection ***
+	    Number of POLL: 1
+	 Number of CLIENTS: 1
+===> Client #1
+===>      FD 4
+REVENTS
+	 POLLERR : 0
+	 POLLHUP : 0
+	 POLLNVAL: 0
+	 POLLIN  : 1
+	 POLLOUT : 0
+[33m ====>> FD: 4 [0m 
+GET / HTTP/1.1
+Host: example.be
+User-Agent: curl/7.68.0
+Accept: */*
+
+
+Win64; x64; rv:96.0) Gecko/20100101 Firefox/96.0
+Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8
+Accept-Language: fr-BE,en;q=0.8,fr;q=0.6,fr-FR;q=0.4,en-US;q=0.2
+Accept-Encoding: gzip, deflate
+DNT: 1
+Connection: keep-alive
+Upgrade-Insecure-Requests: 1
+Sec-Fetch-Dest: document
+Sec-Fetch-Mode: navigate
+Sec-Fetch-Site: none
+Sec-Fetch-User: ?1
+
+
+------------------Hello message sent-------------------
+[32m Gracefull Closing [0m
+
+*** Waiting for new connection ***
+	    Number of POLL: 1
+	 Number of CLIENTS: 1
+===> Client #1
+===>      FD 4
+REVENTS
+	 POLLERR : 0
+	 POLLHUP : 16
+	 POLLNVAL: 0
+	 POLLIN  : 1
+	 POLLOUT : 0
+[32m Client Disconnected [0m 
+[32m Connection Closed [0m
+
+*** Waiting for new connection ***
+	    Number of POLL: 1
+	 Number of CLIENTS: 0
+===> New connection
+
+*** Waiting for new connection ***
+	    Number of POLL: 1
+	 Number of CLIENTS: 1
+===> Client #1
+===>      FD 4
+REVENTS
+	 POLLERR : 0
+	 POLLHUP : 0
+	 POLLNVAL: 0
+	 POLLIN  : 1
+	 POLLOUT : 0
+[33m ====>> FD: 4 [0m 
+GET / HTTP/1.1
+Host: example.com
+User-Agent: curl/7.68.0
+Accept: */*
+
+Win64; x64; rv:96.0) Gecko/20100101 Firefox/96.0
+Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8
+Accept-Language: fr-BE,en;q=0.8,fr;q=0.6,fr-FR;q=0.4,en-US;q=0.2
+Accept-Encoding: gzip, deflate
+DNT: 1
+Connection: keep-alive
+Upgrade-Insecure-Requests: 1
+Sec-Fetch-Dest: document
+Sec-Fetch-Mode: navigate
+Sec-Fetch-Site: none
+Sec-Fetch-User: ?1
+
+
+------------------Hello message sent-------------------
+[32m Gracefull Closing [0m
+
+*** Waiting for new connection ***
+	    Number of POLL: 1
+	 Number of CLIENTS: 1
+===> Client #1
+===>      FD 4
+REVENTS
+	 POLLERR : 0
+	 POLLHUP : 16
+	 POLLNVAL: 0
+	 POLLIN  : 1
+	 POLLOUT : 0
+[32m Client Disconnected [0m 
+[32m Connection Closed [0m
+
+*** Waiting for new connection ***
+	    Number of POLL: 1
+	 Number of CLIENTS: 0
+===> New connection
+
+*** Waiting for new connection ***
+	    Number of POLL: 1
+	 Number of CLIENTS: 1
+===> Client #1
+===>      FD 4
+REVENTS
+	 POLLERR : 0
+	 POLLHUP : 0
+	 POLLNVAL: 0
+	 POLLIN  : 1
+	 POLLOUT : 0
+[33m ====>> FD: 4 [0m 
+GET / HTTP/1.1
+Host: example.be
+User-Agent: curl/7.68.0
+Accept: */*
+
+
+Win64; x64; rv:96.0) Gecko/20100101 Firefox/96.0
+Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8
+Accept-Language: fr-BE,en;q=0.8,fr;q=0.6,fr-FR;q=0.4,en-US;q=0.2
+Accept-Encoding: gzip, deflate
+DNT: 1
+Connection: keep-alive
