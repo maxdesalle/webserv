@@ -1,28 +1,26 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   Server.hpp                                         :+:      :+:    :+:   */
+/*   Config.hpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: tderwedu <tderwedu@student.s19.be>         +#+  +:+       +#+        */
+/*   By: mdesalle <mdesalle@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2022/01/31 10:19:13 by tderwedu          #+#    #+#             */
-/*   Updated: 2022/01/31 10:19:17 by tderwedu         ###   ########.fr       */
+/*   Created: 2022/01/19 11:19:44 by mdesalle          #+#    #+#             */
+/*   Updated: 2022/02/02 17:09:54 by mdesalle         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-class Server
-{
-private:
-	/* data */
-public:
-	Server(/* args */);
-	~Server();
-};
+#ifndef CONFIG_HPP
+# define CONFIG_HPP
 
-Server::Server(/* args */)
-{
-}
+#include "../../include/Webserv.hpp"
+#include "Location.hpp"
+#include "Server.hpp"
 
-Server::~Server()
-{
-}
+#include <fstream>
+
+class Server;
+
+std::vector<Server>	ConfigHandler(std::string ConfigFileName);
+
+#endif

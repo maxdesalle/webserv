@@ -3,26 +3,28 @@
 /*                                                        :::      ::::::::   */
 /*   Response.hpp                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: tderwedu <tderwedu@student.s19.be>         +#+  +:+       +#+        */
+/*   By: ldelmas <ldelmas@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2022/01/31 11:23:43 by tderwedu          #+#    #+#             */
-/*   Updated: 2022/01/31 11:42:54 by tderwedu         ###   ########.fr       */
+/*   Created: 2022/01/26 11:48:07 by ldelmas           #+#    #+#             */
+/*   Updated: 2022/01/26 16:10:42 by ldelmas          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-class Response
+#ifndef RESPONSE_HPP
+# define RESPONSE_HPP
+
+#include "Header.hpp"
+
+class Response : public Header
 {
-private:
-	/* data */
-public:
-	Response(/* args */);
-	~Response();
+	private:
+		static std::string const _fieldNames[16];
+	public:
+		Response(void);
+		Response(Response const &src);
+		~Response(void);
+
+		Response const &operator=(Response const &right);
 };
 
-Response::Response(/* args */)
-{
-}
-
-Response::~Response()
-{
-}
+#endif
