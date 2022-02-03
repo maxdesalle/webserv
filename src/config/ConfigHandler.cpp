@@ -6,7 +6,7 @@
 /*   By: maxdesalle <mdesalle@student.s19.be>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/01/18 18:04:43 by maxdesall         #+#    #+#             */
-/*   Updated: 2022/02/02 18:50:25 by mdesalle         ###   ########.fr       */
+/*   Updated: 2022/02/03 12:52:17 by mdesalle         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -59,7 +59,7 @@ std::vector<Server>	ConfigHandler(std::string ConfigFileName)
 
 	while (std::getline(File, Line))
 	{
-		if (Line.rfind("server ", 0) != std::string::npos && !ServerContent.empty())
+		if (Line.rfind("server ", 0) == 0 && !ServerContent.empty())
 		{
 			Servers.push_back(CreateServerObject(ServerContent));
 			ServerContent.clear();

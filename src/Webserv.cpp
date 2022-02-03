@@ -6,7 +6,7 @@
 /*   By: maxdesalle <mdesalle@student.s19.be>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/01/18 17:28:20 by maxdesall         #+#    #+#             */
-/*   Updated: 2022/02/02 17:52:04 by mdesalle         ###   ########.fr       */
+/*   Updated: 2022/02/03 18:30:00 by mdesalle         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,6 +25,8 @@ int	main(int argc, char **argv)
 	Servers = ConfigHandler(argv[1]);
 	std::cout << Servers[1].GetLocations()[0].GetAllowMethod()[0] << std::endl;
 	std::cout << Servers[0].GetLocations()[1].GetRoot() << std::endl;
+	std::cout << Servers[0].GetListenIPandPorts().at("127.0.0.1")[1] << std::endl;
+	std::cout << Servers[0].GetDefaultServer().at("127.0.0.1")[0] << std::endl;
 	
 	return (0);
 }

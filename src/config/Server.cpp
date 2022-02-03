@@ -6,7 +6,7 @@
 /*   By: mdesalle <mdesalle@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/01/28 14:07:11 by mdesalle          #+#    #+#             */
-/*   Updated: 2022/02/02 18:50:10 by mdesalle         ###   ########.fr       */
+/*   Updated: 2022/02/03 18:32:16 by mdesalle         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,7 +21,7 @@ Server::Server(std::vector<std::string> ConfigFileContent)
 	ErrorChecker(ConfigFileContent);
 	SemiColonRemover(ConfigFileContent);
 	LocationScopeAssembler(ConfigFileContent);
-	FindListenPorts(ConfigFileContent);
+	FindListenIPandPorts(ConfigFileContent);
 	FindServerNames(ConfigFileContent);
 	AddOutsideInfoToLocation(ConfigFileContent);
 	LocationFinder(ConfigFileContent);
@@ -40,27 +40,33 @@ Server::~Server(void)
 
 Server						&Server::operator=(Server const &ref)
 {
-	this->_ListenPorts = ref.GetListenPorts();
-	this->_ServerNames = ref.GetServerNames();
 	this->_Locations = ref.GetLocations();
+	this->_ServerNames = ref.GetServerNames();
+	this->_DefaultServer = ref.GetDefaultServer();
+	this->_ListenIPandPorts = ref.GetListenIPandPorts();
 	return (*this);
 }
 
 //============================ GETTERS / SETTERS =============================//
 
-std::vector<size_t>			Server::GetListenPorts(void)	const
-{
-	return (_ListenPorts);
-}
-
-std::vector<std::string>	Server::GetServerNames(void)	const
+std::vector<std::string>							Server::GetServerNames(void)	const
 {
 	return (_ServerNames);
 }
 
-std::vector<Location>		Server::GetLocations(void)		const
+std::vector<Location>								Server::GetLocations(void)		const
 {
 	return (_Locations);
+}
+
+std::map<std::string, std::vector<size_t> >			Server::GetListenIPandPorts(void)	const
+{
+	return (_ListenIPandPorts);
+}
+
+std::map<std::string, std::vector<size_t> >			Server::GetDefaultServer(void)	const
+{
+	return (_DefaultServer);
 }
 
 //================================ FUNCTIONS =================================//
@@ -292,12 +298,122 @@ void						Server::LocationSaver(std::string LocationContent)
  * Basic error check to see if the port number is not invalid
  */
 
-void						Server::CheckIfValidPorts(std::string Ports)
+/* void						Server::CheckIfValidPorts(std::string Ports) */
+/* { */
+/* 	for (size_t i = 0; i < Ports.size(); i += 1) */
+/* 	{ */
+/* 		if (!(std::isdigit(Ports[i])) && !(isblank(Ports[i]))) */
+/* 			WriteErrorMessage("Invalid listen ports"); */
+/* 	} */
+/* } */
+
+void						Server::InsertNewPort(std::string IP, std::string Ports)
 {
-	for (size_t i = 0; i < Ports.size(); i += 1)
+	std::vector<size_t>		VectorOfPorts;
+
+	if (_ListenIPandPorts.count(IP) == 0)
 	{
-		if (!(std::isdigit(Ports[i])) && !(isblank(Ports[i])))
-			WriteErrorMessage("Invalid listen ports");
+		VectorOfPorts.push_back(size_t(stoi(Ports)));
+		_ListenIPandPorts.insert(std::make_pair(IP, VectorOfPorts));
+	}
+	else
+		_ListenIPandPorts.at(IP).push_back(size_t(stoi(Ports)));
+}
+
+/*
+ * listen	0.0.0.0:8000 default_server;
+ */
+
+void						Server::InsertNewDefaultServer(std::string IP, std::string Ports)
+{
+	std::vector<size_t>		VectorOfPorts;
+
+	if (_DefaultServer.count(IP) == 0)
+	{
+		VectorOfPorts.push_back(size_t(stoi(Ports)));
+		_DefaultServer.insert(std::make_pair(IP, VectorOfPorts));
+	}
+	else
+		_DefaultServer.at(IP).push_back(size_t(stoi(Ports)));
+}
+
+/*
+ * listen 0.0.0.0:8000;
+ */
+
+void						Server::IPWithPort(std::string ConfigLine, size_t EndOfIP, bool DefaultServer)
+{
+	std::string				IP;
+	std::string				Ports;
+
+	IP = ConfigLine.substr(ConfigLine.find_first_of(' ', 0) + 1, EndOfIP - 1 - ConfigLine.find_first_of(' ', 0));
+	Ports = ConfigLine.substr(EndOfIP + 1, ConfigLine.size() - EndOfIP - 1);
+	InsertNewPort(IP, Ports);
+	if (DefaultServer)
+		InsertNewDefaultServer(IP, Ports);
+}
+
+std::string					Server::FindPortsInString(std::string ConfigLine)
+{
+	return (ConfigLine.substr(ConfigLine.find_first_of(' ', 0) + 1, ConfigLine.size() - ConfigLine.find_first_of(' ', 0)));
+}
+
+/*
+ * listen	5000;
+ */
+
+void						Server::SinglePort(std::string Ports, bool DefaultServer)
+{
+	InsertNewPort("127.0.0.1", Ports);
+	if (DefaultServer)
+		InsertNewDefaultServer("127.0.0.1", Ports);
+}
+
+/*
+ * listen	5000 3000;
+ */
+
+void						Server::MultiplePorts(std::string Ports, bool DefaultServer)
+{
+	size_t					EndOfPort = 0;
+
+	for (size_t j = 0; j < Ports.size(); j += 1)
+	{
+		if ((EndOfPort = Ports.find_first_of(' ', j)) != std::string::npos)
+		{
+			InsertNewPort("127.0.0.1", Ports.substr(j, EndOfPort - j));
+			if (DefaultServer)
+				InsertNewDefaultServer("127.0.0.1", Ports.substr(j, EndOfPort - j));
+			j = EndOfPort;
+		}
+		else
+		{
+			InsertNewPort("127.0.0.1", Ports.substr(j, Ports.size() - j));
+			if (DefaultServer)
+				InsertNewDefaultServer("127.0.0.1", Ports.substr(j, Ports.size() - j));
+			break ;
+		}
+	}
+}
+
+/*
+ * Saves the listen info using the appropriate functions
+ */
+
+void						Server::AddListenInfo(std::string ConfigLine, bool DefaultServer)
+{
+	size_t					EndOfIP = 0;
+	std::string				Ports;
+
+	if ((EndOfIP = ConfigLine.find(":", 0)) != std::string::npos)
+		IPWithPort(ConfigLine, EndOfIP, DefaultServer);
+	else
+	{
+		Ports = FindPortsInString(ConfigLine);
+		if (Ports.find_first_of(' ', 0) == std::string::npos)
+			SinglePort(Ports, DefaultServer);
+		else
+			MultiplePorts(Ports, DefaultServer);
 	}
 }
 
@@ -305,36 +421,21 @@ void						Server::CheckIfValidPorts(std::string Ports)
  * Finds the listen ports and saves them
  */
 
-void						Server::FindListenPorts(std::vector<std::string> &ConfigFileContent)
+void						Server::FindListenIPandPorts(std::vector<std::string> &ConfigFileContent)
 {
-	size_t					EndOfPort;
-	std::string				Ports;
+	bool					DefaultServer = false;
+	size_t					StartOfDefaultServer = 0;
 
 	for (size_t i = 0; i < ConfigFileContent.size(); i += 1)
 	{
-		if (ConfigFileContent[i].rfind("listen", 0) == 0)
+		DefaultServer = false;
+		if ((StartOfDefaultServer = ConfigFileContent[i].find("default_server", 0)) != std::string::npos)
 		{
-			Ports = ConfigFileContent[i].substr(ConfigFileContent[i].find_first_of(' ', 0) + 1, ConfigFileContent[i].size());
-			CheckIfValidPorts(Ports);
-			if ((EndOfPort = Ports.find_first_of(' ', 0)) == std::string::npos)
-				_ListenPorts.push_back(size_t(stoi(Ports)));
-			else
-			{
-				for (size_t j = 0; j < Ports.size(); j += 1)
-				{
-					if ((EndOfPort = Ports.find_first_of(' ', j)) != std::string::npos)
-					{
-						_ListenPorts.push_back(size_t(stoi(Ports.substr(j, EndOfPort - j))));
-						j = EndOfPort;
-					}
-					else
-					{
-						_ListenPorts.push_back(size_t(stoi(Ports.substr(j, Ports.size() - j))));
-						break ;
-					}
-				}
-			}
+			DefaultServer = true;
+			ConfigFileContent[i].erase(StartOfDefaultServer, 14);
 		}
+		if (ConfigFileContent[i].rfind("listen", 0) == 0)
+			AddListenInfo(ConfigFileContent[i], DefaultServer);
 	}
 }
 
