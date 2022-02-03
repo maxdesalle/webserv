@@ -6,7 +6,7 @@
 /*   By: tderwedu <tderwedu@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/01 15:22:19 by tderwedu          #+#    #+#             */
-/*   Updated: 2022/02/01 15:33:15 by tderwedu         ###   ########.fr       */
+/*   Updated: 2022/02/03 09:55:50 by tderwedu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,15 +16,13 @@
 # include "NetworkIPC.hpp"
 # include "NetworkSocket.hpp"
 # include "Request.hpp"
-# include "Response.hpp"
 
 # include <queue>
 
 class ClientSocket : public NetworkSocket
 {
 private:
-	std::queue<Request>		_requests;
-	std::queue<Response>	_responses;
+	Request			_request;
 public:
 	ClientSocket(int fd, int port, in_addr_t addr, t_poll const& pollfd);
 	virtual ~ClientSocket();

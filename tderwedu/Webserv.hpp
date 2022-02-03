@@ -6,7 +6,7 @@
 /*   By: tderwedu <tderwedu@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/01/31 10:19:04 by tderwedu          #+#    #+#             */
-/*   Updated: 2022/02/02 10:32:24 by tderwedu         ###   ########.fr       */
+/*   Updated: 2022/02/03 09:58:40 by tderwedu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -105,9 +105,9 @@ void				Webserv::addServerSocket(int port, int nbr_queue)
 
 	opt = 1;
 	if ((fd_sock = socket(AF_INET, SOCK_STREAM, 0)) < 1)
-		exit(EXIT_FAILURE);														//TODO: better error handling;
+		exit(EXIT_FAILURE);														//TODO: better error handling
 	
-	// Set NON)BLOCKING and SO_REUSEADDR
+	// Set NON-BLOCKING and SO_REUSEADDR
 	// Avoid EADDRINUSE -> BIND and LISTEN should not return any error
 	fcntl(fd_sock, F_SETFL, O_NONBLOCK);
 	setsockopt(fd_sock, SOL_SOCKET, SO_REUSEADDR, (char *)(&opt), sizeof(opt));
@@ -139,6 +139,7 @@ void				Webserv::checkServerSockets(void)
 
 	for (it_netSock it = _serverSocks.begin(); it != _serverSocks.end(); ++it)
 	{
+		// TODO: check _fdInUse < open_max
 		if (it->pollfd.revents | POLLIN)
 		{
 			socklen = sizeof(sockaddr);
@@ -162,13 +163,16 @@ void				Webserv::checkClientSockets(void)
 {
 	for (it_netSock it = _serverSocks.begin(); it != _serverSocks.end(); ++it)
 	{
-		
+		// TODO: check _fdInUse < open_max
+		if (it->pollfd.revents | POLLIN)
+		{
 	}
 }
 
 t_poll&				Webserv::addPollfd(int fd_client)
 {
-	t_poll		new_pollfd;
+	t_poll							new_pollfd;
+	std::vector<t_poll>::iterator	it;
 
 	if (_fdInUse == _pollfd.size())
 	{
@@ -181,8 +185,7 @@ t_poll&				Webserv::addPollfd(int fd_client)
 	}
 	else
 	{
-		std::vector<pollfd>::iterator	it = _pollfd.begin();
-
+		it = _pollfd.begin();
 		while (it != _pollfd.end())
 		{
 			if (it->fd < 0)
