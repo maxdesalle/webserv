@@ -6,7 +6,7 @@
 /*   By: maxdesalle <mdesalle@student.s19.be>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/01/18 17:32:32 by maxdesall         #+#    #+#             */
-/*   Updated: 2022/02/02 17:11:56 by mdesalle         ###   ########.fr       */
+/*   Updated: 2022/02/04 11:45:24 by mdesalle         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,7 +21,5 @@
 # include "../src/config/Config.hpp"
 
 class Server;
-
-std::vector<Server>	ConfigHandler(std::string ConfigFileName);
 
 #endif
