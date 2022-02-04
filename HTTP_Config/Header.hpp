@@ -6,7 +6,7 @@
 /*   By: ldelmas <ldelmas@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/01/19 15:31:16 by ldelmas           #+#    #+#             */
-/*   Updated: 2022/02/02 17:10:27 by ldelmas          ###   ########.fr       */
+/*   Updated: 2022/02/04 12:59:24 by ldelmas          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,40 +32,39 @@ class Header
 
 		std::map<std::string const, std::string> _headerFields;
 
+	public:
+
 		/*
 			All of the protected methods used to parse the request line
-			WARNING : I DIDN'T TEST ALL OF THEM YET!
 		*/
-		static std::string	_parseHTTPVersion(std::string &str, size_t pos=0);
-		static std::string	_parseMethod(std::string &str, size_t pos=0);
-		static std::string	_parsePctEncoded(std::string &str, size_t pos=0);
-		static std::string	_parsePchar(std::string &str, size_t pos=0);
-		static std::string	_parseSegment(std::string &str, size_t pos=0);
-		static std::string	_parseSegmentNz(std::string &str, size_t pos=0);
-		static std::string	_parseQuery(std::string &str, size_t pos=0);
-		static std::string	_parsePathAbempty(std::string &str, size_t pos=0);
-		static std::string	_parseAbsPath(std::string &str, size_t pos=0);
-		static std::string	_parsePathRootless(std::string &str, size_t pos=0);
-		static std::string	_parsePathAbs(std::string &str, size_t pos=0);
-        static std::string	_parseScheme(std::string &str, size_t pos=0);
-		static std::string	_parseUserInfo(std::string &str, size_t pos=0);
-		static std::string	_parseRegName(std::string &str, size_t pos=0);
-		static std::string	_parsePort(std::string &str, size_t pos=0);
-		static std::string	_parseDecOctet(std::string &str, size_t pos=0);
-		static std::string	_parseIpv4Address(std::string &str, size_t pos=0);
-		static std::string	_parseHexa16(std::string &str, size_t pos=0);
-		static std::string	_parseLow32(std::string &str, size_t pos=0);
-		static std::string	_parseIpv6Address(std::string &str, size_t pos=0);
-		static std::string	_parseIpvFuture(std::string &str, size_t pos=0);
-		static std::string	_parseIpLiteral(std::string &str, size_t pos=0);
-		static std::string	_parseHost(std::string &str, size_t pos=0);
-		static std::string	_parseAuthority(std::string &str, size_t pos=0);
-		static std::string	_parseHierPart(std::string &str, size_t pos=0);
-		static std::string	_parseOriginForm(std::string &str, size_t pos=0);
-		static std::string	_parseAbsForm(std::string &str, size_t pos=0);
-		static std::string	_parseRequestTarget(std::string &str, size_t pos=0);
-
-	public:
+		static std::string const	_parseHTTPVersion(std::string const &str, size_t pos=0);
+		static std::string const	_parseMethod(std::string const &str, size_t pos=0);
+		static std::string const	_parsePctEncoded(std::string const &str, size_t pos=0);
+		static std::string const	_parsePchar(std::string const &str, size_t pos=0);
+		static std::string const	_parseSegment(std::string const &str, size_t pos=0);
+		static std::string const	_parseSegmentNz(std::string const &str, size_t pos=0);
+		static std::string const	_parseQuery(std::string const &str, size_t pos=0);
+		static std::string const	_parsePathAbempty(std::string const &str, size_t pos=0);
+		static std::string const	_parseAbsPath(std::string const &str, size_t pos=0);
+		static std::string const	_parsePathRootless(std::string const &str, size_t pos=0);
+		static std::string const	_parsePathAbs(std::string const &str, size_t pos=0);
+        static std::string const	_parseScheme(std::string const &str, size_t pos=0);
+		static std::string const	_parseUserInfo(std::string const &str, size_t pos=0);
+		static std::string const	_parseRegName(std::string const &str, size_t pos=0);
+		static std::string const	_parsePort(std::string const &str, size_t pos=0);
+		static std::string const	_parseDecOctet(std::string const &str, size_t pos=0);
+		static std::string const	_parseIpv4Address(std::string const &str, size_t pos=0);
+		static std::string const	_parseHexa16(std::string const &str, size_t pos=0);
+		static std::string const	_parseLow32(std::string const &str, size_t pos=0);
+		static std::string const	_parseIpv6Address(std::string const &str, size_t pos=0);
+		static std::string const	_parseIpvFuture(std::string const &str, size_t pos=0);
+		static std::string const	_parseIpLiteral(std::string const &str, size_t pos=0);
+		static std::string const	_parseHost(std::string const &str, size_t pos=0);
+		static std::string const	_parseAuthority(std::string const &str, size_t pos=0);
+		static std::string const	_parseHierPart(std::string const &str, size_t pos=0);
+		static std::string const	_parseOriginForm(std::string const &str, size_t pos=0);
+		static std::string const	_parseAbsForm(std::string const &str, size_t pos=0);
+		static std::string const	_parseRequestTarget(std::string const &str, size_t pos=0);
 		class WrongSyntaxException : public std::exception
 		{
 			public :

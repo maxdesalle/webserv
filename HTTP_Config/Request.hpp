@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Request.hpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: tderwedu <tderwedu@student.s19.be>         +#+  +:+       +#+        */
+/*   By: ldelmas <ldelmas@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/01/26 11:47:16 by ldelmas           #+#    #+#             */
-/*   Updated: 2022/02/03 10:01:10 by tderwedu         ###   ########.fr       */
+/*   Updated: 2022/02/04 15:16:53 by ldelmas          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,9 +27,15 @@ class Request : public Header
 		enum state {STARTLINE, HEADERS, BODY, PROCESSING, DONE};
 		
 		static std::string const _fieldNames[22];
-		std::string		_method, _target, _version, _body;
+		std::string		_method, _target, _version, _body, _remain;
+		size_t			_cursor;
 		body			_type;
 		state			_state;
+
+		int				_getNextLine(std::string const &str, std::string &line);
+		int				_parseRequestLine(std::string const &r_line);
+		int				_parseHeaderField(std::string const &line);
+
 	public:
 		Request(void);
 		Request(Request const &src);
@@ -47,8 +53,6 @@ class Request : public Header
 		void				setBody(std::string &body);
 
 		int					parseRequest(std::string const &request);
-		int					parseRequestLine(std::string const &r_line);
-		int					parseHeaderField(std::string const &line);
 };
 
 #endif

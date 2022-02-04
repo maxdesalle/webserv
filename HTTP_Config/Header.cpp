@@ -6,7 +6,7 @@
 /*   By: ldelmas <ldelmas@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/01/26 14:57:25 by ldelmas           #+#    #+#             */
-/*   Updated: 2022/02/02 16:34:27 by ldelmas          ###   ########.fr       */
+/*   Updated: 2022/02/04 13:01:06 by ldelmas          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -89,7 +89,6 @@ void				Header::setField(std::string const fieldName, std::string fieldValue)
 	If not there is 2 solutions : some of the functions will return "" (most of
 	the time it means that it is accepted by the RFCs to be an empty string but
 	NOT ALWAYS) otherwise the functions will throw a WrongSyntaxException(). 
-	WARNING : I DIDN'T TEST ALL OF THEM YET!!!
 */
 
 /*
@@ -98,7 +97,7 @@ void				Header::setField(std::string const fieldName, std::string fieldValue)
 	WARNING : Will throw a WrongSyntaxException() if syntax is not corresponding.
 */
 
-std::string			Header::_parseHTTPVersion(std::string &str, size_t pos)
+std::string const	Header::_parseHTTPVersion(std::string const &str, size_t pos)
 {
 	std::string s = str.substr(pos);
 	if (s.substr(0,5)!="HTTP/"
@@ -115,7 +114,7 @@ std::string			Header::_parseHTTPVersion(std::string &str, size_t pos)
 	WARNING : Will throw a WrongSyntaxException() if syntax is not corresponding.
 */
 
-std::string			Header::_parseMethod(std::string &str, size_t pos)
+std::string const	Header::_parseMethod(std::string const &str, size_t pos)
 {
 	std::string s = str.substr(pos);
 	for (int i = 0; Header::_authorizedMethods[i]!=""; i++)
@@ -130,7 +129,7 @@ std::string			Header::_parseMethod(std::string &str, size_t pos)
 	if empty string is not accepted for this rule in the RFCs.
 */
 
-std::string			Header::_parsePctEncoded(std::string &str, size_t pos)
+std::string const	Header::_parsePctEncoded(std::string const &str, size_t pos)
 {
 	std::string s = str.substr(pos);
 	if (s[0] == '%'
@@ -146,7 +145,7 @@ std::string			Header::_parsePctEncoded(std::string &str, size_t pos)
 	if empty string is not accepted for this rule in the RFCs.
 */
 
-std::string			Header::_parsePchar(std::string &str, size_t pos)
+std::string const	Header::_parsePchar(std::string const &str, size_t pos)
 {
 	std::string s = str.substr(pos);
 	if (Header::_custom_pchar.find(s[0]) != std::string::npos)
@@ -159,7 +158,7 @@ std::string			Header::_parsePchar(std::string &str, size_t pos)
 	Rule : segment = *pchar
 */
 
-std::string			Header::_parseSegment(std::string &str, size_t pos)
+std::string const	Header::_parseSegment(std::string const &str, size_t pos)
 {
 	std::string s = str.substr(pos);
 	std::string tmp = Header::_parsePchar(s);
@@ -177,7 +176,7 @@ std::string			Header::_parseSegment(std::string &str, size_t pos)
 	WARNING : Will throw a WrongSyntaxException() if syntax is not corresponding.
 */
 
-std::string			Header::_parseSegmentNz(std::string &str, size_t pos)
+std::string const	Header::_parseSegmentNz(std::string const &str, size_t pos)
 {
 	std::string s = Header::_parseSegment(str, pos);
 	if (s == "")
@@ -189,7 +188,7 @@ std::string			Header::_parseSegmentNz(std::string &str, size_t pos)
 	Rule : query = *( pchar / "/" / "?" )
 */
 
-std::string			Header::_parseQuery(std::string &str, size_t pos)
+std::string const	Header::_parseQuery(std::string const &str, size_t pos)
 {
 	std::string s = str.substr(pos);
 	std::string tmp = Header::_parsePchar(s);
@@ -211,7 +210,7 @@ std::string			Header::_parseQuery(std::string &str, size_t pos)
 	Rule : path-abempty = *( "/" segment )
 */
 
-std::string			Header::_parsePathAbempty(std::string &str, size_t pos)
+std::string const	Header::_parsePathAbempty(std::string const &str, size_t pos)
 {
 	std::string s = str.substr(pos);
 	std::string path = "";
@@ -230,7 +229,7 @@ std::string			Header::_parsePathAbempty(std::string &str, size_t pos)
 	WARNING : Will throw a WrongSyntaxException() if syntax is not corresponding.
 */
 
-std::string			Header::_parseAbsPath(std::string &str, size_t pos)
+std::string const	Header::_parseAbsPath(std::string const &str, size_t pos)
 {
 	std::string s = Header::_parsePathAbempty(str, pos);
 	if (s == "")
@@ -244,7 +243,7 @@ std::string			Header::_parseAbsPath(std::string &str, size_t pos)
 	WARNING : Will throw a WrongSyntaxException() if syntax is not corresponding.
 */
 
-std::string			Header::_parsePathRootless(std::string &str, size_t pos)
+std::string const	Header::_parsePathRootless(std::string const &str, size_t pos)
 {
 	std::string s = str.substr(pos);
 	std::string path = Header::_parseSegmentNz(s);
@@ -258,7 +257,7 @@ std::string			Header::_parsePathRootless(std::string &str, size_t pos)
 	WARNING : Will throw a WrongSyntaxException() if syntax is not corresponding.
 */
 
-std::string			Header::_parsePathAbs(std::string &str, size_t pos)
+std::string const	Header::_parsePathAbs(std::string const &str, size_t pos)
 {
 	std::string s = str.substr(pos);
 	if (s[0] != '/')
@@ -269,7 +268,7 @@ std::string			Header::_parsePathAbs(std::string &str, size_t pos)
 		path += Header::_parseSegmentNz(s, 1);
 		path += Header::_parsePathAbempty(s, path.length());
 	}
-	catch (const std::exception &e) {}
+	catch (const std::exception &e) {return path;}
 	return path;
 }
 
@@ -278,7 +277,7 @@ std::string			Header::_parsePathAbs(std::string &str, size_t pos)
 	WARNING : Will throw a WrongSyntaxException() if syntax is not corresponding.
 */
 
-std::string			Header::_parseScheme(std::string &str, size_t pos)
+std::string const	Header::_parseScheme(std::string const &str, size_t pos)
 {
 	std::string charArr = Header::_alpha + Header::_digit + "+-.";
 	std::string s = str.substr(pos);
@@ -300,7 +299,7 @@ std::string			Header::_parseScheme(std::string &str, size_t pos)
 	Rule : userinfo = *( unreserved / pct-encoded / sub-delims / ":" )
 */
 
-std::string			Header::_parseUserInfo(std::string &str, size_t pos)
+std::string const	Header::_parseUserInfo(std::string const &str, size_t pos)
 {
 	std::string charArr = Header::_unreserved + Header::_sub_delims + ':';
 	std::string s = str.substr(pos);
@@ -322,7 +321,7 @@ std::string			Header::_parseUserInfo(std::string &str, size_t pos)
 	Rule : reg-name = *( unreserved / pct-encoded / sub-delims )
 */
 
-std::string			Header::_parseRegName(std::string &str, size_t pos)
+std::string const	Header::_parseRegName(std::string const &str, size_t pos)
 {
 	std::string charArr = Header::_unreserved + Header::_sub_delims;
 	std::string s = str.substr(pos);
@@ -344,7 +343,7 @@ std::string			Header::_parseRegName(std::string &str, size_t pos)
 	Rule : port = *DIGIT
 */
 
-std::string			Header::_parsePort(std::string &str, size_t pos)
+std::string const	Header::_parsePort(std::string const &str, size_t pos)
 {
 	std::string s = str.substr(pos);
 	std::string port = "";
@@ -364,7 +363,7 @@ std::string			Header::_parsePort(std::string &str, size_t pos)
 	WARNING : Will throw a WrongSyntaxException() if syntax is not corresponding.
 */
 
-std::string			Header::_parseDecOctet(std::string &str, size_t pos)
+std::string const	Header::_parseDecOctet(std::string const &str, size_t pos)
 {
 	std::string s = str.substr(pos);
 	if (s[0] < '0' || s[0] > '9')
@@ -385,7 +384,7 @@ std::string			Header::_parseDecOctet(std::string &str, size_t pos)
 	WARNING : Will throw a WrongSyntaxException() if syntax is not corresponding.
 */
 
-std::string			Header::_parseIpv4Address(std::string &str, size_t pos)
+std::string const	Header::_parseIpv4Address(std::string const &str, size_t pos)
 {
 	std::string s = str.substr(pos);
 	std::string ip = Header::_parseDecOctet(s);
@@ -394,7 +393,7 @@ std::string			Header::_parseIpv4Address(std::string &str, size_t pos)
 		size_t len = ip.length();
 		if (s[len] != '.')
 			throw(Header::WrongSyntaxException());
-		ip += '.' + Header::_parseDecOctet(s, len);
+		ip += '.' + Header::_parseDecOctet(s, len+1);
 	}
 	return ip;
 }
@@ -404,7 +403,7 @@ std::string			Header::_parseIpv4Address(std::string &str, size_t pos)
 	WARNING : Will throw a WrongSyntaxException() if syntax is not corresponding.
 */
 
-std::string			Header::_parseHexa16(std::string &str, size_t pos)
+std::string const	Header::_parseHexa16(std::string const &str, size_t pos)
 {
 	std::string s = str.substr(pos);
 	if (Header::_hexdig.find(s[0]) == std::string::npos)
@@ -412,7 +411,7 @@ std::string			Header::_parseHexa16(std::string &str, size_t pos)
 	std::string bytes(1, s[0]);
 	for (int i = 1; i < 4; i++)
 	{
-		if (Header::_hexdig.find(s[0]) == std::string::npos)
+		if (Header::_hexdig.find(s[i]) == std::string::npos)
 			break ;
 		bytes += s[i];
 	}
@@ -424,14 +423,11 @@ std::string			Header::_parseHexa16(std::string &str, size_t pos)
 	WARNING : Will throw a WrongSyntaxException() if syntax is not corresponding.
 */
 
-std::string			Header::_parseLow32(std::string&str, size_t pos)
+std::string const	Header::_parseLow32(std::string const &str, size_t pos)
 {
 	std::string s = str.substr(pos);
 	std::string bytes = "";
-	try
-	{
-		bytes += Header::_parseIpv4Address(s);
-	}
+	try { bytes += Header::_parseIpv4Address(s); }
 	catch(const std::exception& e)
 	{
 		bytes += Header::_parseHexa16(s);
@@ -456,57 +452,81 @@ std::string			Header::_parseLow32(std::string&str, size_t pos)
 	WARNING : Will throw a WrongSyntaxException() if syntax is not corresponding.
 */
 
-std::string			Header::_parseIpv6Address(std::string &str, size_t pos)
+std::string const	Header::_parseIpv6Address(std::string const &str, size_t pos)
 {
 	std::string s = str.substr(pos);
 	std::string ip = "";
-	size_t position;
-	for (position = 0; position < 6; position++)
+	bool empty = false;
+	for (int i = 0; i < 8; i++)
 	{
-		size_t len = ip.length();
-		try
-		{
-			ip += Header::_parseHexa16(s, len) + ':';
-			if (s[ip.length()-1] != ':')
-				throw(Header::WrongSyntaxException());
-		}
-		catch(const std::exception& e)
-		{
-			if (s[len] == ':')
-			{
-				ip += ':';
-				break ;
-			}
-			throw(Header::WrongSyntaxException());
-		}
-	}
-	if (position < 6)
-	{
-		for (position += 1; position < 6; position++)
-		{
-			ip += Header::_parseHexa16(s, ip.length());
-			if (s[ip.length()] != ':')
-				throw(Header::WrongSyntaxException());
-		}
-		ip += Header::_parseLow32(s, ip.length());
-	}
-	else
-	{
-		if (s[ip.length()] != ':')
+		if (i == 6 || empty) //all cases of l32 are managed here
 		{
 			try
 			{
-				ip += Header::_parseLow32(s, ip.length());
+				ip += Header::_parseIpv4Address(s, ip.length());
+				break ;
 			}
-			catch(const std::exception& e)
+			catch(const std::exception& e){}
+		}
+		if (s[ip.length()] == ':') //all cases of "::" are managed here
+		{
+			if (!empty)
 			{
-				ip += Header::_parseHexa16(s, ip.length()) + ':';
-				if (s[ip.length()-1] != ':')
-					throw(Header::WrongSyntaxException());
+				if (ip == "")
+					ip += "::";
+				else
+					ip += ':';
+				empty = true;
+				continue ;
+			}
+			else
+				break ;
+		}
+		else //all cases of h16 and end of IP are managed here
+		{
+			if (!empty) // if no "::" before and isn't the 8th h16 must have a ':' after 
+			{
+				if (i == 7)
+					ip += Header::_parseHexa16(s, ip.length());
+				else
+				{
+					ip += Header::_parseHexa16(s, ip.length()) + ':';
+					if (s[ip.length()-1] != ':')
+						throw(Header::WrongSyntaxException());
+				}
+			}
+			else //if a "::" occured any h16 can be the last so you have to check before adding the ':'
+			{
+				try
+				{
+					ip += _parseHexa16(s, ip.length());
+					if (i == 7 || s[ip.length()] != ':')
+						break ;
+					else
+					{
+						if (i == 6)
+						{
+							try
+							{
+								Header::_parseIpv4Address(s, ip.length()+1);
+								ip += ':';
+							}
+							catch(const std::exception& e){}
+						}
+						else
+						{
+							try
+							{
+								Header::_parseHexa16(s, ip.length()+1);
+								ip += ':';
+							}
+							catch(const std::exception& e){}
+						}
+					}
+				}
+				catch(const std::exception& e){break;}
 			}
 		}
-		else
-			ip += ':' + Header::_parseHexa16(s, ip.length() + 1); 
 	}
 	return ip;
 }
@@ -516,7 +536,7 @@ std::string			Header::_parseIpv6Address(std::string &str, size_t pos)
 	WARNING : Will throw a WrongSyntaxException() if syntax is not corresponding.
 */
 
-std::string			Header::_parseIpvFuture(std::string &str, size_t pos)
+std::string const	Header::_parseIpvFuture(std::string const &str, size_t pos)
 {
 	std::string s = str.substr(pos);
 	if (s[0] != 'v'
@@ -531,13 +551,13 @@ std::string			Header::_parseIpvFuture(std::string &str, size_t pos)
 	}
 	std::string charArr = Header::_unreserved + Header::_sub_delims + ':';
 	size_t len = ip.length();
-	if (s[len] == '.'
+	if (s[len] != '.'
 	|| charArr.find(s[len+1]) == std::string::npos)
 		throw(Header::WrongSyntaxException());
-	ip += s[len] + s[len+1];
+	ip += s.substr(len, 2);
 	for (int i = len + 2; i < s.length(); i++)
 	{
-		if (charArr.find(s[len+1]) == std::string::npos)
+		if (charArr.find(s[i]) == std::string::npos)
 			break ;
 		ip += s[i];
 	}
@@ -549,62 +569,47 @@ std::string			Header::_parseIpvFuture(std::string &str, size_t pos)
 	WARNING : Will throw a WrongSyntaxException() if syntax is not corresponding.
 */
 
-std::string			Header::_parseIpLiteral(std::string &str, size_t pos)
+std::string const	Header::_parseIpLiteral(std::string const &str, size_t pos)
 {
 	std::string s = str.substr(pos);
 	if (s[0] != '[')
 		throw(Header::WrongSyntaxException());
 	std::string ip = "[";
-	try
-	{
-		ip += Header::_parseIpv6Address(s, 1);
-	}
-	catch(const std::exception& e)
-	{
-		ip += Header::_parseIpvFuture(s, 1);
-	}
+	try { ip += Header::_parseIpv6Address(s, 1); }
+	catch(const std::exception& e) { ip += Header::_parseIpvFuture(s, 1); }
 	if (s[ip.length()] != ']')
 		throw(Header::WrongSyntaxException());
-	return ip;
+	return ip + ']';
 }
 
 /*
 	Rule : host = IP-literal / IPv4address / reg-name
 	NOTE : As reg-name can be empty host can be empty too so no exception.
+	NOTE : If the string is interpreted as an IPv4 it won't take the next
+	chars even if a reg-name would have taken a longer substring. The same
+	if interpreted as IP-literal.
 */
 
-std::string			Header::_parseHost(std::string &str, size_t pos)
+std::string const	Header::_parseHost(std::string const &str, size_t pos)
 {
 	std::string s = str.substr(pos);
-	std::string host = "";
-	try
-	{
-		host += Header::_parseIpLiteral(s);
-	}
+	try { return Header::_parseIpLiteral(s); }
 	catch(const std::exception& e)
 	{
-		try
-		{
-			host += Header::_parseIpv4Address(s);
-		}
-		catch(const std::exception& e)
-		{
-			return Header::_parseRegName(s);
-		}
-		return host;
+		try { return Header::_parseIpv4Address(s); }
+		catch(const std::exception& e) { return Header::_parseRegName(s); }
 	}
-	return host;
 }
 
 /*
 	Rule : authority = [ userinfo "@" ] host [ ":" port ]
 */
 
-std::string			Header::_parseAuthority(std::string &str, size_t pos)
+std::string const	Header::_parseAuthority(std::string const &str, size_t pos)
 {
 	std::string s = str.substr(pos);
 	std::string authority(Header::_parseUserInfo(s) + '@');
-	if (s[authority.length()-1] != '@')
+	if ((authority != "@" && s[authority.length()-1] != '@') || authority == "@")
 		authority = "";
 	authority += Header::_parseHost(s, authority.length());
 	if (s[authority.length()] == ':')
@@ -613,40 +618,34 @@ std::string			Header::_parseAuthority(std::string &str, size_t pos)
 }
 
 /*
-	Rule : hier-part = "//" authority path-abempty / path-absolute / path-rootless / path-empty
+	Rule : hier-part = "//" authority path-abempty
+					/ path-absolute
+					/ path-rootless
+					/ path-empty
 	path-empty = 0<pchar>
+	NOTE :	As priority of operations has to be taken into account this rule means
+			that the hier-part can be "//" authority path-abempty OR another type of
+			path WITHOUT the concatenation of "//" authority before.
 	NOTE :	I'm not sure about the meaning of 0<rule>, [RFC3986] only say "zero characters"
 			as a description of path-empty so for now path-empty == "".
 	WARNING : Will throw a WrongSyntaxException() if syntax is not corresponding.
-	/!\ POTENTIAL MISTAKE : I'm not sure if the options are : 
-		- "//" + authority + any kind of path
-		- "//" + authority + path_abempty OR any other kind of path.
-	I took the 1st solution but I have to check in the RFCs.
 */
 
-std::string			Header::_parseHierPart(std::string &str, size_t pos)
+std::string const	Header::_parseHierPart(std::string const &str, size_t pos)
 {
 	std::string s = str.substr(pos);
-	if (s.substr(0, 2) != "//")
-		throw(Header::WrongSyntaxException());
-	std::string part = "//" + Header::_parseAuthority(s, 2);
-	std::string abempty = Header::_parsePathAbempty(s, part.length());
-	if (abempty != "")
-		return part + abempty;
-	try
+	std::string part = "";
+	if (s[0] == '/' && s[1] == '/')
 	{
-		return part + Header::_parsePathAbs(s, part.length());
+		part += "//" + Header::_parseAuthority(s, 2);
+		part += Header::_parsePathAbempty(s, part.length());
+		return part;
 	}
+	try { return Header::_parsePathAbs(s);}
 	catch(const std::exception& e)
 	{
-		try
-		{
-			return part + Header::_parsePathRootless(s, part.length());
-		}
-		catch(const std::exception& e)
-		{
-			return part;
-		}
+		try { return Header::_parsePathRootless(s);}
+		catch(const std::exception& e) {return "";}
 	}
 }
 
@@ -655,12 +654,12 @@ std::string			Header::_parseHierPart(std::string &str, size_t pos)
 	WARNING : Will throw a WrongSyntaxException() if syntax is not corresponding.
 */
 
-std::string		Header::_parseOriginForm(std::string &str, size_t pos)
+std::string const	Header::_parseOriginForm(std::string const &str, size_t pos)
 {
 	std::string s = str.substr(pos);
 	std::string form(Header::_parseAbsPath(s));
 	if (s[form.length()] == '?')
-		form += '?' + Header::_parseQuery(s, form.length());
+		form += Header::_parseQuery(s, form.length());
 	return form;
 }
 
@@ -670,7 +669,7 @@ std::string		Header::_parseOriginForm(std::string &str, size_t pos)
 	WARNING : Will throw a WrongSyntaxException() if syntax is not corresponding.
 */
 
-std::string		Header::_parseAbsForm(std::string &str, size_t pos)
+std::string const	Header::_parseAbsForm(std::string const &str, size_t pos)
 {
 	std::string s = str.substr(pos);
 	std::string form(Header::_parseScheme(s) + ':');
@@ -678,7 +677,7 @@ std::string		Header::_parseAbsForm(std::string &str, size_t pos)
 		throw(Header::WrongSyntaxException());
 	form += Header::_parseHierPart(s, form.length());
 	if (s[form.length()] == '?')
-		form += '?' + Header::_parseQuery(s, form.length());
+		form += Header::_parseQuery(s, form.length());
 	return form;
 }
 
@@ -689,19 +688,13 @@ std::string		Header::_parseAbsForm(std::string &str, size_t pos)
 	NOTE : Authority-form basically might be an empty string so no exception.
 */
 
-std::string		Header::_parseRequestTarget(std::string &str, size_t pos)
+std::string const	Header::_parseRequestTarget(std::string const &str, size_t pos)
 {
 	std::string s = str.substr(pos);
-	try
-	{
-		return Header::_parseOriginForm(s);
-	}
+	try { return Header::_parseOriginForm(s); }
 	catch(const std::exception& e)
 	{
-		try
-		{
-			return Header::_parseAbsForm(s);
-		}
+		try { return Header::_parseAbsForm(s); }
 		catch(const std::exception& e)
 		{
 			std::string target = Header::_parseAuthority(s);

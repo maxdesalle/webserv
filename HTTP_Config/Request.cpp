@@ -6,7 +6,7 @@
 /*   By: ldelmas <ldelmas@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/01/26 14:59:17 by ldelmas           #+#    #+#             */
-/*   Updated: 2022/02/02 17:11:02 by ldelmas          ###   ########.fr       */
+/*   Updated: 2022/02/04 16:47:50 by ldelmas          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,7 +27,7 @@ std::string const Request::_fieldNames[22] = {"Cache-Control", "Expect", "Host",
 
 /*CONSTRUCTORS AND DESTRUCTORS*/
 
-Request::Request(void) : Header(Request::_fieldNames) {}
+Request::Request(void) : Header(Request::_fieldNames), _state(STARTLINE), _remain(""), _cursor(0) {}
 
 Request::Request(Request const &src) {this->_headerFields = src._headerFields;}
 
@@ -120,29 +120,6 @@ static std::string	trimSpaces(std::string str)
 	return sub;
 }
 
-/*
-	Take a string 'str' as parameter and put one line of it into the substr
-	'line'. It uses a static size_t to determine the position in the string
-	at each call of the function.
-	RETURN VALUE : 0 if the last line has been reached. 1 if there is at
-	least one other line after the one put in 'line'.
-*/
-
-static int		getNextLine(std::string const &str, std::string &line)
-{
-	static size_t pos = 0;
-	static std::string const tmp;
-	size_t tmp_pos = str.find("\r\n", pos);
-	if (tmp_pos == std::string::npos)
-	{
-		line = str.substr(pos);
-		pos = tmp_pos;
-		return 0;
-	}
-	line = str.substr(pos, tmp_pos-(pos));
-	pos = tmp_pos+2;
-	return 1;
-}
 
 /*
 	Take a line as parameter and check if there is a colon ':' to confirm
@@ -167,32 +144,76 @@ static int		getFieldName(std::string const &line, std::string &name)
 
 /*NON-STATIC METHODS*/
 
-int				Request::parseRequest(std::string const &request)
+/*
+	Take a string 'str' as parameter and put one line of it into the substr
+	'line'. It uses a static size_t to determine the position in the string
+	at each call of the function.
+	RETURN VALUE : 0 if the last line has been reached. 1 if there is at
+	least one other line after the one put in 'line'.
+*/
+
+int				Request::_getNextLine(std::string const &str, std::string &line)
 {
-	std::string line;
-	getNextLine(request, line);
-	parseRequestLine(line);
-	while (getNextLine(request, line))
-		parseHeaderField(line);
-	return (parseHeaderField(line));
+	size_t tmp_pos = str.find("\r\n", this->_cursor);
+	if (tmp_pos == std::string::npos)
+	{
+		line = str.substr(this->_cursor);
+		return 0;
+	}
+	line = str.substr(this->_cursor, tmp_pos-(this->_cursor));
+	this->_cursor = tmp_pos+2; //might go too far if CRLF doesn't have anything after
+	return 1;
 }
 
-int				Request::parseRequestLine(std::string const &request)
+/*
+	Rule : start-line ::= method SP request-target SP HTTP-version CRLF
+	Take the first line of the request and try to get the method, target and version.
+	RETURN VALUE : If successful return 0 else depends on what is written in the RFCs
+	(not done yet).
+	/!\ I didn't check the right return values yet ! They will then be used for
+	the response status.
+*/
+
+int				Request::_parseRequestLine(std::string const &request)
 {
-	//`start-line` ::= `method` SP `request-target` SP `HTTP-version` CRLF
-	// std::string start(Header::_parseMethod(request))
-	// return 0;
+	std::string method, target, version;
+	try { method = Header::_parseMethod(request); }
+	catch(const std::exception& e) { return 400;}
+	size_t len =method.length();
+	if (request[len] != ' ')
+		return 400;
+	try { target = Header::_parseRequestTarget(request, len + 1);}
+	catch(const std::exception& e) { return 400; }
+	len += target.length() + 1;
+	if (request[len] != ' ')
+		return 400;
+	try { version = Header::_parseHTTPVersion(request, len + 1);}
+	catch(const std::exception& e) { return 400;}
+	len += version.length() + 1;
+	if (request.substr(len) != "")
+		return 400;
+	this->_method = method;
+	this->_target = target;
+	this->_version = version;
+	return 0;
 }
 
-int				Request::parseHeaderField(std::string const &line)
+/*
+	Rule : header-field = field-name ":" OWS field-value OWS
+	Rule : field-value = *( field-content / obs-fold )
+	Rule : field-content = field-vchar [ 1*( SP / HTAB ) field-vchar ]
+	Rule : field-vchar = VCHAR / obs-text
+	Rule : obs-fold = CRLF 1*( SP / HTAB )
+	Rule : VCHAR = any visible USASCII char
+	Rule : obs-text = %x80-FF (UTF-8 chars written in hexa code, 80-FF refers to the char range outside ASCII)
+	Take a line as argument and check the syntax. Then check name of the field
+	and trim the spaces around the field-value. The point is to associate a field-value
+	to an already existing field-name.
+	RETURN VALUE : 0 if everything went ok. 400 if syntax was wrong.
+*/
+
+int				Request::_parseHeaderField(std::string const &line)
 {
-	//`header-field` = `field-name` ":" OWS `field-value` OWS
-	// field-value = *( field-content / obs-fold )
-	// field-content = field-vchar [ 1*( SP / HTAB ) field-vchar ]
-	// field-vchar = VCHAR / obs-text
-	// obs-fold = CRLF 1*( SP / HTAB )
-	// VCHAR = any visible USASCII char
-	// obs-text = %x80-FF (UTF-8 chars written in hexa code, 80-FF refers to the char range outside ASCII)
 
 	size_t		pos = 0;
 	for (int j = 0; Request::_fieldNames[j][0]; j++)
@@ -213,6 +234,60 @@ int				Request::parseHeaderField(std::string const &line)
 			else
 				this->_headerFields[Request::_fieldNames[j]] = s;
 			return 0;
+		}
+	}
+	return 400;
+}
+
+/*
+	Take a string as argument. This stirng is considered to be a chunk of the
+	HTTP request. It will parse any chunk of the request and check its syntax.
+	If syntax is ok all informations will be attributed where they have to.
+	RETURN VALUE : 0 if everything was ok. If not the value returned depends on
+	the RFCs (400 for now but can change and will influence the status of HTTP
+	reponse).
+*/
+
+int				Request::parseRequest(std::string const &request)
+{
+	std::string line;
+	this->_cursor = 0;
+	std::string full = this->_remain + request;
+	if (this->_state == STARTLINE)
+	{
+		if (!this->_getNextLine(full, line))
+		{
+			this->_remain = line;
+			return 1;
+		}
+		if (this->_parseRequestLine(line))
+			return 400;
+		this->_state = HEADERS;
+	}
+	if (this->_state == HEADERS)
+	{
+		int ret = 0;
+		while ((ret = this->_getNextLine(full, line)) && line != "")
+			if (this->_parseHeaderField(line))
+				return 400;
+		if (!ret)
+		{
+			this->_remain = line;
+			return 1;
+		}
+		this->_state = BODY;
+	}
+	if (this->_state == BODY)
+	{
+		if (this->_getNextLine(full, line))
+		{
+			this->_body = line;
+			this->_state = PROCESSING;
+		}
+		else
+		{
+			this->_remain = line;
+			return 1;
 		}
 	}
 	return 0;

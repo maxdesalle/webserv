@@ -6,7 +6,7 @@
 /*   By: ldelmas <ldelmas@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/01/26 14:58:24 by ldelmas           #+#    #+#             */
-/*   Updated: 2022/01/26 16:10:04 by ldelmas          ###   ########.fr       */
+/*   Updated: 2022/02/04 14:04:15 by ldelmas          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,12 +20,12 @@ std::string const Response::_fieldNames[16] = {"Age", "Cache-Control", "Expires"
 
 Response::Response(void) : Header(Response::_fieldNames) {}
 
-Response::Response(Response const &src) {this->headerFields = src.headerFields;}
+Response::Response(Response const &src) {this->_headerFields = src._headerFields;}
 
 Response::~Response(void) {}
 
 Response const &Response::operator=(Response const &right)
 {
-	this->headerFields = right.headerFields;
+	this->_headerFields = right._headerFields;
 	return *this;
 }
