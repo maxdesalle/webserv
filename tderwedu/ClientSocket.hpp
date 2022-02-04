@@ -6,16 +6,22 @@
 /*   By: tderwedu <tderwedu@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/01 15:22:19 by tderwedu          #+#    #+#             */
-/*   Updated: 2022/02/03 15:56:45 by tderwedu         ###   ########.fr       */
+/*   Updated: 2022/02/04 17:45:57 by tderwedu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef CLIENTSOCKET_HPP
 # define CLIENTSOCKET_HPP
 
+# include <deque>
+
+# include "Config.hpp"
+
 # include "NetworkIPC.hpp"
 # include "NetworkSocket.hpp"
+
 # include "Request.hpp"
+# include "Response.hpp"
 
 # define	BUFF_SIZE	1024
 
@@ -24,9 +30,10 @@ class ClientSocket : public NetworkSocket
 public:
 	static const int	buffSize = BUFF_SIZE;
 private:
-	Request				_request;
-	std::string			_msg;
-	char				_buff[BUFF_SIZE];
+	std::deque<Request>		_requests;
+	std::deque<Response>	_responses;
+	std::string				_msg;
+	char					_buff[BUFF_SIZE];
 
 public:
 	ClientSocket(int port, in_addr_t addr, t_poll& pollfd);
@@ -44,14 +51,14 @@ ClientSocket::~ClientSocket()
 
 void		ClientSocket::getRequest(void)
 {
-	ssize_t			n;
+	ssize_t		n;
+	Request&	request = _requests.back();
 
 	if (_pollfd.fd < 0)
 		return ;
 	if (_pollfd.revents | (POLLHUP & POLLERR)) // Client disconnected
 	{
-		// If a request is being processed
-		_request.stopRequest();
+		request.stopRequest(); // If a request is being processed
 		sockClose();
 	}
 	else if (_pollfd.revents | POLLNVAL) // FD not open
@@ -64,7 +71,7 @@ void		ClientSocket::getRequest(void)
 	}
 	else if (_pollfd.revents | POLLERR)
 	{
-		_request.stopRequest();
+		request.stopRequest(); // If a request is being processed
 		sockClose();
 		// exit(EXIT_FAILURE);
 	}
@@ -73,24 +80,27 @@ void		ClientSocket::getRequest(void)
 		n = recv(_pollfd.fd, _buff, buffSize, 0);
 		if (n <= 0)
 		{
-			// If a request is being processed
-			_request.stopRequest();
+			request.stopRequest(); // If a request is being processed
 			sockClose();
 		}
 		if (_state == HALF_CLOSED)
 			return ;
 		_msg.append(_buff);
-		_msg = _request.parseRequest(_msg);
-		if (_request.getState() == Request::State::DOWNLOADED)
-			;//TODO: find server and add request to the resquest's stack
+		_msg = request.parseRequest(_msg);
+		if (request.getState() == Request::State::DOWNLOADED)
+		{
+			findServer(request);
+			_requests.push_back(Request());
+		}	
 	}
 	else
 	{
-		if (_request.getState() < Request::State::PROCESSING && _timer.getElapsedTime() > TIMEOUT)
+		if (request.getState() < Request::State::PROCESSING && _timer.getElapsedTime() > TIMEOUT)
 		{
-			_request.stopRequest();
+			request.stopRequest(); // If a request is being processed
 			sockClose();
 		}
 	}
 }
+
 #endif

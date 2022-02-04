@@ -6,7 +6,7 @@
 /*   By: tderwedu <tderwedu@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/01/26 11:47:16 by ldelmas           #+#    #+#             */
-/*   Updated: 2022/02/03 15:44:27 by tderwedu         ###   ########.fr       */
+/*   Updated: 2022/02/04 17:36:30 by tderwedu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,6 +14,8 @@
 # define REQUEST_HPP
 
 # include "Header.hpp"
+# include "Response.hpp" // Added by tderwedu
+# include "Server.hpp" // Added by tderwedu
 
 /*
 ** TO DO
@@ -31,6 +33,10 @@ class Request : public Header
 		std::string		_method, _target, _version, _body;
 		Body			_type;
 		State			_state;
+		// Added by tderwedu
+		Server&			_server;
+		Response&		_response;
+
 	public:
 		Request(void);
 		Request(Request const &src);
@@ -56,7 +62,8 @@ class Request : public Header
 		void				clear(void);
 		void				stopRequest(void);
 		State				getState(void);
-		Body				getBodyType(void);
+		void				setServer(Server& server);
+		// Body				getBodyType(void);
 };
 
 #endif

@@ -6,7 +6,7 @@
 /*   By: tderwedu <tderwedu@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/01/31 10:19:04 by tderwedu          #+#    #+#             */
-/*   Updated: 2022/02/03 16:00:41 by tderwedu         ###   ########.fr       */
+/*   Updated: 2022/02/04 17:45:31 by tderwedu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -68,6 +68,7 @@ public:
 	void			checkClientSockets(void);
 	t_poll&			addPollfd(int fd_client);
 	void			popPollfd(t_poll& pollfd);
+	void			findServer(Request& request);
 };
 
 Webserv::Webserv(void) {}
@@ -220,6 +221,34 @@ void				Webserv::popPollfd(t_poll&	pollfd)
 {
 	pollfd.fd = -1;
 	--_fdInUse;
+}
+
+void				Webserv::findServer(Request& request)
+{
+	std::vector<Server>		matchingServers;
+	struct in_addr			addr;
+	char					ip[INET_ADDRSTRLEN];
+	std::string const&		host = request.getField("Host");
+
+	addr.s_addr = request.getIP();
+	inet_ntop(AF_INET, &addr, ip, INET_ADDRSTRLEN);
+	matchingServers = FindMatchingServers(_servers, request.getPort(), ip);
+	if (matchingServers.empty())
+		exit(EXIT_FAILURE);														//TODO: better error handling
+	if (host.empty())															//TODO: Might be an error!
+		request.setServer(matchingServers[0]);
+	for (int i; i < matchingServers.size(); ++i)
+	{
+		for (int j; j < matchingServers[i].GetServerNames().size(); ++j)
+		{
+			if (host == matchingServers[i].GetServerNames()[j])
+			{
+				request.setServer(matchingServers[j]);
+				return ;
+			}
+		}
+	}
+	request.setServer(matchingServers[0]);
 }
 
 #endif

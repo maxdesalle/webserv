@@ -7,7 +7,7 @@ A lightweight HTTP server implemented in C++.
 
  - [ ] Webserv
 	- [x] Config file parsing
-	- [ ] Connection management
+	- [x] Connection management
 	- [ ] Request processing (Common Core)
 	- [ ] Basic request handling (static content)
 	- [ ] CGI request handling
@@ -23,6 +23,12 @@ A lightweight HTTP server implemented in C++.
  - [ ] Set up a default config file path if none is provided
  - [ ] Add a HOST to a listening port
 ### Connection Management
+<!-- To avoid bugs or dull checks: 
+     - deque should never be empty
+     - last item should always be ready to hold the next incomming request
+-->
+ - [ ] In the CLientSocket's constructor create an empty `Request` ans set its state as `NONE`
+ - [ ] When moving a `Request` from `DOWNLOADED` to `PROCESSING` create an empty `Request` and set its state as `NONE`
 ### Request Common Core
 ### Request Static Site
 ### Request CGI

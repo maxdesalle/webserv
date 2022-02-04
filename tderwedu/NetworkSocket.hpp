@@ -6,7 +6,7 @@
 /*   By: tderwedu <tderwedu@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/01/31 15:54:27 by tderwedu          #+#    #+#             */
-/*   Updated: 2022/02/03 15:22:07 by tderwedu         ###   ########.fr       */
+/*   Updated: 2022/02/04 17:46:57 by tderwedu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,9 +36,11 @@ public:
 	NetworkSocket(int port, in_addr_t addr, t_poll& pollfd);
 	virtual ~NetworkSocket(void);
 
-	void	sockShutdown(void);
-	void	sockClose(void);
-	void	handlePOLLERR(void);
+	in_addr_t	getIP(void);
+	int			getPort(void);
+	void		sockShutdown(void);
+	void		sockClose(void);
+	void		handlePOLLERR(void);
 };
 
 NetworkSocket::NetworkSocket(int port, in_addr_t addr, t_poll& pollfd)
@@ -58,6 +60,16 @@ void		NetworkSocket::sockShutdown(void)
 	}
 	else
 		sockClose();
+}
+
+in_addr_t	NetworkSocket::getIP(void)
+{
+	return _addr;
+}
+
+int			NetworkSocket::getPort(void)
+{
+	return _port;
 }
 
 void		NetworkSocket::sockClose(void)
