@@ -6,7 +6,7 @@
 /*   By: ldelmas <ldelmas@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/01/26 14:59:17 by ldelmas           #+#    #+#             */
-/*   Updated: 2022/02/04 16:47:50 by ldelmas          ###   ########.fr       */
+/*   Updated: 2022/02/07 14:37:39 by ldelmas          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -240,7 +240,7 @@ int				Request::_parseHeaderField(std::string const &line)
 }
 
 /*
-	Take a string as argument. This stirng is considered to be a chunk of the
+	Take a string as argument. This string is considered to be a chunk of the
 	HTTP request. It will parse any chunk of the request and check its syntax.
 	If syntax is ok all informations will be attributed where they have to.
 	RETURN VALUE : 0 if everything was ok. If not the value returned depends on

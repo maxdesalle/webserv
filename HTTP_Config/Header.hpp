@@ -6,7 +6,7 @@
 /*   By: ldelmas <ldelmas@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/01/19 15:31:16 by ldelmas           #+#    #+#             */
-/*   Updated: 2022/02/04 12:59:24 by ldelmas          ###   ########.fr       */
+/*   Updated: 2022/02/08 17:12:08 by ldelmas          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,14 +26,13 @@ class Header
 		/*
 			common informations between requests and responses types of header
 		*/
-		static std::string const _alpha, _digit, _unreserved, _sub_delims,
-								_hexdig, _custom_pchar;
-		static std::string const _authorizedMethods[4];
 
 		std::map<std::string const, std::string> _headerFields;
 
 	public:
-
+		static std::string const alpha, digit, unreserved, sub_delims,
+								gen_delims, reserved, hexdig, custom_pchar;
+		static std::string const authorizedMethods[4];
 		/*
 			All of the protected methods used to parse the request line
 		*/
@@ -65,6 +64,7 @@ class Header
 		static std::string const	_parseOriginForm(std::string const &str, size_t pos=0);
 		static std::string const	_parseAbsForm(std::string const &str, size_t pos=0);
 		static std::string const	_parseRequestTarget(std::string const &str, size_t pos=0);
+		static std::string const	_parseURI(std::string const &str, size_t pos= 0);
 		class WrongSyntaxException : public std::exception
 		{
 			public :

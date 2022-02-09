@@ -6,7 +6,7 @@
 /*   By: ldelmas <ldelmas@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/01/26 14:57:25 by ldelmas           #+#    #+#             */
-/*   Updated: 2022/02/04 13:01:06 by ldelmas          ###   ########.fr       */
+/*   Updated: 2022/02/09 11:27:52 by ldelmas          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,19 +16,21 @@
 	Some useful rules used in the parsing.
 */
 
-std::string const	Header::_alpha = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
-std::string const	Header::_digit = "0123456789";
-std::string const	Header::_unreserved = Header::_alpha + Header::_digit + "-._~";
-std::string const	Header::_sub_delims = "!$&'()*+,;=";
-std::string const	Header::_hexdig = Header::_digit + "ABCDEF";
-std::string const	Header::_custom_pchar = Header::_unreserved + Header::_sub_delims + ":@";
+std::string const	Header::alpha = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
+std::string const	Header::digit = "0123456789";
+std::string const	Header::unreserved = Header::alpha + Header::digit + "-._~";
+std::string const	Header::gen_delims = ":/?#[]@";
+std::string const	Header::sub_delims = "!$&’()*+,;=";
+std::string const	Header::reserved = Header::sub_delims + Header::gen_delims;
+std::string const	Header::hexdig = Header::digit + "ABCDEF" + "abcdef";
+std::string const	Header::custom_pchar = Header::unreserved + Header::sub_delims + ":@";
 
 /*
 	The only methods that will be interpreted from a HTTP request.
 	Other methods will be considered as random string of chars.
 */
 
-std::string const 	Header::_authorizedMethods[4] = {"GET", "POST", "DELETE", ""};
+std::string const 	Header::authorizedMethods[4] = {"GET", "POST", "DELETE", ""};
 
 
 
@@ -101,9 +103,9 @@ std::string const	Header::_parseHTTPVersion(std::string const &str, size_t pos)
 {
 	std::string s = str.substr(pos);
 	if (s.substr(0,5)!="HTTP/"
-	|| Header::_digit.find(s[5])==std::string::npos
+	|| Header::digit.find(s[5])==std::string::npos
 	|| s[6] != '.'
-	|| Header::_digit.find(s[7])==std::string::npos)
+	|| Header::digit.find(s[7])==std::string::npos)
 		throw(Header::WrongSyntaxException());
 	return s.substr(0, 8);
 }
@@ -117,9 +119,9 @@ std::string const	Header::_parseHTTPVersion(std::string const &str, size_t pos)
 std::string const	Header::_parseMethod(std::string const &str, size_t pos)
 {
 	std::string s = str.substr(pos);
-	for (int i = 0; Header::_authorizedMethods[i]!=""; i++)
-		if (Header::_authorizedMethods[i]==s.substr(0,Header::_authorizedMethods[i].length()))
-			return Header::_authorizedMethods[i];
+	for (int i = 0; Header::authorizedMethods[i]!=""; i++)
+		if (Header::authorizedMethods[i]==s.substr(0,Header::authorizedMethods[i].length()))
+			return Header::authorizedMethods[i];
 	throw(Header::WrongSyntaxException());
 }
 
@@ -133,8 +135,8 @@ std::string const	Header::_parsePctEncoded(std::string const &str, size_t pos)
 {
 	std::string s = str.substr(pos);
 	if (s[0] == '%'
-	&& Header::_hexdig.find(s[1])!=std::string::npos
-	&& Header::_hexdig.find(s[2])!=std::string::npos)
+	&& Header::hexdig.find(s[1])!=std::string::npos
+	&& Header::hexdig.find(s[2])!=std::string::npos)
 		return s.substr(0, 3);
 	return "";
 }
@@ -148,7 +150,7 @@ std::string const	Header::_parsePctEncoded(std::string const &str, size_t pos)
 std::string const	Header::_parsePchar(std::string const &str, size_t pos)
 {
 	std::string s = str.substr(pos);
-	if (Header::_custom_pchar.find(s[0]) != std::string::npos)
+	if (Header::custom_pchar.find(s[0]) != std::string::npos)
 		return s.substr(0, 1);
 	else
 		return Header::_parsePctEncoded(s);
@@ -186,6 +188,7 @@ std::string const	Header::_parseSegmentNz(std::string const &str, size_t pos)
 
 /*
 	Rule : query = *( pchar / "/" / "?" )
+	Rule : fragment = query
 */
 
 std::string const	Header::_parseQuery(std::string const &str, size_t pos)
@@ -279,10 +282,10 @@ std::string const	Header::_parsePathAbs(std::string const &str, size_t pos)
 
 std::string const	Header::_parseScheme(std::string const &str, size_t pos)
 {
-	std::string charArr = Header::_alpha + Header::_digit + "+-.";
+	std::string charArr = Header::alpha + Header::digit + "+-.";
 	std::string s = str.substr(pos);
 	std::string scheme = "";
-	if (Header::_alpha.find(s[0]) == std::string::npos)
+	if (Header::alpha.find(s[0]) == std::string::npos)
 		throw(Header::WrongSyntaxException());
 	scheme += s[0];
 	for (int i = 1; i < s.length(); i++)
@@ -301,7 +304,7 @@ std::string const	Header::_parseScheme(std::string const &str, size_t pos)
 
 std::string const	Header::_parseUserInfo(std::string const &str, size_t pos)
 {
-	std::string charArr = Header::_unreserved + Header::_sub_delims + ':';
+	std::string charArr = Header::unreserved + Header::sub_delims + ':';
 	std::string s = str.substr(pos);
 	std::string info = "";
 	while (1)
@@ -323,7 +326,7 @@ std::string const	Header::_parseUserInfo(std::string const &str, size_t pos)
 
 std::string const	Header::_parseRegName(std::string const &str, size_t pos)
 {
-	std::string charArr = Header::_unreserved + Header::_sub_delims;
+	std::string charArr = Header::unreserved + Header::sub_delims;
 	std::string s = str.substr(pos);
 	std::string info = "";
 	while (1)
@@ -349,7 +352,7 @@ std::string const	Header::_parsePort(std::string const &str, size_t pos)
 	std::string port = "";
 	for (int i = 0; i < s.length(); i++)
 	{
-		if (Header::_digit.find(s[i]) != std::string::npos)
+		if (Header::digit.find(s[i]) != std::string::npos)
 			port += s[i];
 		else 
 			break ;
@@ -406,12 +409,12 @@ std::string const	Header::_parseIpv4Address(std::string const &str, size_t pos)
 std::string const	Header::_parseHexa16(std::string const &str, size_t pos)
 {
 	std::string s = str.substr(pos);
-	if (Header::_hexdig.find(s[0]) == std::string::npos)
+	if (Header::hexdig.find(s[0]) == std::string::npos)
 		throw(Header::WrongSyntaxException());
 	std::string bytes(1, s[0]);
 	for (int i = 1; i < 4; i++)
 	{
-		if (Header::_hexdig.find(s[i]) == std::string::npos)
+		if (Header::hexdig.find(s[i]) == std::string::npos)
 			break ;
 		bytes += s[i];
 	}
@@ -540,16 +543,16 @@ std::string const	Header::_parseIpvFuture(std::string const &str, size_t pos)
 {
 	std::string s = str.substr(pos);
 	if (s[0] != 'v'
-	|| Header::_hexdig.find(s[1]) == std::string::npos)
+	|| Header::hexdig.find(s[1]) == std::string::npos)
 		throw(Header::WrongSyntaxException());
 	std::string ip(s.substr(0, 2));
 	for (int i = 2; i < s.length(); i++)
 	{
-		if (Header::_hexdig.find(s[i]) == std::string::npos)
+		if (Header::hexdig.find(s[i]) == std::string::npos)
 			break ;
 		ip += s[i];
 	}
-	std::string charArr = Header::_unreserved + Header::_sub_delims + ':';
+	std::string charArr = Header::unreserved + Header::sub_delims + ':';
 	size_t len = ip.length();
 	if (s[len] != '.'
 	|| charArr.find(s[len+1]) == std::string::npos)
@@ -703,6 +706,25 @@ std::string const	Header::_parseRequestTarget(std::string const &str, size_t pos
 			return "*";
 		}
 	}
+}
+
+/*
+	Rule : URI = scheme ":" hier-part [ "?" query ] [ "#" fragment ]
+	WARNING : Will throw a WrongSyntaxException() if syntax is not corresponding.
+*/
+
+std::string const	Header::_parseURI(std::string const &str, size_t pos)
+{
+	std::string s = str.substr(pos);
+	std::string form(Header::_parseScheme(s) + ':');
+	if (s[form.length() - 1] != ':')
+		throw(Header::WrongSyntaxException());
+	form += Header::_parseHierPart(s, form.length());
+	if (s[form.length()] == '?')
+		form += Header::_parseQuery(s, form.length());
+	if (s[form.length() == '#'])
+		form += '#' + Header::_parseQuery(s, form.length() + 1);
+	return form;
 }
 
 
