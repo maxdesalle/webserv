@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Request.hpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ldelmas <ldelmas@student.42.fr>            +#+  +:+       +#+        */
+/*   By: tderwedu <tderwedu@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/01/26 11:47:16 by ldelmas           #+#    #+#             */
-/*   Updated: 2022/02/04 15:16:53 by ldelmas          ###   ########.fr       */
+/*   Updated: 2022/02/09 18:04:27 by tderwedu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,6 +14,8 @@
 # define REQUEST_HPP
 
 # include "Header.hpp"
+# include <cstdlib>
+# include <cerrno>
 
 /*
 ** TO DO
@@ -25,17 +27,22 @@ class Request : public Header
 	private:
 		enum body {LEN, CHUNKED, NONE};
 		enum state {STARTLINE, HEADERS, BODY, PROCESSING, DONE};
+		enum chunk {SIZE, DATA, TE}; // tderwedu
 		
 		static std::string const _fieldNames[22];
 		std::string		_method, _target, _version, _body, _remain;
 		size_t			_cursor;
+		size_t			_body_size; // tderwedu
 		body			_type;
 		state			_state;
+		chunk			_chunk; // tderwedu
 
 		int				_getNextLine(std::string const &str, std::string &line);
 		int				_parseRequestLine(std::string const &r_line);
 		int				_parseHeaderField(std::string const &line);
 
+		int				_findBodyType(void); // tderwedu
+		int				_getBody(std::string const &buff); // tderwedu
 	public:
 		Request(void);
 		Request(Request const &src);
@@ -53,6 +60,7 @@ class Request : public Header
 		void				setBody(std::string &body);
 
 		int					parseRequest(std::string const &request);
+
 };
 
 #endif

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Request.cpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ldelmas <ldelmas@student.42.fr>            +#+  +:+       +#+        */
+/*   By: tderwedu <tderwedu@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/01/26 14:59:17 by ldelmas           #+#    #+#             */
-/*   Updated: 2022/02/07 14:37:39 by ldelmas          ###   ########.fr       */
+/*   Updated: 2022/02/09 18:08:53 by tderwedu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -140,6 +140,22 @@ static int		getFieldName(std::string const &line, std::string &name)
 	return 0;
 }
 
+// tderwedu
+/*
+	Case-insensitive equl
+*/
+
+bool	ci_equal(const std::string &s1, const std::string &s2)
+{
+	if (s1.size() != s2.size())
+		return false;
+	for (size_t i = 0; i < s1.size(); ++i)
+	{
+		if ((s1[i] | 0x2) != (s2[i] | 0x20))
+			return false;
+	}
+	return true;
+}
 
 
 /*NON-STATIC METHODS*/
@@ -276,19 +292,93 @@ int				Request::parseRequest(std::string const &request)
 			return 1;
 		}
 		this->_state = BODY;
+		if (this->_findBodyType()) // tderwedu
+			return ret;
 	}
 	if (this->_state == BODY)
 	{
-		if (this->_getNextLine(full, line))
+		return this->_getBody(full);
+	}
+	return 0;
+}
+
+int			Request::_findBodyType(void) // tderwedu
+{
+	char			*ptr = NULL;
+	size_t			nbr = 0;
+	std::string		value;
+
+	value = getField("Transfer-Encoding");
+	if (!value.empty())
+	{
+		if (ci_equal(value, "Chunked"))
+			return 501; // (Not Implemented)
+		this->_type = CHUNKED;
+		this->_chunk = SIZE;
+		this->_body_size = 0;
+	}
+	value = getField("Content-Length");
+	if (!value.empty())
+	{
+		errno = 0;
+		this->_body_size = strtol(value.c_str(), &ptr, 10);
+		if (this->_body_size < 0 || ptr != &value[value.size()] || errno)
+			return 400;
+		this->_type = LEN;
+	}
+	return 0;
+}
+
+int			Request::_getBody(std::string const &buff) // tderwedu
+{
+	int				ret = 0;
+	char			*ptr = NULL;
+	std::string		line;
+
+	if (this->_type == LEN)
+	{
+		if (buff.size() < this->_body_size)
+			return 1;
+		this->_body = buff.substr(this->_body_size);
+		this->_state = PROCESSING;
+		return 0;
+	}
+	else if (this->_chunk < TE) // Chunked data
+	{
+		while ((ret = this->_getNextLine(buff, line)) && (this->_chunk < TE))
 		{
-			this->_body = line;
-			this->_state = PROCESSING;
+			if (this->_chunk == SIZE)
+			{
+				this->_body_size = strtol(buff.c_str(), &ptr, 16);
+				if (this->_body_size < 0 || ptr <= &buff[0] || errno)
+					return 400;
+				if (this->_body_size)
+					this->_chunk = DATA;
+				else
+				{
+					this->_chunk = TE;
+					this->_body_size = this->_body.size();
+				}
+			}
+			else if (this->_chunk == DATA)
+			{
+				this->_body.append(line);
+				this->_chunk = SIZE;
+			}
 		}
-		else
+		this->_remain = line;
+		return 1;
+	}
+	else
+	{
+		while ((ret = this->_getNextLine(buff, line)) && line != "")
+			if (this->_parseHeaderField(line))	//TODO: allowed trailer field!!
+				return 400;
+		if (!ret)
 		{
 			this->_remain = line;
 			return 1;
 		}
+		this->_state = PROCESSING;
 	}
-	return 0;
 }
