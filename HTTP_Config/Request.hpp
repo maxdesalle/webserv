@@ -6,7 +6,7 @@
 /*   By: ldelmas <ldelmas@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/01/26 11:47:16 by ldelmas           #+#    #+#             */
-/*   Updated: 2022/02/04 15:16:53 by ldelmas          ###   ########.fr       */
+/*   Updated: 2022/02/10 16:30:05 by ldelmas          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,6 +14,7 @@
 # define REQUEST_HPP
 
 # include "Header.hpp"
+# include "URI.hpp"
 
 /*
 ** TO DO

@@ -6,7 +6,7 @@
 /*   By: ldelmas <ldelmas@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/01/19 15:31:16 by ldelmas           #+#    #+#             */
-/*   Updated: 2022/02/08 17:12:08 by ldelmas          ###   ########.fr       */
+/*   Updated: 2022/02/10 16:25:32 by ldelmas          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,6 +22,8 @@
 
 class Header
 {
+	enum uristatus {NORMALIZED, WRONG_SYNTAX, UNCHECKED};
+
     protected:
 		/*
 			common informations between requests and responses types of header
