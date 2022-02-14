@@ -6,7 +6,7 @@
 /*   By: ldelmas <ldelmas@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/01/26 11:47:16 by ldelmas           #+#    #+#             */
-/*   Updated: 2022/02/10 16:30:05 by ldelmas          ###   ########.fr       */
+/*   Updated: 2022/02/14 14:51:48 by ldelmas          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,8 +27,10 @@ class Request : public Header
 		enum body {LEN, CHUNKED, NONE};
 		enum state {STARTLINE, HEADERS, BODY, PROCESSING, DONE};
 		
-		static std::string const _fieldNames[22];
+		static std::string const _fieldNames[32];
+		static std::string const _cgiSerVarNames[19];
 		std::string		_method, _target, _version, _body, _remain;
+		std::map<std::string const, std::string> _cgiSerVars;
 		size_t			_cursor;
 		body			_type;
 		state			_state;
@@ -48,10 +50,12 @@ class Request : public Header
 		std::string const	&getTarget(void) const;
 		std::string const	&getVersion(void) const;
 		std::string const	&getBody(void) const;
+		std::map<std::string const, std::string> const &getCGIServerVars(void);
 		void				setMethod(std::string &method);
 		void				setTarget(std::string &target);
 		void				setVersion(std::string &version);
 		void				setBody(std::string &body);
+		void				setCGIServerVars(void);
 
 		int					parseRequest(std::string const &request);
 };

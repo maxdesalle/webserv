@@ -6,7 +6,7 @@
 /*   By: ldelmas <ldelmas@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/01/26 14:59:17 by ldelmas           #+#    #+#             */
-/*   Updated: 2022/02/07 14:37:39 by ldelmas          ###   ########.fr       */
+/*   Updated: 2022/02/14 17:03:05 by ldelmas          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,20 +14,37 @@
 
 /* Important static attributes*/
 
-std::string const Request::_fieldNames[22] = {"Cache-Control", "Expect", "Host", 
+std::string const Request::_fieldNames[32] = {"Cache-Control", "Expect", "Host", 
 										"Max-Forwards", "Pragma", "Range",
 										"TE", "If-Match", "If-None-Match",
 										"If-Modified-Since", "If-Unmodified-Since",
 										"If-Range", "Accept", "Accept-Charset",
 										"Accept-Encoding", "Accept-Language",
 										"Authorization", "Proxy-Authorization",
-										"From", "Referer", "User-Agent", ""};
+										"From", "Referer", "User-Agent",
+										"Transfer-encoding", "Content-Length", 
+										"TE", "Trailer", "Connection", "Via",
+										"Received", "Warning", "Keep-Alive",
+										"Upgrade", ""};
 
+std::string const Request::_cgiSerVarNames[19] = {"SERVER_SOFTWARE", "SERVER-NAME",
+												"GATEWAY_INTERFACE", "SERVER_PROTOCOL",
+												"SERVER_PORT", "REQUEST_METHOD",
+												"PATH_INFO", "PATH_TRANSLATED",
+												"SCRIPT_NAME", "QUERY_STRING",
+												"REMOTE_HOST", "REMOTE_ADDR",
+												"AUTH_TYPE", "REMOTE_USER",
+												"AUTH_USER", "REMOTE_IDENT",
+												"CONTENT_TYPE", "CONTENT_LENGTH", ""};
 
 
 /*CONSTRUCTORS AND DESTRUCTORS*/
 
-Request::Request(void) : Header(Request::_fieldNames), _state(STARTLINE), _remain(""), _cursor(0) {}
+Request::Request(void) : Header(Request::_fieldNames), _state(STARTLINE), _remain(""), _cursor(0)
+{
+	for (int i  = 0; i < 18; i++)
+		this->_cgiSerVars.insert(std::pair<std::string const, std::string>(_cgiSerVarNames[i], ""));
+}
 
 Request::Request(Request const &src) {this->_headerFields = src._headerFields;}
 
@@ -40,6 +57,20 @@ Request::~Request(void) {}
 Request const	&Request::operator=(Request const &right)
 {
 	this->_headerFields = right._headerFields;
+	this->_method = right._method;
+	this->_target = right._target;
+	this->_version = right._version;
+	this->_body = right._body;
+	this->_remain = right._remain;
+	this->_cursor = right._cursor;
+	this->_type = right._type;
+	this->_state = right._state;
+	for (int i = 0; i < 18; i++)
+	{
+		std::string const &key = Request::_cgiSerVarNames[i];
+		std::map<std::string const, std::string>::const_iterator it = right._cgiSerVars.find(key); 
+		this->_cgiSerVars[key] = it->second;
+	}
 	return *this;
 }
 
@@ -67,6 +98,11 @@ std::string const	&Request::getBody(void) const
 	return this->_body;
 }
 
+std::map<std::string const, std::string> const &Request::getCGIServerVars(void)
+{
+	return this->_cgiSerVars;
+}
+
 void				Request::setMethod(std::string &method)
 {
 	this->_method = method;
@@ -85,6 +121,19 @@ void				Request::setVersion(std::string &version)
 void				Request::setBody(std::string &body)
 {
 	this->_body = body;
+}
+
+void				Request::setCGIServerVars(void)
+{
+	this->_cgiSerVars["GATEWAY_INTERFACE"] = "CGI/1.1"; //is there a way to change it through header fields?
+	this->_cgiSerVars["REQUEST_METHOD"] = this->_method;
+	this->_cgiSerVars["CONTENT_LENGTH"] = this->_headerFields["Content-Length"];
+
+	//ALL USELESS FOR NOW
+	this->_cgiSerVars["AUTH_TYPE"] = ""; //to change if the server support user authentification
+	this->_cgiSerVars["REMOTE_USER"] = ""; //to change if the server support user authentification
+	this->_cgiSerVars["AUTH_USER"] = this->_cgiSerVars["REMOTE_USER"]; //to change if the server support user authentification
+	this->_cgiSerVars["REMOTE_IDENT"] = ""; // to change if the server supports RFC 931 identification
 }
 
 
