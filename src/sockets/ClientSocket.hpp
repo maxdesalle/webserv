@@ -6,7 +6,7 @@
 /*   By: tderwedu <tderwedu@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/01 15:22:19 by tderwedu          #+#    #+#             */
-/*   Updated: 2022/02/14 16:04:06 by tderwedu         ###   ########.fr       */
+/*   Updated: 2022/02/14 17:53:25 by tderwedu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,8 +22,9 @@
 # include "NetworkSocket.hpp"
 
 # include "RequestHandler.hpp"
-# include "Request.hpp"
-# include "Timer.hpp"
+# include "../utils/Timer.hpp"
+
+# include "../HTTP_Config/Request.hpp"
 
 # define	BUFF_SIZE	1024
 
@@ -81,7 +82,7 @@ void		ClientSocket::getNewRequest(void)
 		if (_state == HALF_CLOSED)
 			return ;
 		request.parseRequest(std::string(_buff));
-		if (request.getState() == Request::State::PROCESSING)
+		if (request.getState() == Request::state::PROCESSING)
 		{
 			if (_webserv.isValidRequest(request.getMethod()))
 				; // TODO: reponse "501 Not Implemented"
@@ -89,7 +90,7 @@ void		ClientSocket::getNewRequest(void)
 			// 
 		}	
 	}
-	else if (request.getState() < Request::State::PROCESSING && _timer.getElapsedTime() > TIMEOUT)
+	else if (request.getState() < Request::state::PROCESSING && _timer.getElapsedTime() > TIMEOUT)
 		_clearSocket();
 }
 

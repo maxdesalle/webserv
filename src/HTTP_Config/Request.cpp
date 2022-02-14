@@ -6,7 +6,7 @@
 /*   By: tderwedu <tderwedu@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/01/26 14:59:17 by ldelmas           #+#    #+#             */
-/*   Updated: 2022/02/14 17:37:35 by tderwedu         ###   ########.fr       */
+/*   Updated: 2022/02/14 17:37:52 by tderwedu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -102,7 +102,6 @@ Request::state	Request::getState(void) const
 {
 	return this->_state;
 }
-
 
 std::map<std::string const, std::string> const &Request::getCGIServerVars(void)
 {

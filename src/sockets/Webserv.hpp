@@ -6,7 +6,7 @@
 /*   By: tderwedu <tderwedu@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/01/31 10:19:04 by tderwedu          #+#    #+#             */
-/*   Updated: 2022/02/14 15:58:36 by tderwedu         ###   ########.fr       */
+/*   Updated: 2022/02/14 17:47:11 by tderwedu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,12 +31,12 @@
 
 # include "Server.hpp"
 # include "Location.hpp"
-# include "Request.hpp"
-# include "Response.hpp"
 # include "NetworkSocket.hpp"
 # include "ClientSocket.hpp"
-# include "Timer.hpp"
-# include "utils.hpp"
+# include "../HTTP_Config/Request.hpp"
+# include "../HTTP_Config/Response.hpp"
+# include "../utils/Timer.hpp"
+# include "../utils/utils.hpp"
 
 # ifdef OPEN_MAX
 	static long	open_max = OPEN_MAX;
