@@ -6,7 +6,7 @@
 /*   By: tderwedu <tderwedu@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/01 15:22:19 by tderwedu          #+#    #+#             */
-/*   Updated: 2022/02/14 17:53:25 by tderwedu         ###   ########.fr       */
+/*   Updated: 2022/02/14 18:49:43 by tderwedu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,13 +30,15 @@
 
 class ClientSocket : public NetworkSocket
 {
+	typedef std::deque<RequestHandler>	cont_reqHand;
+	typedef cont_reqHand::iterator		it_reqHand;
 public:
 	static const int	buffSize = BUFF_SIZE;
 private:
-	Webserv&					_webserv;
-	std::deque<RequestHandler>	_messages;
-	char						_buff[BUFF_SIZE];
-	Timer						_timer;
+	Webserv&			_webserv;
+	cont_reqHand		_messages;
+	char				_buff[BUFF_SIZE];
+	Timer				_timer;
 	
 
 public:
@@ -44,12 +46,15 @@ public:
 	virtual ~ClientSocket();
 
 	void		getNewRequest(void);
+
+	int			empty(void);
 private:
-	void		_clearSocket(void);
 	void		_findServer(void);
+	void		_clearSocket(void);
 };
 
-ClientSocket::ClientSocket(int port, in_addr_t addr, t_poll& pollfd, Webserv& webserv) : NetworkSocket(port, addr, pollfd), _webserv(webserv)
+ClientSocket::ClientSocket(int port, in_addr_t addr, t_poll& pollfd, Webserv& webserv)
+: NetworkSocket(port, addr, pollfd), _webserv(webserv)
 {
 	_timer.start();
 }
@@ -65,7 +70,7 @@ void		ClientSocket::getNewRequest(void)
 
 	if (_pollfd.fd < 0)
 		return ;
-	if (_pollfd.revents & (POLLHUP | POLLERR)) // Client disconnected
+	if (_pollfd.revents & (POLLHUP | POLLERR)) // Client disconnected or Any error
 		_clearSocket();
 	else if (_pollfd.revents & POLLNVAL) // FD not open
 	{
@@ -77,8 +82,14 @@ void		ClientSocket::getNewRequest(void)
 	else if (_pollfd.revents & POLLIN)
 	{
 		n = recv(_pollfd.fd, _buff, buffSize, 0);
-		if (n <= 0)
+		if (n < 0)
 			_clearSocket();
+		if (n == 0) // Client initated a gracefull close
+		{
+			request.reset();
+			if (_messages.size() == 1) // Not processing any request
+				sockShutdown();
+		}
 		if (_state == HALF_CLOSED)
 			return ;
 		request.parseRequest(std::string(_buff));
@@ -92,6 +103,11 @@ void		ClientSocket::getNewRequest(void)
 	}
 	else if (request.getState() < Request::state::PROCESSING && _timer.getElapsedTime() > TIMEOUT)
 		_clearSocket();
+}
+
+int		ClientSocket::empty(void)
+{
+	return (_messages.size() <= 1);
 }
 
 void				ClientSocket::_findServer(void)
@@ -124,5 +140,13 @@ void				ClientSocket::_findServer(void)
 	handler.setServer(matchingServers[0]);
 }
 
+void		ClientSocket::_clearSocket(void)
+{
+	for (it_reqHand it = _messages.begin(); it < _messages.end(); ++it)
+	{
+		it->clearRequestHandler();
+	}
+	sockClose();
+}
 
 #endif

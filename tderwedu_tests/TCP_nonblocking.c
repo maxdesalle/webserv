@@ -116,6 +116,12 @@ int	main(void)
 						printf("Error : %i\nb_read", err);
 				disconnect = 1;
 			}
+			else if (revents & POLLHUP)
+			{
+				printf("\e[32m POLLHUP \e[0m \n");
+				printf("\e[32m Client Disconnected \e[0m \n");
+				disconnect = 1;
+			}
 			else if (revents & POLLIN)
 			{
 				nb_read = recv(sockfd, buff, MAXLINE, 0);
@@ -126,8 +132,9 @@ int	main(void)
 				}
 				else if (nb_read == 0)
 				{
-					printf("\e[32m Client Disconnected \e[0m \n");
-					disconnect = 1;
+					// printf("\e[32m Client Disconnected \e[0m \n");
+					printf("\e[32m Going GraceFull \e[0m \n");
+					disconnect = 2;
 				}
 				else
 				{

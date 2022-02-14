@@ -6,7 +6,7 @@
 /*   By: tderwedu <tderwedu@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/14 11:49:23 by tderwedu          #+#    #+#             */
-/*   Updated: 2022/02/14 17:55:19 by tderwedu         ###   ########.fr       */
+/*   Updated: 2022/02/14 18:29:52 by tderwedu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,6 +31,7 @@ public:
 
 	Request&		getRequest(void);
 	void			setServer(const Server& server);
+	void			clearRequestHandler(void);
 };
 
 RequestHandler::RequestHandler() : _request(Request()){}

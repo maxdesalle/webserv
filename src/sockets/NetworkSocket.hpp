@@ -6,7 +6,7 @@
 /*   By: tderwedu <tderwedu@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/01/31 15:54:27 by tderwedu          #+#    #+#             */
-/*   Updated: 2022/02/14 15:08:42 by tderwedu         ###   ########.fr       */
+/*   Updated: 2022/02/14 18:43:23 by tderwedu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,8 +37,7 @@ public:
 
 	in_addr_t	getIP(void);
 	int			getPort(void);
-	int			getFD(void);
-	short		getRevents(void);
+	t_poll&		getPollFd(void);
 	State		getState(void);
 
 	void		sockShutdown(void);
@@ -63,14 +62,9 @@ int						NetworkSocket::getPort(void)
 	return _port;
 }
 
-int						NetworkSocket::getPort(void)
+t_poll&					NetworkSocket::getPollFd(void)
 {
-	return _pollfd.fd;
-}
-
-short						NetworkSocket::getRevents(void)
-{
-	return _pollfd.revents;
+	return _pollfd;
 }
 
 NetworkSocket::State	NetworkSocket::getState(void)

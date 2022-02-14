@@ -6,7 +6,7 @@
 /*   By: tderwedu <tderwedu@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/01/31 10:19:04 by tderwedu          #+#    #+#             */
-/*   Updated: 2022/02/14 17:47:11 by tderwedu         ###   ########.fr       */
+/*   Updated: 2022/02/14 18:50:04 by tderwedu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,10 +47,10 @@
 # define POLL_FLAGS			POLLIN | POLLOUT	// POLLERR | POLLHUP | POLLNVAL are allways set
 
 typedef std::vector<Server>					t_servers;
-typedef std::vector<NetworkSocket>			t_netSock;
-typedef std::vector<ClientSocket>			t_clieSock;
-typedef t_netSock::iterator					it_netSock;
-typedef t_clieSock::iterator				it_clieSock; // TODO: Change to deque
+typedef std::vector<NetworkSocket>			cont_netSock;
+typedef std::vector<ClientSocket>			cont_cliSock;
+typedef cont_netSock::iterator				it_netSock;
+typedef cont_cliSock::iterator				it_cliSock; // TODO: Change to deque
 
 class Webserv
 {
@@ -59,8 +59,8 @@ private:
 	int							_fdInUse;
 	std::vector<t_poll>			_pollfd;
 	t_servers					_servers;
-	t_netSock					_serverSocks;
-	t_clieSock					_clientSocks;
+	cont_netSock				_serverSocks;
+	cont_cliSock				_clientSocks;
 	
 public:
 	Webserv(void);
@@ -71,11 +71,16 @@ public:
 	const t_servers&	getServers(void);
 	
 	void				addServerSocket(int port, int nbr_queue);
+
 	void				checkServerSockets(void);
 	void				checkClientSockets(void);
+	void				reapClosedClientSock(void);
+	
 	t_poll&				addPollfd(int fd_client);
 	void				popPollfd(t_poll& pollfd);
+
 	int					isValidRequest(const std::string& method);
+
 };
 
 std::string const Webserv::_validMethod[4] = {"GET", "HEAD", "POST", "DELETE"};
@@ -158,13 +163,13 @@ void				Webserv::checkServerSockets(void)
 	{
 		// TODO: check _fdInUse < open_max
 		// TODO: check other values of revents
-		revents = it->getRevents();
+		revents = (it->getPollFd()).revents;
 		if (revents == POLLOUT)
 			continue ;
 		if (revents | POLLIN)
 		{
 			socklen = sizeof(sockaddr);
-			if ((fd_client = accept(it->getFD(), (t_sockaddr *) &sockaddr, &socklen)) < 0)
+			if ((fd_client = accept((it->getPollFd()).fd, (t_sockaddr *) &sockaddr, &socklen)) < 0)
 				exit(EXIT_FAILURE);												//TODO: better error handling;
 			fcntl(fd_client, F_SETFL, O_NONBLOCK);
 			addr = sockaddr.sin_addr.s_addr;
@@ -184,7 +189,7 @@ void				Webserv::checkServerSockets(void)
 void				Webserv::checkClientSockets(void)
 {
 	ssize_t			n;
-	it_clieSock		client;
+	it_cliSock		client;
 
 	client = _clientSocks.begin();
 	while (client != _clientSocks.end())
@@ -196,6 +201,19 @@ void				Webserv::checkClientSockets(void)
 		++client;
 	}
 }
+
+void				Webserv::reapClosedClientSock(void)
+{
+	for (it_cliSock it = _clientSocks.begin(); it != _clientSocks.end(); ++it)
+	{
+		if (it->getState() != NetworkSocket::State::OPEN && !it->empty())
+		{
+			popPollfd(it->getPollFd());
+			_clientSocks.erase(it);
+		}
+	}
+}
+
 
 t_poll&				Webserv::addPollfd(int fd_client)
 {
