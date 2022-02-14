@@ -6,7 +6,7 @@
 /*   By: tderwedu <tderwedu@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/01/31 10:19:04 by tderwedu          #+#    #+#             */
-/*   Updated: 2022/02/14 12:08:50 by tderwedu         ###   ########.fr       */
+/*   Updated: 2022/02/14 15:58:36 by tderwedu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,6 +36,7 @@
 # include "NetworkSocket.hpp"
 # include "ClientSocket.hpp"
 # include "Timer.hpp"
+# include "utils.hpp"
 
 # ifdef OPEN_MAX
 	static long	open_max = OPEN_MAX;
@@ -45,31 +46,39 @@
 # define OPEN_MAX_GUESS		256
 # define POLL_FLAGS			POLLIN | POLLOUT	// POLLERR | POLLHUP | POLLNVAL are allways set
 
+typedef std::vector<Server>					t_servers;
+typedef std::vector<NetworkSocket>			t_netSock;
+typedef std::vector<ClientSocket>			t_clieSock;
+typedef t_netSock::iterator					it_netSock;
+typedef t_clieSock::iterator				it_clieSock; // TODO: Change to deque
+
 class Webserv
 {
 private:
-
-	typedef std::vector<NetworkSocket>::iterator	it_server;
-	typedef std::vector<ClientSocket>::iterator		it_client;
-
+	static std::string const	_validMethod[4];
 	int							_fdInUse;
 	std::vector<t_poll>			_pollfd;
-	std::vector<Server>			_servers;
-	std::vector<NetworkSocket>	_serverSocks;
-	std::vector<ClientSocket>	_clientSocks;
+	t_servers					_servers;
+	t_netSock					_serverSocks;
+	t_clieSock					_clientSocks;
+	
 public:
 	Webserv(void);
 	~Webserv(void);
 
-	void			setOpenMax(void);
-	Server const&	findServer(NetworkSocket const& sock);
-	void			addServerSocket(int port, int nbr_queue);
-	void			checkServerSockets(void);
-	void			checkClientSockets(void);
-	t_poll&			addPollfd(int fd_client);
-	void			popPollfd(t_poll& pollfd);
-	void			findServer(Request& request);
+	void				setOpenMax(void);
+
+	const t_servers&	getServers(void);
+	
+	void				addServerSocket(int port, int nbr_queue);
+	void				checkServerSockets(void);
+	void				checkClientSockets(void);
+	t_poll&				addPollfd(int fd_client);
+	void				popPollfd(t_poll& pollfd);
+	int					isValidRequest(const std::string& method);
 };
+
+std::string const Webserv::_validMethod[4] = {"GET", "HEAD", "POST", "DELETE"};
 
 Webserv::Webserv(void) {}
 
@@ -94,6 +103,11 @@ void				Webserv::setOpenMax(void)
 				std::cerr << "sysconf error for _SC_OPEN_MAX" << std::endl;		//TODO: better error handling
 		}
 	}
+}
+
+const t_servers&	Webserv::getServers(void)
+{
+	return _servers;
 }
 
 void				Webserv::addServerSocket(int port, int nbr_queue)
@@ -136,32 +150,29 @@ void				Webserv::checkServerSockets(void)
 	int				fd_client;
 	in_addr_t		addr;
 	socklen_t		socklen;
+	short			revents;
 	t_sockaddr_in	sockaddr;
 
 
-	for (it_server it = _serverSocks.begin(); it != _serverSocks.end(); ++it)
+	for (it_netSock it = _serverSocks.begin(); it != _serverSocks.end(); ++it)
 	{
 		// TODO: check _fdInUse < open_max
 		// TODO: check other values of revents
-		if (it->_pollfd.revents == POLLOUT)
+		revents = it->getRevents();
+		if (revents == POLLOUT)
 			continue ;
-		if (it->_pollfd.revents | POLLIN)
+		if (revents | POLLIN)
 		{
 			socklen = sizeof(sockaddr);
-			if ((fd_client = accept(it->_pollfd.fd, (t_sockaddr *) &sockaddr, &socklen)) < 0)
+			if ((fd_client = accept(it->getFD(), (t_sockaddr *) &sockaddr, &socklen)) < 0)
 				exit(EXIT_FAILURE);												//TODO: better error handling;
 			fcntl(fd_client, F_SETFL, O_NONBLOCK);
 			addr = sockaddr.sin_addr.s_addr;
-			_clientSocks.push_back(ClientSocket(it->_port, addr, addPollfd(fd_client)));
+			_clientSocks.push_back(ClientSocket(it->getPort(), addr, addPollfd(fd_client), *this));
 			if (_fdInUse == open_max)
 				break ;
 		}
 	}
-}
-
-Server const&		Webserv::findServer(NetworkSocket const& sock)
-{
-	// After A whole request has been downloaded
 }
 
 /*
@@ -173,14 +184,15 @@ Server const&		Webserv::findServer(NetworkSocket const& sock)
 void				Webserv::checkClientSockets(void)
 {
 	ssize_t			n;
-	it_client		client;
+	it_clieSock		client;
 
 	client = _clientSocks.begin();
 	while (client != _clientSocks.end())
 	{
-		client->getRequest();
+		client->getNewRequest();
 		// Handle Request's Stack - 
 		// Handle Response's Stack
+		// Update DEQUE
 		++client;
 	}
 }
@@ -222,32 +234,14 @@ void				Webserv::popPollfd(t_poll&	pollfd)
 	--_fdInUse;
 }
 
-void				Webserv::findServer(Request& request)
+int					Webserv::isValidRequest(const std::string& method)
 {
-	std::vector<Server>		matchingServers;
-	struct in_addr			addr;
-	char					ip[INET_ADDRSTRLEN];
-	std::string const&		host = request.getField("Host");
-
-	addr.s_addr = request.getIP();
-	inet_ntop(AF_INET, &addr, ip, INET_ADDRSTRLEN);
-	matchingServers = FindMatchingServers(_servers, request.getPort(), ip);
-	if (matchingServers.empty())
-		exit(EXIT_FAILURE);														//TODO: better error handling
-	if (host.empty())															//TODO: Might be an error!
-		request.setServer(matchingServers[0]);
-	for (int i; i < matchingServers.size(); ++i)
+	for (std::string::size_type i = 0; i < sizeof(_validMethod)/sizeof(std::string); ++i)
 	{
-		for (int j; j < matchingServers[i].GetServerNames().size(); ++j)
-		{
-			if (host == matchingServers[i].GetServerNames()[j])
-			{
-				request.setServer(matchingServers[j]);
-				return ;
-			}
-		}
+		if (ci_equal(method, _validMethod[i]))
+			return 1;
 	}
-	request.setServer(matchingServers[0]);
+	return 0;
 }
 
 #endif
