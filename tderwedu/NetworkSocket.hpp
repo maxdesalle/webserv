@@ -6,7 +6,7 @@
 /*   By: tderwedu <tderwedu@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/01/31 15:54:27 by tderwedu          #+#    #+#             */
-/*   Updated: 2022/02/04 17:46:57 by tderwedu         ###   ########.fr       */
+/*   Updated: 2022/02/14 11:59:09 by tderwedu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,7 +40,7 @@ public:
 	int			getPort(void);
 	void		sockShutdown(void);
 	void		sockClose(void);
-	void		handlePOLLERR(void);
+	void		handlePollErr(void);
 };
 
 NetworkSocket::NetworkSocket(int port, in_addr_t addr, t_poll& pollfd)
@@ -50,6 +50,16 @@ NetworkSocket::NetworkSocket(int port, in_addr_t addr, t_poll& pollfd)
 }
 
 NetworkSocket::~NetworkSocket() {}
+
+in_addr_t	NetworkSocket::getIP(void)
+{
+	return _addr;
+}
+
+int			NetworkSocket::getPort(void)
+{
+	return _port;
+}
 
 void		NetworkSocket::sockShutdown(void)
 {
@@ -62,16 +72,6 @@ void		NetworkSocket::sockShutdown(void)
 		sockClose();
 }
 
-in_addr_t	NetworkSocket::getIP(void)
-{
-	return _addr;
-}
-
-int			NetworkSocket::getPort(void)
-{
-	return _port;
-}
-
 void		NetworkSocket::sockClose(void)
 {
 	shutdown(_pollfd.fd, SHUT_RDWR);
@@ -80,7 +80,7 @@ void		NetworkSocket::sockClose(void)
 	_state = CLOSED;
 }
 
-void		NetworkSocket::handlePOLLERR(void)  // TODO: error handling
+void		NetworkSocket::handlePollErr(void)  // TODO: error handling
 {
 	int			err;
 	socklen_t	size;

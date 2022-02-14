@@ -6,7 +6,7 @@
 /*   By: tderwedu <tderwedu@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/01/31 10:19:04 by tderwedu          #+#    #+#             */
-/*   Updated: 2022/02/04 17:45:31 by tderwedu         ###   ########.fr       */
+/*   Updated: 2022/02/14 12:08:50 by tderwedu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -49,8 +49,8 @@ class Webserv
 {
 private:
 
-	typedef std::vector<NetworkSocket>::iterator	it_servSock;
-	typedef std::vector<ClientSocket>::iterator		it_clieSock;
+	typedef std::vector<NetworkSocket>::iterator	it_server;
+	typedef std::vector<ClientSocket>::iterator		it_client;
 
 	int							_fdInUse;
 	std::vector<t_poll>			_pollfd;
@@ -96,7 +96,6 @@ void				Webserv::setOpenMax(void)
 	}
 }
 
-
 void				Webserv::addServerSocket(int port, int nbr_queue)
 {
 	int			fd_sock;
@@ -140,7 +139,7 @@ void				Webserv::checkServerSockets(void)
 	t_sockaddr_in	sockaddr;
 
 
-	for (it_servSock it = _serverSocks.begin(); it != _serverSocks.end(); ++it)
+	for (it_server it = _serverSocks.begin(); it != _serverSocks.end(); ++it)
 	{
 		// TODO: check _fdInUse < open_max
 		// TODO: check other values of revents
@@ -174,7 +173,7 @@ Server const&		Webserv::findServer(NetworkSocket const& sock)
 void				Webserv::checkClientSockets(void)
 {
 	ssize_t			n;
-	it_clieSock		client;
+	it_client		client;
 
 	client = _clientSocks.begin();
 	while (client != _clientSocks.end())

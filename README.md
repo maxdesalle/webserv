@@ -29,6 +29,7 @@ A lightweight HTTP server implemented in C++.
 -->
  - [ ] In the CLientSocket's constructor create an empty `Request` ans set its state as `NONE`
  - [ ] When moving a `Request` from `DOWNLOADED` to `PROCESSING` create an empty `Request` and set its state as `NONE`
+ - Handle `408 Request Timeout`
 ### Request Common Core
 ### Request Static Site
 ### Request CGI

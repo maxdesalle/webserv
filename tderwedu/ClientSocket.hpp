@@ -6,7 +6,7 @@
 /*   By: tderwedu <tderwedu@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/01 15:22:19 by tderwedu          #+#    #+#             */
-/*   Updated: 2022/02/04 17:45:57 by tderwedu         ###   ########.fr       */
+/*   Updated: 2022/02/14 11:55:32 by tderwedu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -89,6 +89,7 @@ void		ClientSocket::getRequest(void)
 		_msg = request.parseRequest(_msg);
 		if (request.getState() == Request::State::DOWNLOADED)
 		{
+			// TODO: better handling
 			findServer(request);
 			_requests.push_back(Request());
 		}	
