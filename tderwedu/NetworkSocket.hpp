@@ -6,7 +6,7 @@
 /*   By: tderwedu <tderwedu@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/01/31 15:54:27 by tderwedu          #+#    #+#             */
-/*   Updated: 2022/02/14 11:59:09 by tderwedu         ###   ########.fr       */
+/*   Updated: 2022/02/14 15:08:42 by tderwedu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,7 +17,6 @@
 # include <iostream>
 
 # include "NetworkIPC.hpp"
-# include "Timer.hpp"
 
 # define	TIMEOUT			3 * 60 * 1000
 # define	TIMEOUT_NVAL	100
@@ -26,42 +25,60 @@ class NetworkSocket
 {
 public:
 	enum State {OPEN, HALF_CLOSED, CLOSED};
-
+protected:
 	int				_port;
 	in_addr_t		_addr;
 	t_poll&			_pollfd;
 	State			_state;
-	Timer			_timer;
 
-	NetworkSocket(int port, in_addr_t addr, t_poll& pollfd);
+public:
+	NetworkSocket::NetworkSocket(int port, in_addr_t addr, t_poll& pollfd);
 	virtual ~NetworkSocket(void);
 
 	in_addr_t	getIP(void);
 	int			getPort(void);
+	int			getFD(void);
+	short		getRevents(void);
+	State		getState(void);
+
 	void		sockShutdown(void);
 	void		sockClose(void);
+
 	void		handlePollErr(void);
 };
 
 NetworkSocket::NetworkSocket(int port, in_addr_t addr, t_poll& pollfd)
 :_port(port), _addr(addr), _pollfd(pollfd), _state(OPEN)
-{
-	_timer.start();
-}
+{}
 
 NetworkSocket::~NetworkSocket() {}
 
-in_addr_t	NetworkSocket::getIP(void)
+in_addr_t				NetworkSocket::getIP(void)
 {
 	return _addr;
 }
 
-int			NetworkSocket::getPort(void)
+int						NetworkSocket::getPort(void)
 {
 	return _port;
 }
 
-void		NetworkSocket::sockShutdown(void)
+int						NetworkSocket::getPort(void)
+{
+	return _pollfd.fd;
+}
+
+short						NetworkSocket::getRevents(void)
+{
+	return _pollfd.revents;
+}
+
+NetworkSocket::State	NetworkSocket::getState(void)
+{
+	return _state;
+}
+
+void					NetworkSocket::sockShutdown(void)
 {
 	if (_state == OPEN)
 	{
@@ -72,7 +89,7 @@ void		NetworkSocket::sockShutdown(void)
 		sockClose();
 }
 
-void		NetworkSocket::sockClose(void)
+void					NetworkSocket::sockClose(void)
 {
 	shutdown(_pollfd.fd, SHUT_RDWR);
 	close(_pollfd.fd);
@@ -80,7 +97,7 @@ void		NetworkSocket::sockClose(void)
 	_state = CLOSED;
 }
 
-void		NetworkSocket::handlePollErr(void)  // TODO: error handling
+void					NetworkSocket::handlePollErr(void)  // TODO: error handling
 {
 	int			err;
 	socklen_t	size;
