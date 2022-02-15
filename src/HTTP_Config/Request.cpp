@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Request.cpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: tderwedu <tderwedu@student.s19.be>         +#+  +:+       +#+        */
+/*   By: ldelmas <ldelmas@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/01/26 14:59:17 by ldelmas           #+#    #+#             */
-/*   Updated: 2022/02/14 17:37:52 by tderwedu         ###   ########.fr       */
+/*   Updated: 2022/02/15 16:12:16 by ldelmas          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,7 +14,7 @@
 
 /* Important static attributes*/
 
-std::string const Request::_fieldNames[32] = {"Cache-Control", "Expect", "Host", 
+std::string const Request::_fieldNames[33] = {"Cache-Control", "Expect", "Host", 
 										"Max-Forwards", "Pragma", "Range",
 										"TE", "If-Match", "If-None-Match",
 										"If-Modified-Since", "If-Unmodified-Since",
@@ -25,7 +25,7 @@ std::string const Request::_fieldNames[32] = {"Cache-Control", "Expect", "Host",
 										"Transfer-encoding", "Content-Length", 
 										"TE", "Trailer", "Connection", "Via",
 										"Received", "Warning", "Keep-Alive",
-										"Upgrade", ""};
+										"Upgrade", "Content-Type", ""};
 
 std::string const Request::_cgiSerVarNames[19] = {"SERVER_SOFTWARE", "SERVER-NAME",
 												"GATEWAY_INTERFACE", "SERVER_PROTOCOL",
@@ -130,15 +130,36 @@ void				Request::setBody(std::string &body)
 
 void				Request::setCGIServerVars(void)
 {
+	this->_cgiSerVars["SERVER_SOFTWARE"] = "webserv"; //will change to the name of our program
+	// this->_cgiSerVars["SERVER_NAME"] = ""; //Should we take it from the configuration?
 	this->_cgiSerVars["GATEWAY_INTERFACE"] = "CGI/1.1"; //is there a way to change it through header fields?
+	this->_cgiSerVars["SERVER_PROTOCOL"] = "HTTP/1.1";
+	// this->_cgiSerVars["SERVER_PORT"] = ""; //Should we take it from the configuration?
 	this->_cgiSerVars["REQUEST_METHOD"] = this->_method;
+	// this->_cgiSerVars["PATH_INFO"] = ; //get it from request URI
+	// this->_cgiSerVars["PATH_TRANSLATED"] = ""; //don't understand what it's supposed to be
+	// this->_cgiSerVars["SCRIPT_NAME"] = ""; //where do I find the path to the executing script? config file I guess?
+	// this->_cgiSerVars["QUERY_STRING"] = ""; //get it from request URI (easy)
+	// if ((this->_cgiSerVars["REMOTE_HOST"] = "") == "") //probably get it from a header field
+	// 	this->_cgiSerVars["REMOTE_ADDR"] = ""; //get it from tderwedu's part?
+	this->_cgiSerVars["CONTENT_TYPE"] = this->_headerFields["Content-Type"];
 	this->_cgiSerVars["CONTENT_LENGTH"] = this->_headerFields["Content-Length"];
 
+
 	//ALL USELESS FOR NOW
-	this->_cgiSerVars["AUTH_TYPE"] = ""; //to change if the server support user authentification
-	this->_cgiSerVars["REMOTE_USER"] = ""; //to change if the server support user authentification
-	this->_cgiSerVars["AUTH_USER"] = this->_cgiSerVars["REMOTE_USER"]; //to change if the server support user authentification
-	this->_cgiSerVars["REMOTE_IDENT"] = ""; // to change if the server supports RFC 931 identification
+	/*IF SERVER DOESN'T SUPPORT USER AUTHENTIFICATION*/
+	this->_cgiSerVars["AUTH_TYPE"] = "";
+	this->_cgiSerVars["REMOTE_USER"] = "";	
+	this->_cgiSerVars["REMOTE_IDENT"] = "";
+	/*ELSE*/
+	//->get the auth-scheme part
+	//this->_cgiSerVars["AUTH_TYPE"] = get_this->_headerFields["Authorization"];
+	//->get the credentials part
+	//this->_cgiSerVars["REMOTE_USER"] = get_this->_headerFields["Authorization"];
+	//I'm really not sure of that but it seems that the username is also put in authorization
+	// this->_cgiSerVars["REMOTE_IDENT"] = get_this->_headerFields["Authorization"];
+
+	this->_cgiSerVars["AUTH_USER"] = this->_cgiSerVars["REMOTE_USER"];
 }
 
 

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Request.hpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: tderwedu <tderwedu@student.s19.be>         +#+  +:+       +#+        */
+/*   By: ldelmas <ldelmas@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/01/26 11:47:16 by ldelmas           #+#    #+#             */
-/*   Updated: 2022/02/14 18:31:41 by tderwedu         ###   ########.fr       */
+/*   Updated: 2022/02/15 11:59:56 by ldelmas          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,7 +28,7 @@ class Request : public Header
 	private:
 		enum body {LEN, CHUNKED, NONE};
 		
-		static std::string const _fieldNames[32];
+		static std::string const _fieldNames[33];
 		static std::string const _cgiSerVarNames[19];
 		std::string		_method, _target, _version, _body, _remain;
 		std::map<std::string const, std::string> _cgiSerVars;
