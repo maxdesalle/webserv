@@ -6,7 +6,7 @@
 /*   By: tderwedu <tderwedu@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/01 15:22:19 by tderwedu          #+#    #+#             */
-/*   Updated: 2022/02/14 18:49:43 by tderwedu         ###   ########.fr       */
+/*   Updated: 2022/02/16 12:37:59 by tderwedu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,6 +39,7 @@ private:
 	cont_reqHand		_messages;
 	char				_buff[BUFF_SIZE];
 	Timer				_timer;
+	State				_state;
 	
 
 public:
@@ -46,6 +47,7 @@ public:
 	virtual ~ClientSocket();
 
 	void		getNewRequest(void);
+	void		getRessources(void);
 
 	int			empty(void);
 private:
@@ -53,8 +55,7 @@ private:
 	void		_clearSocket(void);
 };
 
-ClientSocket::ClientSocket(int port, in_addr_t addr, t_poll& pollfd, Webserv& webserv)
-: NetworkSocket(port, addr, pollfd), _webserv(webserv)
+ClientSocket::ClientSocket(int port, in_addr_t addr, t_poll& pollfd, Webserv& webserv) : NetworkSocket(port, addr, pollfd), _webserv(webserv)
 {
 	_timer.start();
 }
@@ -98,19 +99,19 @@ void		ClientSocket::getNewRequest(void)
 			if (_webserv.isValidRequest(request.getMethod()))
 				; // TODO: reponse "501 Not Implemented"
 			_findServer();
-			// 
+			_messages.push_back(RequestHandler());
 		}	
 	}
 	else if (request.getState() < Request::state::PROCESSING && _timer.getElapsedTime() > TIMEOUT)
 		_clearSocket();
 }
 
-int		ClientSocket::empty(void)
+int			ClientSocket::empty(void)
 {
 	return (_messages.size() <= 1);
 }
 
-void				ClientSocket::_findServer(void)
+void		ClientSocket::_findServer(void)										// TODO: CORR matchingServers
 {
 	struct in_addr			addr;
 	char					ip[INET_ADDRSTRLEN];

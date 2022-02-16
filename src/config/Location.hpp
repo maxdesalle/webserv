@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Location.hpp                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mdesalle <mdesalle@student.s19.be>         +#+  +:+       +#+        */
+/*   By: tderwedu <tderwedu@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/01/28 13:20:37 by mdesalle          #+#    #+#             */
-/*   Updated: 2022/02/02 17:49:52 by mdesalle         ###   ########.fr       */
+/*   Updated: 2022/02/16 12:06:52 by tderwedu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,6 +45,9 @@ class Location
 		void							Assignator(std::string Key, std::string Value);
 		size_t							FindPath(std::string LocationContent);
 		std::string						FindKeyValue(std::string LocationContent, size_t &End);
+
+		int								isMethodValid(const std::string &method) const;
+		int								isCgi(void) const;
 
 	private:
 
