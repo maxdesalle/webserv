@@ -6,7 +6,7 @@
 /*   By: ldelmas <ldelmas@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/01/26 14:59:17 by ldelmas           #+#    #+#             */
-/*   Updated: 2022/02/15 16:12:16 by ldelmas          ###   ########.fr       */
+/*   Updated: 2022/02/16 11:45:52 by mdesalle         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -128,17 +128,17 @@ void				Request::setBody(std::string &body)
 	this->_body = body;
 }
 
-void				Request::setCGIServerVars(void)
+void				Request::setCGIServerVars(Location &CGILocation, Header &RequestHeaders)
 {
-	this->_cgiSerVars["SERVER_SOFTWARE"] = "webserv"; //will change to the name of our program
-	// this->_cgiSerVars["SERVER_NAME"] = ""; //Should we take it from the configuration?
+	this->_cgiSerVars["SERVER_SOFTWARE"] = "WEBSERV/1.0";
+	this->_cgiSerVars["SERVER_NAME"] = RequestHeaders.getField("Host");
 	this->_cgiSerVars["GATEWAY_INTERFACE"] = "CGI/1.1"; //is there a way to change it through header fields?
 	this->_cgiSerVars["SERVER_PROTOCOL"] = "HTTP/1.1";
 	// this->_cgiSerVars["SERVER_PORT"] = ""; //Should we take it from the configuration?
 	this->_cgiSerVars["REQUEST_METHOD"] = this->_method;
 	// this->_cgiSerVars["PATH_INFO"] = ; //get it from request URI
 	// this->_cgiSerVars["PATH_TRANSLATED"] = ""; //don't understand what it's supposed to be
-	// this->_cgiSerVars["SCRIPT_NAME"] = ""; //where do I find the path to the executing script? config file I guess?
+	this->_cgiSerVars["SCRIPT_NAME"] = CGILocation.GetPass();
 	// this->_cgiSerVars["QUERY_STRING"] = ""; //get it from request URI (easy)
 	// if ((this->_cgiSerVars["REMOTE_HOST"] = "") == "") //probably get it from a header field
 	// 	this->_cgiSerVars["REMOTE_ADDR"] = ""; //get it from tderwedu's part?

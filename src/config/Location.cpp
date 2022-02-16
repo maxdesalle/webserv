@@ -6,7 +6,7 @@
 /*   By: mdesalle <mdesalle@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/01/28 14:30:39 by mdesalle          #+#    #+#             */
-/*   Updated: 2022/02/02 18:45:19 by mdesalle         ###   ########.fr       */
+/*   Updated: 2022/02/16 11:26:46 by mdesalle         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,6 +45,7 @@ Location	&Location::operator=(Location const &ref)
 	this->_CGI = ref.GetCGI();
 	this->_Path = ref.GetPath();
 	this->_Root = ref.GetRoot();
+	this->_Pass = ref.GetPass();
 	this->_Index = ref.GetIndex();
 	this->_AutoIndex = ref.GetAutoIndex();
 	this->_ErrorPage = ref.GetErrorPage();
@@ -80,6 +81,11 @@ std::string						Location::GetPath(void)					const
 std::string						Location::GetRoot(void)					const
 {
 	return (_Root);
+}
+
+std::string						Location::GetPass(void)					const
+{
+	return (_Pass);
 }
 
 std::vector<std::string>		Location::GetIndex(void)				const
@@ -300,6 +306,8 @@ void		Location::Assignator(std::string Key, std::string Value)
 		SaveAllowMethod(Value);
 	else if (Key == "cgi")
 		_CGI = Value;
+	else if (Key == "pass")
+		_Pass = Value;
 	else if (Key == "autoindex")
 		_AutoIndex = (Value == "on") ? true : false;
 	else if (Key == "limit_except")

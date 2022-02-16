@@ -6,7 +6,7 @@
 /*   By: mdesalle <mdesalle@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/01/28 13:20:37 by mdesalle          #+#    #+#             */
-/*   Updated: 2022/02/02 17:49:52 by mdesalle         ###   ########.fr       */
+/*   Updated: 2022/02/16 11:25:27 by mdesalle         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -53,6 +53,7 @@ class Location
 		std::string						_CGI;
 		std::string						_Path;
 		std::string						_Root;
+		std::string						_Pass;
 		std::vector<std::string>		_Index;
 		std::vector<std::string>		_LimitExcept;
 		std::vector<std::string>		_AllowMethod;
