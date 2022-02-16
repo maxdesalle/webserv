@@ -1,19 +1,18 @@
 <!DOCTYPE html>
 <html>
 <head>
-	<title>Nothing To See!</title>
+	<title>Return</title>
 </head>
 <body>
 
 	<!-- Main content -->
-	<h1>Welcome! </h1>
-	<h2>This is a bogus website!</h2>
+	<h1>Return! </h1>
+	<h2>This is a bogus Return!</h2>
 	<h3>Location</h3>
-		<p> /index.html
+		<p> /Return/index.html
 	<h3>NGINX parameters</h3>
 	<ul>
-		<li>root /var/www/website;</li>
-		<li>index index.html;</li>
+		<li>return 301 http://localhost$request_uri;</li>
 	</ul>
 	<!-- Footer -->
 	<footer>

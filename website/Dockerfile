@@ -21,6 +21,8 @@ WORKDIR /var/www/website
 
 COPY ./website/ .
 
+# RUN cd .. ; chown -R www-data:www-data * && chmod -R 755 /var/www/* ; cd website
+
 #=========================== 3. Launching Container ===========================
 
 # To allow a graceful NGINX shutdown
