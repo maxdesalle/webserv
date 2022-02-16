@@ -6,7 +6,7 @@
 /*   By: tderwedu <tderwedu@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/01/31 10:19:04 by tderwedu          #+#    #+#             */
-/*   Updated: 2022/02/14 18:50:04 by tderwedu         ###   ########.fr       */
+/*   Updated: 2022/02/16 12:49:30 by tderwedu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,7 +46,7 @@
 # define OPEN_MAX_GUESS		256
 # define POLL_FLAGS			POLLIN | POLLOUT	// POLLERR | POLLHUP | POLLNVAL are allways set
 
-typedef std::vector<Server>					t_servers;
+typedef std::vector<Server>					cont_server;
 typedef std::vector<NetworkSocket>			cont_netSock;
 typedef std::vector<ClientSocket>			cont_cliSock;
 typedef cont_netSock::iterator				it_netSock;
@@ -58,7 +58,7 @@ private:
 	static std::string const	_validMethod[4];
 	int							_fdInUse;
 	std::vector<t_poll>			_pollfd;
-	t_servers					_servers;
+	cont_server					_servers;
 	cont_netSock				_serverSocks;
 	cont_cliSock				_clientSocks;
 	
@@ -68,7 +68,7 @@ public:
 
 	void				setOpenMax(void);
 
-	const t_servers&	getServers(void);
+	const cont_server&	getServers(void);
 	
 	void				addServerSocket(int port, int nbr_queue);
 
@@ -110,7 +110,7 @@ void				Webserv::setOpenMax(void)
 	}
 }
 
-const t_servers&	Webserv::getServers(void)
+const cont_server&	Webserv::getServers(void)
 {
 	return _servers;
 }

@@ -27,9 +27,10 @@ A lightweight HTTP server implemented in C++.
      - deque should never be empty
      - last item should always be ready to hold the next incomming request
 -->
- - [ ] In the CLientSocket's constructor create an empty `Request` ans set its state as `NONE`
- - [ ] When moving a `Request` from `DOWNLOADED` to `PROCESSING` create an empty `Request` and set its state as `NONE`
- - Handle `408 Request Timeout`
+ - [x] In the CLientSocket's constructor create an empty `Request` ans set its state as `NONE`
+ - [x] When moving a `Request` from `DOWNLOADED` to `PROCESSING` create an empty `Request` and set its state as `NONE`
+ - [ ] Handle `408 Request Timeout`
+ - [ ] Corr. `ClientSocket::_findServer(void)`
 ### Request Common Core
 ### Request Static Site
 ### Request CGI
