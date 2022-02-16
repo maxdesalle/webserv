@@ -6,7 +6,7 @@
 /*   By: mdesalle <mdesalle@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/01/28 13:20:37 by mdesalle          #+#    #+#             */
-/*   Updated: 2022/02/16 11:25:27 by mdesalle         ###   ########.fr       */
+/*   Updated: 2022/02/16 13:47:27 by mdesalle         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,6 +28,7 @@ class Location
 		size_t							GetClientMaxBodySize(void)	const;
 		std::string						GetCGI(void)				const;
 		std::string						GetPath(void)				const;
+		std::string						GetPass(void)				const;
 		std::string						GetRoot(void)				const;
 		std::vector<std::string>		GetIndex(void)				const;
 		std::vector<std::string>		GetLimitExcept(void)		const;

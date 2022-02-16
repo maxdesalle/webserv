@@ -6,7 +6,7 @@
 /*   By: maxdesalle <mdesalle@student.s19.be>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/01/18 18:04:43 by maxdesall         #+#    #+#             */
-/*   Updated: 2022/02/04 14:46:00 by mdesalle         ###   ########.fr       */
+/*   Updated: 2022/02/16 14:15:20 by mdesalle         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,14 +31,6 @@ static Server					CreateServerObject(std::vector<std::string> ServerContent)
 
 	return (ServerConfig);
 }
-
-/*
- * Returns a vector of Server objects which match the given Port and IP address
- */
-
-/* std::vector<Server>			FindMatchingServers(size_t Port, std::string IP) */
-/* { */
-/* } */
 
 /*
  * Returns a vector with a Server object for each server block in the provided config file
@@ -101,7 +93,7 @@ static std::vector<size_t>		ReturnNormalPorts(Server ServerBlock, std::string IP
 	return (PossiblePorts);
 }
 
-static bool						DefaultServerCheck(Server ServerBlock, std::vector<Server> &MatchingServers, size_t Port, std::string IP)
+static bool						DefaultServerCheck(Server ServerBlock, std::vector<Server> *MatchingServers, size_t Port, std::string IP)
 {
 	std::vector<size_t>			PossiblePorts;
 
@@ -110,14 +102,14 @@ static bool						DefaultServerCheck(Server ServerBlock, std::vector<Server> &Mat
 	{
 		if (Port == PossiblePorts[i])
 		{
-			MatchingServers.push_back(ServerBlock);
+			MatchingServers->push_back(ServerBlock);
 			return (true);
 		}
 	}
 	return (false);
 }
 
-static void						NormalServerCheck(Server ServerBlock, std::vector<Server> &MatchingServers, size_t Port, std::string IP)
+static void						NormalServerCheck(Server ServerBlock, std::vector<Server> *MatchingServers, size_t Port, std::string IP)
 {
 	std::vector<size_t>			PossiblePorts;
 
@@ -126,7 +118,7 @@ static void						NormalServerCheck(Server ServerBlock, std::vector<Server> &Matc
 	{
 		if (Port == PossiblePorts[i])
 		{
-			MatchingServers.push_back(ServerBlock);
+			MatchingServers->push_back(ServerBlock);
 			return ;
 		}
 	}
@@ -136,10 +128,10 @@ static void						NormalServerCheck(Server ServerBlock, std::vector<Server> &Matc
  * Returns a vector of Server objects which match a given port and IP
  */
 
-std::vector<Server>				FindMatchingServers(std::vector<Server> Servers, size_t Port, std::string IP)
+std::vector<Server>				*FindMatchingServers(std::vector<Server> &Servers, size_t Port, std::string IP)
 {
 	std::vector<size_t>			PossiblePorts;
-	std::vector<Server>			MatchingServers;
+	std::vector<Server>			*MatchingServers = new std::vector<Server>;
 
 	for (size_t i = 0; i < Servers.size(); i += 1)
 		DefaultServerCheck(Servers[i], MatchingServers, Port, IP);
