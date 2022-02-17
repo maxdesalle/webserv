@@ -35,8 +35,8 @@ int	main(void)
 	t_sockaddr_in	addr_client, addr_sock;
 
 	// char		*hello = "Hello from server";
-	// char	*hello = "HTTP/1.1 200 OK\r\nContent-Type: text/plain\r\nContent-Length: 14\r\n\r\nHello world!\n.";
-	char	*hello = "HTTP/1.1 301 Moved Permanently\r\nServer: nginx/1.14.2\r\nDate: Wed, 16 Feb 2022 20:51:41 GMT\r\nContent-Type: text/html\r\nContent-Length: 185\r\nLocation: http://localhost/error_page/\r\nConnection: keep-alive\r\n\r\n<html>\n<head><title>301 Moved Permanently</title></head>\n<body bgcolor=\"white\">\n<center><h1>301 Moved Permanently</h1></center>\n<hr><center>nginx/1.14.2</center>\n</body>\n</html>\r\n";
+	char	*hello = "HTTP/1.1 200 OK\r\nContent-Type: text/plain\r\nContent-Length: 14\r\n\r\nHello world!\n.";
+	// char	*hello = "HTTP/1.1 301 Moved Permanently\r\nServer: nginx/1.14.2\r\nDate: Wed, 16 Feb 2022 20:51:41 GMT\r\nContent-Type: text/html\r\nContent-Length: 185\r\nLocation: http://localhost/error_page/\r\nConnection: keep-alive\r\n\r\n<html>\n<head><title>301 Moved Permanently</title></head>\n<body bgcolor=\"white\">\n<center><h1>301 Moved Permanently</h1></center>\n<hr><center>nginx/1.14.2</center>\n</body>\n</html>\r\n";
 
 	fd_sock = socket(AF_INET, SOCK_STREAM, 0);
 	fcntl(fd_sock, F_SETFL, O_NONBLOCK);
@@ -135,7 +135,7 @@ int	main(void)
 				{
 					// printf("\e[32m Client Disconnected \e[0m \n");
 					printf("\e[32m Going GraceFull \e[0m \n");
-					disconnect = 2;
+					disconnect = 2; // 0
 				}
 				else
 				{

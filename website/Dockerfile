@@ -12,7 +12,7 @@ RUN apt-get -yqq install nginx
 
 # Copy NGINX server block definition and create a symbolic link
 # to "enable" our website
-COPY srcs/website.conf /etc/nginx/sites-available
+COPY website.conf /etc/nginx/sites-available
 RUN ln -s /etc/nginx/sites-available/website.conf /etc/nginx/sites-enabled
 
 # Root directory of our website

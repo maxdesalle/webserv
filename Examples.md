@@ -13,6 +13,7 @@
 4. `autoindex on`
 - works only with `target`s ending with `/`
 - else error 404
+5. **symbolic links are followed!**
 
 # Index.html
 ## Request
