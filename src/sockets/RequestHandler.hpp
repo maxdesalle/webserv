@@ -6,7 +6,7 @@
 /*   By: tderwedu <tderwedu@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/14 11:49:23 by tderwedu          #+#    #+#             */
-/*   Updated: 2022/02/16 13:08:41 by tderwedu         ###   ########.fr       */
+/*   Updated: 2022/02/17 17:47:34 by tderwedu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,7 +36,12 @@ public:
 
 	void			setServer(Server& server);
 	void			clearRequestHandler(void);
-	void			getRessource(void);
+	void			processRessource(void);
+
+	std::string		getHost(void); // TODO
+	std::string		getRoot(void); // TODO
+	std::string		getTarget(void); // TODO
+	std::string		getPath(void); // TODO
 
 	void			_findLocation(const std::string &path);
 };
@@ -50,7 +55,7 @@ void			RequestHandler::setServer(Server& server)
 	_server = &server;
 }
 
-void			RequestHandler::getRessource(void)
+void			RequestHandler::processRessource(void)
 {
 	if (_state == NEW)
 	{

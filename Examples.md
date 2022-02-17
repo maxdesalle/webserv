@@ -14,6 +14,7 @@
 - works only with `target`s ending with `/`
 - else error 404
 5. **symbolic links are followed!**
+6. Method not allowed ` 403 Forbidden`
 
 # Index.html
 ## Request

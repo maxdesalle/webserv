@@ -1,33 +1,23 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   Response.hpp                                       :+:      :+:    :+:   */
+/*   __main__.cpp                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: tderwedu <tderwedu@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2022/01/26 11:48:07 by ldelmas           #+#    #+#             */
-/*   Updated: 2022/02/17 17:30:46 by tderwedu         ###   ########.fr       */
+/*   Created: 2022/02/17 17:18:51 by tderwedu          #+#    #+#             */
+/*   Updated: 2022/02/17 18:44:22 by tderwedu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef RESPONSE_HPP
-# define RESPONSE_HPP
+#include "utils.cpp"
+#include <iostream>
 
-#include "Header.hpp"
-
-class Response : public Header
+int	main(void)
 {
-	private:
-		static std::string const _fieldNames[16];
-		std::string		_body;
-	public:
-		Response(void);
-		Response(Response const &src);
-		~Response(void);
+	std::string		buff;
+	std::string		path = std::string(".");
 
-		Response const &operator=(Response const &right);
-
-		void	bodyAppend(const std::string &buff);
-};
-
-#endif
+	buff = get_autoindex(path);
+	std::cout << buff << std::endl;
+}
