@@ -6,7 +6,7 @@
 /*   By: tderwedu <tderwedu@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/14 15:30:54 by tderwedu          #+#    #+#             */
-/*   Updated: 2022/02/17 18:40:28 by tderwedu         ###   ########.fr       */
+/*   Updated: 2022/02/18 11:22:23 by tderwedu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,6 +18,10 @@
 
 # include <string>
 # include <sstream>
+# include <algorithm>
+# include <deque>
+
+# include <iostream> // TODO:remove
 
 // # include "RequestHandler.hpp"
 

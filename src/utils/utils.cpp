@@ -6,7 +6,7 @@
 /*   By: tderwedu <tderwedu@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/14 15:31:19 by tderwedu          #+#    #+#             */
-/*   Updated: 2022/02/17 18:53:30 by tderwedu         ###   ########.fr       */
+/*   Updated: 2022/02/18 11:53:44 by tderwedu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -52,10 +52,7 @@ bool			is_file(const std::string &path)
 	struct stat s_stat;
 
 	if (!stat(path.c_str(), &s_stat))
-	{
-		if (S_IFDIR & s_stat.st_mode)
-			return true;
-	}
+		return (S_IFREG & s_stat.st_mode);
 	return false;
 }
 
@@ -67,89 +64,87 @@ bool			is_dir(const std::string &path)
 	struct stat s_stat;
 
 	if (!stat(path.c_str(), &s_stat))
-	{
-		if (S_IFREG & s_stat.st_mode)
-			return true;
-	}
+		return (S_IFDIR & s_stat.st_mode);
 	return false;
 }
 
-//TODO: remvoe ".." and "." from entries
-std::string			get_autoindex(const std::string &path)
+/*
+* Produce the autoindex in HTML
+* /!\ path MUST be the URI's TARGET
+* /!\ The Working Directory MUST be the Location's ROOT
+*/
+std::string		get_autoindex(const std::string &path)
 {
-	// char				d_buff[18];
-	std::stringstream	buff;
-	// std::string			fullpath;
-	std::string			str_name;
-	// struct tm			*date;
-	// struct stat			s_stat;
-	struct dirent		*entry; // statically allocate struct
+	char								d_buff[18];
+	std::string							autoindex;
+	std::string							str_name;
+	struct tm							*date;
+	struct stat							s_stat;
+	struct dirent						*entry; // statically allocate struct
+	std::stringstream					buff;
+	std::deque<std::string>				files;
+	std::deque<std::string>				directories;
+	std::deque<std::string>::iterator	it;
+	std::deque<std::string>::iterator	ite;
 
-	// if (!is_dir(path))
-	// 	return std::string("aie aie aie");
-	buff << "<html>\n";
-	buff << "<head><title>Index of " << "/error_page/autoindex/" << "</title></head>\n";
-	buff << "<body bgcolor=\"white\">\n";
-	buff << "<h1>Index of " << "/error_page/autoindex/" << "</h1>\n";
-	buff << "<hr><pre>\n";
-	DIR* directory = opendir(path.c_str());
+	if (!is_dir(path))
+		return std::string();
+	autoindex.append("<html>\n<head>\n<title>Index of ");
+	autoindex.append(path); // Target
+	autoindex.append("</title>\n</head>\n<body bgcolor=\"white\">\n<h1>Index of ");
+	autoindex.append(path); // Target
+	autoindex.append("</h1>\n<hr><pre>\n");
+	DIR*	directory = opendir(path.c_str());
 	while ((entry = readdir(directory)))
 	{
 		str_name = std::string(entry->d_name);
-		// fullpath = std::string("~/Documents/19/42cursus/14_Webserver/webserv/website") + std::string("/error_page/autoindex/") + str_name;
-		// stat(fullpath.c_str(), &s_stat);
-		// date = gmtime(&s_stat.st_mtime);
-		// strftime(d_buff, 18, "%d-%a-%Y %R", date);
-		// if ((S_IFREG  | S_IFDIR) & s_stat.st_mode)
-		// {
-		// 	buff.width(68);
-			buff << "<a href=\"" << str_name << "\">" << str_name <<"/</a>";
-			// buff << std::left << d_buff;
-			// buff.width(20);
-			// if (S_IFDIR & s_stat.st_mode)
-			// 	buff << "-";
-			// else 
-			// 	buff << s_stat.st_size;
+		if (str_name == ".")
+			continue ;
+		// clear the stringstream
+		buff.str(std::string());
+		// To get the date of Last Modification and File Type
+		stat(str_name.c_str(), &s_stat);
+		date = gmtime(&s_stat.st_mtime);
+		strftime(d_buff, 18, "%d-%b-%Y %R", date);
+		if (S_IFREG & s_stat.st_mode)
+		{
+			buff << "<a href=\"" << str_name << "\">" << str_name <<"</a>";
+			buff.width(68 - str_name.length());
+			buff << std::right << d_buff;
+			buff.width(20);
+			buff << s_stat.st_size;
 			buff << "\n";
-		// }
+			files.push_back(buff.str());
+		}
+		else if (S_IFDIR & s_stat.st_mode)
+		{
+			buff << "<a href=\"" << str_name << "\">" << str_name << "/</a>";
+			if (str_name == "..")
+			{
+				buff << "\n";
+				directories.push_back(buff.str());
+				continue ;
+			}
+			buff.width(67 - str_name.length());
+			buff << std::right << d_buff;
+			buff.width(20);
+			buff << "-";
+			buff << "\n";
+			directories.push_back(buff.str());
+		}
 	}
-	buff << "</pre><hr>\n</body>\n</html>\n";
-	return buff.str();
+	// Sort and then Append Directories
+	std::sort(directories.begin(), directories.end());
+	it = directories.begin();
+	ite = directories.end();
+	for (; it< ite; ++it)
+		autoindex.append(*it);
+	// Sort and then Append Files
+	std::sort(files.begin(), files.end());
+	it = files.begin();
+	ite = files.end();
+	for (; it< ite; ++it)
+		autoindex.append(*it);
+	autoindex.append("</pre><hr>\n</body>\n</html>\n");
+	return autoindex;
 }
-
-// std::string			get_autoindex(const std::string &path, RequestHandler &handler)
-// {
-// 	char				d_buff[18];
-// 	std::stringstream	buff;
-// 	std::string			fullpath;
-// 	std::string			str_name;
-// 	struct tm			*date;
-// 	struct stat			s_stat;
-// 	struct dirent		*entry; // statically allocate struct
-
-// 	if (!is_dir(path))
-// 		return ;
-// 	buff << "<html>\n";
-// 	buff << "<head><title>Index of " << handler.getTarget() << "</title></head>\n";
-// 	buff << "<body bgcolor=\"white\">\n";
-// 	buff << "<h1>Index of " << handler.getTarget() << "</h1>\n";
-// 	buff << "<hr><pre>\n";
-// 	DIR* directory = opendir(path.c_str());
-// 	while ((entry = readdir(directory)))
-// 	{
-// 		str_name = std::string(entry->d_name);
-// 		fullpath = handler.getRoot() + handler.getTarget() + str_name;
-// 		stat(fullpath.c_str(), &s_stat);
-// 		date = gmtime(s_stat.st_mtime);
-// 		strftime(d_buff, 18, "%d-%a-%Y %R", date);
-// 		if ((S_IFREG  | S_IFDIR) & s_stat.st_mode)
-// 		{
-// 			buff.width(68);
-// 			buff << "<a href=\"" << str_name << "\">" << str_name <<"/</a>";
-// 			buff << std::left << d_buff;
-// 			buff.width(20);
-// 			buff << (S_IFDIR & s_stat.st_mode ? "-": s_stat.st_size) << "\n";
-// 		}
-// 	}
-// 	return buff.str();
-// }
