@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Request.cpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ldelmas <ldelmas@student.42.fr>            +#+  +:+       +#+        */
+/*   By: lucas <lucas@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/01/26 14:59:17 by ldelmas           #+#    #+#             */
-/*   Updated: 2022/02/16 11:45:52 by mdesalle         ###   ########.fr       */
+/*   Updated: 2022/02/19 11:39:12 by lucas            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,7 +27,7 @@ std::string const Request::_fieldNames[33] = {"Cache-Control", "Expect", "Host",
 										"Received", "Warning", "Keep-Alive",
 										"Upgrade", "Content-Type", ""};
 
-std::string const Request::_cgiSerVarNames[19] = {"SERVER_SOFTWARE", "SERVER-NAME",
+std::string const Request::_cgiSerVarNames[ENV_NUM] = {"SERVER_SOFTWARE", "SERVER-NAME",
 												"GATEWAY_INTERFACE", "SERVER_PROTOCOL",
 												"SERVER_PORT", "REQUEST_METHOD",
 												"PATH_INFO", "PATH_TRANSLATED",
@@ -35,14 +35,14 @@ std::string const Request::_cgiSerVarNames[19] = {"SERVER_SOFTWARE", "SERVER-NAM
 												"REMOTE_HOST", "REMOTE_ADDR",
 												"AUTH_TYPE", "REMOTE_USER",
 												"AUTH_USER", "REMOTE_IDENT",
-												"CONTENT_TYPE", "CONTENT_LENGTH", ""};
+												"CONTENT_TYPE", "CONTENT_LENGTH"};
 
 
 /*CONSTRUCTORS AND DESTRUCTORS*/
 
 Request::Request(void) : Header(Request::_fieldNames), _state(STARTLINE), _remain(""), _cursor(0)
 {
-	for (int i  = 0; i < 18; i++)
+	for (int i  = 0; i < ENV_NUM; i++)
 		this->_cgiSerVars.insert(std::pair<std::string const, std::string>(_cgiSerVarNames[i], ""));
 }
 
@@ -65,7 +65,7 @@ Request const	&Request::operator=(Request const &right)
 	this->_cursor = right._cursor;
 	this->_type = right._type;
 	this->_state = right._state;
-	for (int i = 0; i < 18; i++)
+	for (int i = 0; i < ENV_NUM; i++)
 	{
 		std::string const &key = Request::_cgiSerVarNames[i];
 		std::map<std::string const, std::string>::const_iterator it = right._cgiSerVars.find(key); 
@@ -128,25 +128,43 @@ void				Request::setBody(std::string &body)
 	this->_body = body;
 }
 
-void				Request::setCGIServerVars(Location &CGILocation, Header &RequestHeaders)
+/*
+	Executable name : WEBSERV/1.0
+	CGI version : CGI/1.1
+	Server protocol : HTTP/1.1
+	This function should be called once the request-fields have been read.
+	Important note : We suppose that we have an origin-form as a request target
+	and that there is a "Host" header field. Which is the case if we do no bonuses
+	for WebServ.
+	/!\ Should this function take into account security? 
+		-Path translated : do the file open? do we try to go /..?
+		-What happens if no QUERY or no PORT?
+		-What happens if wrong PORT, wrong server name, wrong path?
+*/
+
+void				Request::setCGIServerVars(Location &CGILocation, ClientSocket &Client)
 {
 	this->_cgiSerVars["SERVER_SOFTWARE"] = "WEBSERV/1.0";
-	this->_cgiSerVars["SERVER_NAME"] = RequestHeaders.getField("Host");
-	this->_cgiSerVars["GATEWAY_INTERFACE"] = "CGI/1.1"; //is there a way to change it through header fields?
+	this->_cgiSerVars["SERVER_NAME"] = Header::_parseHost(this->_headerFields["Host"]);
+	this->_cgiSerVars["GATEWAY_INTERFACE"] = "CGI/1.1";
 	this->_cgiSerVars["SERVER_PROTOCOL"] = "HTTP/1.1";
-	// this->_cgiSerVars["SERVER_PORT"] = ""; //Should we take it from the configuration?
+	if (this->_headerFields["Host"][this->_cgiSerVars["SERVER_NAME"].length()] == ':')
+		this->_cgiSerVars["SERVER_PORT"] = Header::_parsePort(this->_headerFields["Host"], this->_cgiSerVars["SERVER_NAME"].length()+1);
 	this->_cgiSerVars["REQUEST_METHOD"] = this->_method;
-	// this->_cgiSerVars["PATH_INFO"] = ; //get it from request URI
-	// this->_cgiSerVars["PATH_TRANSLATED"] = ""; //don't understand what it's supposed to be
+	this->_cgiSerVars["PATH_INFO"] = Header::_parseAbsPath(this->_target);
+	this->_cgiSerVars["PATH_TRANSLATED"] = CGILocation.GetRoot() + this->_cgiSerVars["PATH_INFO"];
 	this->_cgiSerVars["SCRIPT_NAME"] = CGILocation.GetPass();
-	// this->_cgiSerVars["QUERY_STRING"] = ""; //get it from request URI (easy)
-	// if ((this->_cgiSerVars["REMOTE_HOST"] = "") == "") //probably get it from a header field
-	// 	this->_cgiSerVars["REMOTE_ADDR"] = ""; //get it from tderwedu's part?
+	if (this->_cgiSerVars["PATH_INFO"][this->_cgiSerVars["PATH_INFO"].length()] == '?')
+		this->_cgiSerVars["QUERY_STRING"] = Header::_parseQuery(this->_target, this->_cgiSerVars["PATH_INFO"].length()+1);
+	this->_cgiSerVars["REMOTE_HOST"] = this->_headerFields["Referer"];
+	in_addr_t addr = Client.getIP();
+	char buff[100];
+	inet_ntop(AF_INET, &addr, buff, INET_ADDRSTRLEN);
+	this->_cgiSerVars["REMOTE_ADDR"] = buff;
 	this->_cgiSerVars["CONTENT_TYPE"] = this->_headerFields["Content-Type"];
 	this->_cgiSerVars["CONTENT_LENGTH"] = this->_headerFields["Content-Length"];
 
 
-	//ALL USELESS FOR NOW
 	/*IF SERVER DOESN'T SUPPORT USER AUTHENTIFICATION*/
 	this->_cgiSerVars["AUTH_TYPE"] = "";
 	this->_cgiSerVars["REMOTE_USER"] = "";	
@@ -220,12 +238,33 @@ static int		getFieldName(std::string const &line, std::string &name)
 /*NON-STATIC METHODS*/
 
 /*
+	Put every attributes at their status when they were created at the class
+	construction.
+*/
+
+void			Request::reset(void)
+{
+	this->_state = STARTLINE;
+	for (int i = 0; this->_fieldNames[i][0]; i++)
+		this->_headerFields[this->_fieldNames[i]] = "";
+	for (int i = 0; i < ENV_NUM; i++)
+		this->_cgiSerVars[this->_cgiSerVarNames[i]] = "";
+	this->_method = "";
+	this->_target = "";
+	this->_version = "";
+	this->_body = "";
+	this->_remain = "";
+	this->_cursor = 0;
+}
+
+/*
 	Take a string 'str' as parameter and put one line of it into the substr
 	'line'. It uses a static size_t to determine the position in the string
 	at each call of the function.
 	RETURN VALUE : 0 if the last line has been reached. 1 if there is at
 	least one other line after the one put in 'line'.
 */
+
 
 int				Request::_getNextLine(std::string const &str, std::string &line)
 {
@@ -245,6 +284,9 @@ int				Request::_getNextLine(std::string const &str, std::string &line)
 	Take the first line of the request and try to get the method, target and version.
 	RETURN VALUE : If successful return 0 else depends on what is written in the RFCs
 	(not done yet).
+	Important note : An absolute-form request-target would be considered as an
+	error since it is designed only for proxies. In case of using this code to
+	create a proxy absolute-form would be authorized but not the origin-form.
 	/!\ I didn't check the right return values yet ! They will then be used for
 	the response status.
 */
@@ -254,16 +296,21 @@ int				Request::_parseRequestLine(std::string const &request)
 	std::string method, target, version;
 	try { method = Header::_parseMethod(request); }
 	catch(const std::exception& e) { return 400;}
-	size_t len =method.length();
+	size_t len = method.length();
 	if (request[len] != ' ')
 		return 400;
-	try { target = Header::_parseRequestTarget(request, len + 1);}
+	std::string targetType = "";
+	try { target = Header::_parseRequestTarget(targetType, request, len + 1);}
 	catch(const std::exception& e) { return 400; }
 	len += target.length() + 1;
-	if (request[len] != ' ')
+	if (request[len] != ' '
+	|| (targetType == "ASTERISK" && method != "OPTIONS")
+	|| (targetType == "AUTHORITY" && method != "CONNECT")
+	|| targetType == "ABSOLUTE")
 		return 400;
 	try { version = Header::_parseHTTPVersion(request, len + 1);}
 	catch(const std::exception& e) { return 400;}
+
 	len += version.length() + 1;
 	if (request.substr(len) != "")
 		return 400;

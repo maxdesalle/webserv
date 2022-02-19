@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Header.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ldelmas <ldelmas@student.42.fr>            +#+  +:+       +#+        */
+/*   By: lucas <lucas@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/01/26 14:57:25 by ldelmas           #+#    #+#             */
-/*   Updated: 2022/02/09 11:27:52 by ldelmas          ###   ########.fr       */
+/*   Updated: 2022/02/17 11:30:46 by lucas            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -703,6 +703,40 @@ std::string const	Header::_parseRequestTarget(std::string const &str, size_t pos
 			std::string target = Header::_parseAuthority(s);
 			if (target != "" || (target == "" && s[0] != '*'))
 				return target;
+			return "*";
+		}
+	}
+}
+
+/*
+	Do the same as above but change the 'type' string depending of the type of the
+	target (origin-form, absolute-form, authority-form, asterisk-form).
+*/
+
+std::string const	Header::_parseRequestTarget(std::string &type, std::string const &str, size_t pos)
+{
+	std::string s = str.substr(pos);
+	try 
+	{
+		type = "ORIGIN";
+		return Header::_parseOriginForm(s);
+	}
+	catch(const std::exception& e)
+	{
+		try
+		{
+			type = "ABSOLUTE";
+			return Header::_parseAbsForm(s);
+		}
+		catch(const std::exception& e)
+		{
+			std::string target = Header::_parseAuthority(s);
+			if (target != "" || (target == "" && s[0] != '*'))
+			{
+				type = "AUTHORITY";
+				return target;
+			}
+			type = "ASTERISK";
 			return "*";
 		}
 	}

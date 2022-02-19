@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Header.hpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ldelmas <ldelmas@student.42.fr>            +#+  +:+       +#+        */
+/*   By: lucas <lucas@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/01/19 15:31:16 by ldelmas           #+#    #+#             */
-/*   Updated: 2022/02/14 13:41:52 by ldelmas          ###   ########.fr       */
+/*   Updated: 2022/02/17 11:25:39 by lucas            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -64,6 +64,7 @@ class Header
 		static std::string const	_parseOriginForm(std::string const &str, size_t pos=0);
 		static std::string const	_parseAbsForm(std::string const &str, size_t pos=0);
 		static std::string const	_parseRequestTarget(std::string const &str, size_t pos=0);
+		static std::string const	_parseRequestTarget(std::string &type, std::string const &str, size_t pos=0);
 		static std::string const	_parseURI(std::string const &str, size_t pos= 0);
 		class WrongSyntaxException : public std::exception
 		{

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Request.hpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ldelmas <ldelmas@student.42.fr>            +#+  +:+       +#+        */
+/*   By: lucas <lucas@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/01/26 11:47:16 by ldelmas           #+#    #+#             */
-/*   Updated: 2022/02/16 11:46:04 by mdesalle         ###   ########.fr       */
+/*   Updated: 2022/02/19 11:12:39 by lucas            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,6 +15,11 @@
 
 # include "Header.hpp"
 # include "URI.hpp"
+# include "Location.hpp"
+# include "ClientSocket.hpp"
+
+/*Number of CGI's environment variables*/
+# define ENV_NUM 18
 
 /*
 ** TO DO
@@ -29,7 +34,7 @@ class Request : public Header
 		enum body {LEN, CHUNKED, NONE};
 		
 		static std::string const _fieldNames[33];
-		static std::string const _cgiSerVarNames[19];
+		static std::string const _cgiSerVarNames[ENV_NUM];
 		std::string		_method, _target, _version, _body, _remain;
 		std::map<std::string const, std::string> _cgiSerVars;
 		size_t			_cursor;
@@ -57,7 +62,7 @@ class Request : public Header
 		void				setTarget(std::string &target);
 		void				setVersion(std::string &version);
 		void				setBody(std::string &body);
-		void				setCGIServerVars(Location &CGILocation, Header &RequestHeaders);
+		void				setCGIServerVars(Location &CGILocation, ClientSocket &Client);
 
 		int					parseRequest(std::string const &request);
 
