@@ -6,7 +6,7 @@
 /*   By: mdesalle <mdesalle@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/01/28 14:07:11 by mdesalle          #+#    #+#             */
-/*   Updated: 2022/02/04 11:06:58 by mdesalle         ###   ########.fr       */
+/*   Updated: 2022/02/16 15:23:48 by mdesalle         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -49,22 +49,22 @@ Server						&Server::operator=(Server const &ref)
 
 //============================ GETTERS / SETTERS =============================//
 
-std::vector<std::string>							Server::GetServerNames(void)	const
+std::vector<std::string> const						Server::GetServerNames(void)	const
 {
 	return (_ServerNames);
 }
 
-std::vector<Location>								Server::GetLocations(void)		const
+std::vector<Location> const							&Server::GetLocations(void)	const
 {
 	return (_Locations);
 }
 
-std::map<std::string, std::vector<size_t> >			Server::GetListenIPandPorts(void)	const
+std::map<std::string, std::vector<size_t> > const	Server::GetListenIPandPorts(void)	const
 {
 	return (_ListenIPandPorts);
 }
 
-std::map<std::string, std::vector<size_t> >			Server::GetDefaultServer(void)	const
+std::map<std::string, std::vector<size_t> > const	Server::GetDefaultServer(void)	const
 {
 	return (_DefaultServer);
 }

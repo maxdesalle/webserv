@@ -6,7 +6,7 @@
 /*   By: mdesalle <mdesalle@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/01/28 14:30:39 by mdesalle          #+#    #+#             */
-/*   Updated: 2022/02/02 18:45:19 by mdesalle         ###   ########.fr       */
+/*   Updated: 2022/02/16 16:46:04 by mdesalle         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,15 +42,14 @@ Location::~Location(void)
 
 Location	&Location::operator=(Location const &ref)
 {
-	this->_CGI = ref.GetCGI();
 	this->_Path = ref.GetPath();
 	this->_Root = ref.GetRoot();
+	this->_Pass = ref.GetPass();
 	this->_Index = ref.GetIndex();
 	this->_AutoIndex = ref.GetAutoIndex();
 	this->_ErrorPage = ref.GetErrorPage();
 	this->_Return = ref.GetReturn();
 	this->_LimitExcept = ref.GetLimitExcept();
-	this->_AllowMethod = ref.GetAllowMethod();
 	this->_ClientMaxBodySize = ref.GetClientMaxBodySize();
 	return (*this);
 }
@@ -67,11 +66,6 @@ size_t							Location::GetClientMaxBodySize(void)	const
 	return (_ClientMaxBodySize);
 }
 
-std::string						Location::GetCGI(void)					const
-{
-	return (_CGI);
-}
-
 std::string						Location::GetPath(void)					const
 {
 	return (_Path);
@@ -82,6 +76,11 @@ std::string						Location::GetRoot(void)					const
 	return (_Root);
 }
 
+std::string						Location::GetPass(void)					const
+{
+	return (_Pass);
+}
+
 std::vector<std::string>		Location::GetIndex(void)				const
 {
 	return (_Index);
@@ -90,11 +89,6 @@ std::vector<std::string>		Location::GetIndex(void)				const
 std::vector<std::string>		Location::GetLimitExcept(void)			const
 {
 	return (_LimitExcept);
-}
-
-std::vector<std::string>		Location::GetAllowMethod(void)			const
-{
-	return (_AllowMethod);
 }
 
 std::map<size_t, std::string>	Location::GetErrorPage(void)			const
@@ -197,34 +191,6 @@ void		Location::SaveLimitExcept(std::string Value)
 }
 
 /*
- * Saves the allow_method value(s)
- */
-
-void		Location::SaveAllowMethod(std::string Value)
-{
-	size_t	EndOfWord = 0;
-
-	if ((EndOfWord = Value.find_first_of(' ', 0)) == std::string::npos)
-	{
-		_AllowMethod.push_back(Value);
-		return ;
-	}
-	for (size_t i = 0; i < Value.size(); i += 1)
-	{
-		if ((EndOfWord = Value.find_first_of(' ', i)) != std::string::npos)
-		{
-			_AllowMethod.push_back(Value.substr(i, EndOfWord - i));
-			i = EndOfWord;
-		}
-		else
-		{
-			_AllowMethod.push_back(Value.substr(i, Value.size() - i));
-			break ;
-		}
-	}
-}
-
-/*
  * Saves the index value(s)
  */
 
@@ -296,10 +262,8 @@ void		Location::Assignator(std::string Key, std::string Value)
 {
 	if (Key == "index")
 		SaveIndex(Value);
-	else if (Key == "allow_method")
-		SaveAllowMethod(Value);
-	else if (Key == "cgi")
-		_CGI = Value;
+	else if (Key == "pass")
+		_Pass = Value;
 	else if (Key == "autoindex")
 		_AutoIndex = (Value == "on") ? true : false;
 	else if (Key == "limit_except")
@@ -328,4 +292,21 @@ void		Location::AddToLocationVector(std::string KeyValue)
 	Key = KeyValue.substr(0, FirstSpaceInString);
 	Value = KeyValue.substr(FirstSpaceInString + 1, KeyValue.size());
 	Assignator(Key, Value);
+}
+
+bool		Location::isCgi(void)	const
+{
+	if (GetPass().empty() == false)
+		return (true);
+	return (false);
+}
+
+bool		Location::isMethodValid(const std::string &method)	const
+{
+	for (size_t i = 0; i < GetLimitExcept().size(); i += 1)
+	{
+		if (method == GetLimitExcept()[i])
+			return (true);
+	}
+	return (false);
 }
