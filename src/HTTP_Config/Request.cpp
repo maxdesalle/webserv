@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Request.cpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: lucas <lucas@student.42.fr>                +#+  +:+       +#+        */
+/*   By: ldelmas <ldelmas@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/01/26 14:59:17 by ldelmas           #+#    #+#             */
-/*   Updated: 2022/02/19 11:39:12 by lucas            ###   ########.fr       */
+/*   Updated: 2022/02/21 14:33:10 by ldelmas          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -158,7 +158,7 @@ void				Request::setCGIServerVars(Location &CGILocation, ClientSocket &Client)
 		this->_cgiSerVars["QUERY_STRING"] = Header::_parseQuery(this->_target, this->_cgiSerVars["PATH_INFO"].length()+1);
 	this->_cgiSerVars["REMOTE_HOST"] = this->_headerFields["Referer"];
 	in_addr_t addr = Client.getIP();
-	char buff[100];
+	char buff[16];
 	inet_ntop(AF_INET, &addr, buff, INET_ADDRSTRLEN);
 	this->_cgiSerVars["REMOTE_ADDR"] = buff;
 	this->_cgiSerVars["CONTENT_TYPE"] = this->_headerFields["Content-Type"];
@@ -185,16 +185,6 @@ void				Request::setCGIServerVars(Location &CGILocation, ClientSocket &Client)
 /*UTILS THAT WILL GO ELSEWHERE ONCE THIS FILE IS CLEANED UP*/
 
 /*
-	RETURN VALUE : Return true if the char 'c' is a space or a tab. Return
-	false otherwise.
-*/
-
-static bool		isSpace(unsigned char c)
-{
-	return (c == ' ' || c == '\t');
-}
-
-/*
 	Create and return a substring where leading and tailing spaces and tabs
 	have been deleted from the string taken as argument.
 	RETURN VALUE : The substring without leading and tailing whitespaces.
@@ -207,8 +197,8 @@ static std::string	trimSpaces(std::string str)
 	std::string sub;
 	size_t sub_len = str.length();
 	size_t start, end;
-	for (start = 0; start < sub_len && isSpace(str[start]); start++);
-	for (end = sub_len-1; end >= 0 && isSpace(str[end]); end--);
+	for (start = 0; start < sub_len && Header::_isSpace(str[start]); start++);
+	for (end = sub_len-1; end >= 0 && Header::_isSpace(str[end]); end--);
 	sub = str.substr(start, 1+end-start);
 	return sub;
 }
@@ -232,7 +222,6 @@ static int		getFieldName(std::string const &line, std::string &name)
 		return 400;
 	return 0;
 }
-
 
 
 /*NON-STATIC METHODS*/
@@ -322,12 +311,6 @@ int				Request::_parseRequestLine(std::string const &request)
 
 /*
 	Rule : header-field = field-name ":" OWS field-value OWS
-	Rule : field-value = *( field-content / obs-fold )
-	Rule : field-content = field-vchar [ 1*( SP / HTAB ) field-vchar ]
-	Rule : field-vchar = VCHAR / obs-text
-	Rule : obs-fold = CRLF 1*( SP / HTAB )
-	Rule : VCHAR = any visible USASCII char
-	Rule : obs-text = %x80-FF (UTF-8 chars written in hexa code, 80-FF refers to the char range outside ASCII)
 	Take a line as argument and check the syntax. Then check name of the field
 	and trim the spaces around the field-value. The point is to associate a field-value
 	to an already existing field-name.
@@ -336,7 +319,6 @@ int				Request::_parseRequestLine(std::string const &request)
 
 int				Request::_parseHeaderField(std::string const &line)
 {
-
 	size_t		pos = 0;
 	for (int j = 0; Request::_fieldNames[j][0]; j++)
 	{
