@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Header.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: lucas <lucas@student.42.fr>                +#+  +:+       +#+        */
+/*   By: ldelmas <ldelmas@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/01/26 14:57:25 by ldelmas           #+#    #+#             */
-/*   Updated: 2022/02/17 11:30:46 by lucas            ###   ########.fr       */
+/*   Updated: 2022/02/21 14:24:18 by ldelmas          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -79,6 +79,50 @@ void				Header::setField(std::string const fieldName, std::string fieldValue)
 
 
 /*NON MEMBER FUNCTIONS*/
+
+/*
+	RETURN VALUE : Return true if the char 'c' is a space or a tab. Return
+	false otherwise.
+*/
+
+bool const	Header::_isSpace(unsigned char c)
+{
+	return (c == ' ' || c == '\t');
+}
+
+/*
+	RETURN VALUE : Return true if the char 'c' is a printable ASCII character.
+	Return false otherwise.
+*/
+
+bool const	Header::_isPrintable(unsigned char c)
+{
+	return (c > 31 && c < 128);	
+}
+
+/*
+	Rule : obs-text = %x80-FF
+	UTF-8 chars written in hexa code, 80-FF refers to the char range outside ASCII.
+	RETURN VALUE : Return true if the char 'c' is a obs-text character.
+	Return false otherwise.
+*/
+
+bool const	Header::_isObsText(unsigned char c)
+{
+	return (c > 127 && c < 256);
+}
+
+/*
+	Rule : field-vchar = VCHAR / obs-text
+	RETURN VALUE : Return true if the char 'c' is a field-vchar character.
+	Return false otherwise.
+*/
+
+bool const	Header::_isFieldVchar(unsigned char c)
+{
+	return (c > 31 && c < 256);
+}
+
 
 /*
 	The "_parseX static methods" :
@@ -760,6 +804,65 @@ std::string const	Header::_parseURI(std::string const &str, size_t pos)
 		form += '#' + Header::_parseQuery(s, form.length() + 1);
 	return form;
 }
+
+/*
+	Rule : obs-fold = CRLF 1*( SP / HTAB )
+	WARNING : Only return an empty string if syntax is not corresponding even
+	if empty string is not accepted for this rule in the RFCs.
+*/
+
+std::string const	Header::_parseObsFold(std::string const &str, size_t pos=0)
+{
+	std::string s = str.substr(pos);
+	if (s[0] != '\r' && s[1] != '\n' && s[2] != ' ' && s[2] != '	')
+		return "";
+	size_t i = 3;
+	while (i < s.length() && (s[i] == ' ' || s[i] == '	'))
+		i++;
+	return s.substr(0, i);
+}
+
+/*
+	Rule : field-content = field-vchar [ 1*( SP / HTAB ) field-vchar ]
+	WARNING : Only return an empty string if syntax is not corresponding even
+	if empty string is not accepted for this rule in the RFCs.
+*/
+
+std::string const	Header::_parseFieldContent(std::string const &str, size_t pos=0)
+{
+	std::string s = str.substr(pos);
+	if (!Header::_isFieldVchar(static_cast<unsigned char>(s[0])))
+		return "";
+	size_t i = 1;
+	while (i < s.length() && (s[i] == ' ' || s[i] == '	'))
+		i++;
+	if (i == 1 || !Header::_isFieldVchar(static_cast<unsigned char>(s[i])))
+		return s.substr(0, 1);
+	return s.substr(0, i+1);
+}
+
+/*
+	Rule : field-value = *( field-content / obs-fold )
+*/
+
+std::string const	Header::_parseFieldValue(std::string const &str, size_t pos=0)
+{
+	std::string s = str.substr(pos);
+	std::string value("");
+	std::string	tmp = Header::_parseObsFold(s);
+	if (tmp == "")
+		tmp = Header::_parseFieldContent(s);
+	value += tmp;
+	while (tmp != "")
+	{
+		tmp = Header::_parseObsFold(s);
+		if (tmp == "")
+			tmp = Header::_parseFieldContent(s);
+		value += tmp;
+	}
+	return value;
+}
+
 
 
 /*EXCEPTIONS MANAGEMENT*/

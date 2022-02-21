@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Header.hpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: lucas <lucas@student.42.fr>                +#+  +:+       +#+        */
+/*   By: ldelmas <ldelmas@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/01/19 15:31:16 by ldelmas           #+#    #+#             */
-/*   Updated: 2022/02/17 11:25:39 by lucas            ###   ########.fr       */
+/*   Updated: 2022/02/21 13:50:34 by ldelmas          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,8 +34,12 @@ class Header
 								gen_delims, reserved, hexdig, custom_pchar;
 		static std::string const authorizedMethods[4];
 		/*
-			All of the protected methods used to parse the request line
+			All of the protected methods used to parse the request
 		*/
+		static bool const			_isSpace(unsigned char c);
+		static bool const			_isPrintable(unsigned char c);
+		static bool const			_isObsText(unsigned char c);
+		static bool const			_isFieldVchar(unsigned char c);
 		static std::string const	_parseHTTPVersion(std::string const &str, size_t pos=0);
 		static std::string const	_parseMethod(std::string const &str, size_t pos=0);
 		static std::string const	_parsePctEncoded(std::string const &str, size_t pos=0);
@@ -65,7 +69,10 @@ class Header
 		static std::string const	_parseAbsForm(std::string const &str, size_t pos=0);
 		static std::string const	_parseRequestTarget(std::string const &str, size_t pos=0);
 		static std::string const	_parseRequestTarget(std::string &type, std::string const &str, size_t pos=0);
-		static std::string const	_parseURI(std::string const &str, size_t pos= 0);
+		static std::string const	_parseURI(std::string const &str, size_t pos=0);
+		static std::string const	_parseObsFold(std::string const &str, size_t pos=0);
+		static std::string const	_parseFieldContent(std::string const &str, size_t pos=0);
+		static std::string const	_parseFieldValue(std::string const &str, size_t pos=0);
 		class WrongSyntaxException : public std::exception
 		{
 			public :
