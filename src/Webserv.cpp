@@ -6,7 +6,7 @@
 /*   By: tderwedu <tderwedu@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/01/18 17:28:20 by maxdesall         #+#    #+#             */
-/*   Updated: 2022/02/22 10:44:07 by tderwedu         ###   ########.fr       */
+/*   Updated: 2022/02/22 15:29:52 by tderwedu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,7 +15,7 @@
 int	main(int argc, char **argv)
 {
 	std::vector<Server>	Servers;
-	std::vector<Server>	*MatchingServers;
+	// std::vector<Server>	*MatchingServers;
 
 	if (argc != 2)
 	{
@@ -24,9 +24,14 @@ int	main(int argc, char **argv)
 	}
 
 	Servers = ConfigHandler(argv[1]);
-	MatchingServers = FindMatchingServers(Servers, 80, "127.0.0.1");
-	std::cout << (*MatchingServers)[0].GetServerNames()[0] << std::endl;
-	std::cout << (*MatchingServers)[0].GetLocations()[1].isCgi() << std::endl;
-	std::cout << (*MatchingServers)[0].GetLocations()[0].isMethodValid("POST") << std::endl;
+	printServers(Servers);
+	// MatchingServers = FindMatchingServers(Servers, 80, "127.0.0.1");
+	// std::cout << (*MatchingServers)[0].GetServerNames()[0] << std::endl;
+	// std::cout << (*MatchingServers)[0].GetLocations()[1].isCgi() << std::endl;
+	// std::cout << (*MatchingServers)[0].GetLocations()[0].isMethodValid("POST") << std::endl;
+	// MatchingServers = FindMatchingServers(Servers, 5000, "169.38.0.1");
+	// std::cout << (*MatchingServers)[0].GetServerNames()[0] << std::endl;
+	// MatchingServers = FindMatchingServers(Servers, 8080, "169.38.0.1");
+	// std::cout << (*MatchingServers)[0].GetServerNames()[0] << std::endl;
 	return (0);
 }

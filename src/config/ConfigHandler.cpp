@@ -6,7 +6,7 @@
 /*   By: tderwedu <tderwedu@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/01/18 18:04:43 by maxdesall         #+#    #+#             */
-/*   Updated: 2022/02/21 15:46:17 by tderwedu         ###   ########.fr       */
+/*   Updated: 2022/02/22 15:38:52 by tderwedu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -138,4 +138,11 @@ std::vector<Server>				*FindMatchingServers(std::vector<Server> &Servers, size_t
 	for (size_t i = 0; i < Servers.size(); i += 1)
 		NormalServerCheck(Servers[i], MatchingServers, Port, IP);
 	return (MatchingServers);
+}
+
+void						printServers(std::vector<Server> &Servers)
+{
+	std::cout << "Number of servers: " << Servers.size() << std::endl;
+	for (size_t i = 0; i < Servers.size(); ++i)
+		Servers[i].printServer();
 }

@@ -6,7 +6,7 @@
 /*   By: tderwedu <tderwedu@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/01/28 14:30:39 by mdesalle          #+#    #+#             */
-/*   Updated: 2022/02/22 10:40:45 by tderwedu         ###   ########.fr       */
+/*   Updated: 2022/02/22 15:35:49 by tderwedu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -303,4 +303,11 @@ bool		Location::isMethodValid(const std::string &method)	const
 			return (true);
 	}
 	return (false);
+}
+
+void		Location::printLocation(void) const
+{
+	std::cout << "\t\e[34m Location : \e[0m" << std::endl;
+	std::cout << "\t  - Path : " << _Path << std::endl;
+	std::cout << "\t  - Root : " << _Root << std::endl;
 }

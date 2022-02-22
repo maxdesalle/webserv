@@ -6,7 +6,7 @@
 /*   By: tderwedu <tderwedu@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/01/28 14:07:11 by mdesalle          #+#    #+#             */
-/*   Updated: 2022/02/21 15:50:21 by tderwedu         ###   ########.fr       */
+/*   Updated: 2022/02/22 15:56:42 by tderwedu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -502,4 +502,35 @@ void						Server::AddOutsideInfoToLocation(std::vector<std::string> &ConfigFileC
 			ConfigFileContent[i] += OutOfLocationContent + '}';
 		}
 	}
+}
+
+void						Server::printServer(void) const
+{
+	std::map<std::string, std::vector<size_t> >::const_iterator	it;
+
+	std::cout << " \e[33m ############## Server ############## \e[0m" << std::endl;
+	std::cout << "\e[36m Server Names: \e[0m" ;
+	for (size_t i = 0; i < _ServerNames.size(); ++i)
+		std::cout << _ServerNames[i] << (i != (_ServerNames.size() - 1) ? ", " : " ");
+	std::cout << std::endl;
+	std::cout << "\e[36m Locations: \e[0m" << _Locations.size() << std::endl;
+	for (size_t i = 0; i < _Locations.size(); ++i)
+		_Locations[i].printLocation();
+	std::cout << "\e[36m _DefaultServer: \e[0m" << std::endl;
+	for (it = _DefaultServer.begin(); it != _DefaultServer.end(); ++it)
+	{
+		std::cout << "\t    Key: " << it->first << std::endl << "\t Values: ";
+		for (size_t i = 0; i < it->second.size(); ++i)
+			std::cout << it->second[i] << " ";
+		std::cout << std::endl;
+	}
+	std::cout << "\e[36m _ListenIPandPorts: \e[0m" << std::endl;
+	for (it = _ListenIPandPorts.begin(); it != _ListenIPandPorts.end(); ++it)
+	{
+		std::cout << "\t    Key: " << it->first << std::endl << "\t Values: ";
+		for (size_t i = 0; i < it->second.size(); ++i)
+			std::cout << it->second[i] << " ";
+		std::cout << std::endl;
+	}
+	std::cout << " \e[33m #################################### \e[0m" << std::endl;
 }

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Server.hpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mdesalle <mdesalle@student.s19.be>         +#+  +:+       +#+        */
+/*   By: tderwedu <tderwedu@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/01/28 13:37:00 by mdesalle          #+#    #+#             */
-/*   Updated: 2022/02/16 15:23:17 by mdesalle         ###   ########.fr       */
+/*   Updated: 2022/02/22 15:28:33 by tderwedu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -54,6 +54,7 @@ class Server
 		void			MultiplePorts(std::string Ports, bool DefaultServer);
 		size_t			ReturnEndOfScopeLineNumber(size_t BeginBracketsLineNumber, std::vector<std::string> &ConfigFileContent)	const;
 		std::string		FindPortsInString(std::string ConfigLine);
+		void			printServer(void) const;
 
 	private:
 

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Location.hpp                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mdesalle <mdesalle@student.s19.be>         +#+  +:+       +#+        */
+/*   By: tderwedu <tderwedu@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/16 15:28:58 by mdesalle          #+#    #+#             */
-/*   Updated: 2022/02/16 16:45:12 by mdesalle         ###   ########.fr       */
+/*   Updated: 2022/02/22 15:28:37 by tderwedu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,6 +46,7 @@ class Location
 
 		bool							isCgi(void)									const;
 		bool							isMethodValid(const std::string &method)	const;
+		void							printLocation(void) const;
 
 	private:
 
