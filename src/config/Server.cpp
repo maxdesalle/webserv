@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Server.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mdesalle <mdesalle@student.s19.be>         +#+  +:+       +#+        */
+/*   By: tderwedu <tderwedu@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/01/28 14:07:11 by mdesalle          #+#    #+#             */
-/*   Updated: 2022/02/16 15:23:48 by mdesalle         ###   ########.fr       */
+/*   Updated: 2022/02/21 15:50:21 by tderwedu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -106,7 +106,7 @@ void						Server::FrontSpaceEraser(std::vector<std::string> &ConfigFileContent)
 
 	for (size_t i = 0; i < ConfigFileContent.size(); i += 1)
 	{
-		while (j < ConfigFileContent[i].size() && std::isblank(ConfigFileContent[i][j]))
+		while (j < ConfigFileContent[i].size() && std::isspace(ConfigFileContent[i][j]))
 			j += 1;
 		ConfigFileContent[i].erase(0, j);
 		j = 0;
@@ -196,7 +196,7 @@ bool						Server::LastCharIsASemiColon(std::vector<std::string> &ConfigFileConte
 				ConfigFileContent[i].find('}') == std::string::npos)
 		{
 			j = ConfigFileContent[i].size() - 1;
-			while (j > 0 && isblank(ConfigFileContent[i][j]))
+			while (j > 0 && isspace(ConfigFileContent[i][j]))
 				j -= 1;
 
 			if (ConfigFileContent[i][j] != ';')
@@ -302,7 +302,7 @@ void						Server::LocationSaver(std::string LocationContent)
 /* { */
 /* 	for (size_t i = 0; i < Ports.size(); i += 1) */
 /* 	{ */
-/* 		if (!(std::isdigit(Ports[i])) && !(isblank(Ports[i]))) */
+/* 		if (!(std::isdigit(Ports[i])) && !(isspace(Ports[i]))) */
 /* 			WriteErrorMessage("Invalid listen ports"); */
 /* 	} */
 /* } */
@@ -313,11 +313,11 @@ void						Server::InsertNewPort(std::string IP, std::string Ports)
 
 	if (_ListenIPandPorts.count(IP) == 0)
 	{
-		VectorOfPorts.push_back(size_t(stoi(Ports)));
+		VectorOfPorts.push_back(size_t(atoi(Ports.c_str())));
 		_ListenIPandPorts.insert(std::make_pair(IP, VectorOfPorts));
 	}
 	else
-		_ListenIPandPorts.at(IP).push_back(size_t(stoi(Ports)));
+		_ListenIPandPorts.at(IP).push_back(size_t(atoi(Ports.c_str())));
 }
 
 /*
@@ -330,11 +330,11 @@ void						Server::InsertNewDefaultServer(std::string IP, std::string Ports)
 
 	if (_DefaultServer.count(IP) == 0)
 	{
-		VectorOfPorts.push_back(size_t(stoi(Ports)));
+		VectorOfPorts.push_back(size_t(atoi(Ports.c_str())));
 		_DefaultServer.insert(std::make_pair(IP, VectorOfPorts));
 	}
 	else
-		_DefaultServer.at(IP).push_back(size_t(stoi(Ports)));
+		_DefaultServer.at(IP).push_back(size_t(atoi(Ports.c_str())));
 }
 
 /*

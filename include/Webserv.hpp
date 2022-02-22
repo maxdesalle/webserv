@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Webserv.hpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: maxdesalle <mdesalle@student.s19.be>       +#+  +:+       +#+        */
+/*   By: tderwedu <tderwedu@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/01/18 17:32:32 by maxdesall         #+#    #+#             */
-/*   Updated: 2022/02/04 11:45:24 by mdesalle         ###   ########.fr       */
+/*   Updated: 2022/02/22 10:35:23 by tderwedu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,7 +16,6 @@
 # include <iostream>
 # include <vector>
 # include <map>
-# include <array>
 # include <string>
 # include "../src/config/Config.hpp"
 

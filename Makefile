@@ -3,10 +3,10 @@
 #                                                         :::      ::::::::    #
 #    Makefile                                           :+:      :+:    :+:    #
 #                                                     +:+ +:+         +:+      #
-#    By: maxdesalle <mdesalle@student.s19.be>       +#+  +:+       +#+         #
+#    By: tderwedu <tderwedu@student.s19.be>         +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2022/01/18 10:08:26 by maxdesall         #+#    #+#              #
-#    Updated: 2022/02/01 11:15:35 by mdesalle         ###   ########.fr        #
+#    Updated: 2022/02/22 10:41:47 by tderwedu         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
