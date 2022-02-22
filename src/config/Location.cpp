@@ -6,7 +6,7 @@
 /*   By: tderwedu <tderwedu@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/01/28 14:30:39 by mdesalle          #+#    #+#             */
-/*   Updated: 2022/02/22 15:35:49 by tderwedu         ###   ########.fr       */
+/*   Updated: 2022/02/22 16:49:17 by tderwedu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -118,8 +118,13 @@ size_t		Location::FindPath(std::string LocationContent)
 		if (LocationContent[i] == '{')
 			break ;
 	}
-	NewPath = LocationContent.substr(1, i - 1);
+	NewPath = LocationContent.substr(0, i - 1);
 	NewPath.erase(std::remove(NewPath.begin(), NewPath.end(), ' '), NewPath.end());
+	if (NewPath.empty()) // TODO: move in function call
+	{
+		std::cerr << "Error found when parsing file" << std::endl;
+		exit(1);
+	}
 	_Path = NewPath;
 	return (i + 1);
 }
@@ -269,7 +274,11 @@ void		Location::Assignator(std::string Key, std::string Value)
 	else if (Key == "error_page")
 		SaveErrorPage(Value);
 	else if (Key == "root")
+	{
+		if (Value[Value.size() - 1] == '/')
+			Value.resize(Value.size() - 1);
 		_Root = Value;
+	}
 }
 
 /*
@@ -308,6 +317,6 @@ bool		Location::isMethodValid(const std::string &method)	const
 void		Location::printLocation(void) const
 {
 	std::cout << "\t\e[34m Location : \e[0m" << std::endl;
-	std::cout << "\t  - Path : " << _Path << std::endl;
-	std::cout << "\t  - Root : " << _Root << std::endl;
+	std::cout << "\t  - Path : " << "\e[31m>>\e[0m"<< _Path << "\e[31m<<\e[0m"<< std::endl;
+	std::cout << "\t  - Root : " << "\e[31m>>\e[0m" << _Root << "\e[31m<<\e[0m" << std::endl;
 }

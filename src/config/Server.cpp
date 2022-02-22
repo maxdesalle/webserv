@@ -6,7 +6,7 @@
 /*   By: tderwedu <tderwedu@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/01/28 14:07:11 by mdesalle          #+#    #+#             */
-/*   Updated: 2022/02/22 15:56:42 by tderwedu         ###   ########.fr       */
+/*   Updated: 2022/02/22 17:12:47 by tderwedu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -59,12 +59,12 @@ std::vector<Location> const							&Server::GetLocations(void)	const
 	return (_Locations);
 }
 
-std::map<std::string, std::vector<size_t> > const	Server::GetListenIPandPorts(void)	const
+std::map<std::string, std::vector<size_t> > const&	Server::GetListenIPandPorts(void)	const
 {
 	return (_ListenIPandPorts);
 }
 
-std::map<std::string, std::vector<size_t> > const	Server::GetDefaultServer(void)	const
+std::map<std::string, std::vector<size_t> > const&	Server::GetDefaultServer(void)	const
 {
 	return (_DefaultServer);
 }
@@ -278,7 +278,7 @@ void						Server::LocationFinder(std::vector<std::string> &ConfigFileContent)
 {
 	for (size_t i = 0; i < ConfigFileContent.size(); i += 1)
 	{
-		if (ConfigFileContent[i].rfind("location /", 0) != std::string::npos)
+		if (ConfigFileContent[i].rfind("location", 0) != std::string::npos)
 			LocationSaver(ConfigFileContent[i]);
 	}
 }
@@ -364,9 +364,9 @@ std::string					Server::FindPortsInString(std::string ConfigLine)
 
 void						Server::SinglePort(std::string Ports, bool DefaultServer)
 {
-	InsertNewPort("127.0.0.1", Ports);
+	InsertNewPort("0.0.0.0", Ports);
 	if (DefaultServer)
-		InsertNewDefaultServer("127.0.0.1", Ports);
+		InsertNewDefaultServer("0.0.0.0", Ports);
 }
 
 /*
@@ -381,16 +381,16 @@ void						Server::MultiplePorts(std::string Ports, bool DefaultServer)
 	{
 		if ((EndOfPort = Ports.find_first_of(' ', j)) != std::string::npos)
 		{
-			InsertNewPort("127.0.0.1", Ports.substr(j, EndOfPort - j));
+			InsertNewPort("0.0.0.0", Ports.substr(j, EndOfPort - j));
 			if (DefaultServer)
-				InsertNewDefaultServer("127.0.0.1", Ports.substr(j, EndOfPort - j));
+				InsertNewDefaultServer("0.0.0.0", Ports.substr(j, EndOfPort - j));
 			j = EndOfPort;
 		}
 		else
 		{
-			InsertNewPort("127.0.0.1", Ports.substr(j, Ports.size() - j));
+			InsertNewPort("0.0.0.0", Ports.substr(j, Ports.size() - j));
 			if (DefaultServer)
-				InsertNewDefaultServer("127.0.0.1", Ports.substr(j, Ports.size() - j));
+				InsertNewDefaultServer("0.0.0.0", Ports.substr(j, Ports.size() - j));
 			break ;
 		}
 	}
@@ -519,17 +519,17 @@ void						Server::printServer(void) const
 	std::cout << "\e[36m _DefaultServer: \e[0m" << std::endl;
 	for (it = _DefaultServer.begin(); it != _DefaultServer.end(); ++it)
 	{
-		std::cout << "\t    Key: " << it->first << std::endl << "\t Values: ";
+		std::cout << "\t    Key: " << "\e[31m>>\e[0m" << it->first << "\e[31m<<\e[0m" <<std::endl << "\t Values: ";
 		for (size_t i = 0; i < it->second.size(); ++i)
-			std::cout << it->second[i] << " ";
+			std::cout << "\e[31m|\e[0m" << it->second[i] << "\e[31m|\e[0m ";
 		std::cout << std::endl;
 	}
 	std::cout << "\e[36m _ListenIPandPorts: \e[0m" << std::endl;
 	for (it = _ListenIPandPorts.begin(); it != _ListenIPandPorts.end(); ++it)
 	{
-		std::cout << "\t    Key: " << it->first << std::endl << "\t Values: ";
+		std::cout << "\t    Key: " << "\e[31m>>\e[0m" << it->first << "\e[31m<<\e[0m" <<std::endl << "\t Values: ";
 		for (size_t i = 0; i < it->second.size(); ++i)
-			std::cout << it->second[i] << " ";
+			std::cout << "\e[31m|\e[0m" << it->second[i] << "\e[31m|\e[0m ";
 		std::cout << std::endl;
 	}
 	std::cout << " \e[33m #################################### \e[0m" << std::endl;

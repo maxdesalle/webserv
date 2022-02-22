@@ -6,7 +6,7 @@
 /*   By: tderwedu <tderwedu@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/01/28 13:37:00 by mdesalle          #+#    #+#             */
-/*   Updated: 2022/02/22 15:28:33 by tderwedu         ###   ########.fr       */
+/*   Updated: 2022/02/22 17:13:01 by tderwedu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,8 +28,8 @@ class Server
 
 		std::vector<Location> const								&GetLocations(void)			const;
 		std::vector<std::string> const							GetServerNames(void)		const;
-		std::map<std::string, std::vector<size_t> > const		GetDefaultServer(void)		const;
-		std::map<std::string, std::vector<size_t> > const		GetListenIPandPorts(void)	const;
+		std::map<std::string, std::vector<size_t> > const&		GetDefaultServer(void)		const;
+		std::map<std::string, std::vector<size_t> > const&		GetListenIPandPorts(void)	const;
 
 		bool			CheckBrackets(std::vector<std::string> &ConfigFileContent)				const;
 		bool			LastCharIsASemiColon(std::vector<std::string> &ConfigFileContent)		const;
