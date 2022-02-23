@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Request.hpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: lucas <lucas@student.42.fr>                +#+  +:+       +#+        */
+/*   By: ldelmas <ldelmas@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/01/26 11:47:16 by ldelmas           #+#    #+#             */
-/*   Updated: 2022/02/19 11:12:39 by lucas            ###   ########.fr       */
+/*   Updated: 2022/02/23 15:46:26 by ldelmas          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,11 +15,12 @@
 
 # include "Header.hpp"
 # include "URI.hpp"
-# include "Location.hpp"
-# include "ClientSocket.hpp"
+# include "../config/Location.hpp"
+# include "../sockets/ClientSocket.hpp"
 
 /*Number of CGI's environment variables*/
 # define ENV_NUM 18
+# define NAME_MAX 100
 
 /*
 ** TO DO
@@ -42,8 +43,9 @@ class Request : public Header
 		state			_state;
 
 		int				_getNextLine(std::string const &str, std::string &line);
+		int				_getNextField(std::string const &str, std::string &line);
 		int				_parseRequestLine(std::string const &r_line);
-		int				_parseHeaderField(std::string const &line);
+		int				_parseHeaderField(std::string const &request);
 
 	public:
 		Request(void);

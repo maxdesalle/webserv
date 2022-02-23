@@ -6,7 +6,7 @@
 /*   By: ldelmas <ldelmas@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/01/26 14:57:25 by ldelmas           #+#    #+#             */
-/*   Updated: 2022/02/21 14:24:18 by ldelmas          ###   ########.fr       */
+/*   Updated: 2022/02/23 15:09:17 by ldelmas          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -109,7 +109,7 @@ bool const	Header::_isPrintable(unsigned char c)
 
 bool const	Header::_isObsText(unsigned char c)
 {
-	return (c > 127 && c < 256);
+	return (c > 127);
 }
 
 /*
@@ -120,7 +120,7 @@ bool const	Header::_isObsText(unsigned char c)
 
 bool const	Header::_isFieldVchar(unsigned char c)
 {
-	return (c > 31 && c < 256);
+	return (c > 31);
 }
 
 
@@ -811,7 +811,7 @@ std::string const	Header::_parseURI(std::string const &str, size_t pos)
 	if empty string is not accepted for this rule in the RFCs.
 */
 
-std::string const	Header::_parseObsFold(std::string const &str, size_t pos=0)
+std::string const	Header::_parseObsFold(std::string const &str, size_t pos)
 {
 	std::string s = str.substr(pos);
 	if (s[0] != '\r' && s[1] != '\n' && s[2] != ' ' && s[2] != '	')
@@ -828,7 +828,7 @@ std::string const	Header::_parseObsFold(std::string const &str, size_t pos=0)
 	if empty string is not accepted for this rule in the RFCs.
 */
 
-std::string const	Header::_parseFieldContent(std::string const &str, size_t pos=0)
+std::string const	Header::_parseFieldContent(std::string const &str, size_t pos)
 {
 	std::string s = str.substr(pos);
 	if (!Header::_isFieldVchar(static_cast<unsigned char>(s[0])))
@@ -845,7 +845,7 @@ std::string const	Header::_parseFieldContent(std::string const &str, size_t pos=
 	Rule : field-value = *( field-content / obs-fold )
 */
 
-std::string const	Header::_parseFieldValue(std::string const &str, size_t pos=0)
+std::string const	Header::_parseFieldValue(std::string const &str, size_t pos)
 {
 	std::string s = str.substr(pos);
 	std::string value("");
