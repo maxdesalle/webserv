@@ -6,11 +6,7 @@
 /*   By: tderwedu <tderwedu@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/01/26 14:59:17 by ldelmas           #+#    #+#             */
-<<<<<<< HEAD:HTTP_Config/Request.cpp
-/*   Updated: 2022/02/09 18:08:53 by tderwedu         ###   ########.fr       */
-=======
-/*   Updated: 2022/02/21 14:33:10 by ldelmas          ###   ########.fr       */
->>>>>>> main:src/HTTP_Config/Request.cpp
+/*   Updated: 2022/02/23 16:28:44 by tderwedu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -48,6 +44,13 @@ Request::Request(void) : Header(Request::_fieldNames), _state(STARTLINE), _remai
 {
 	for (int i  = 0; i < ENV_NUM; i++)
 		this->_cgiSerVars.insert(std::pair<std::string const, std::string>(_cgiSerVarNames[i], ""));
+}
+
+Request::Request(std::string const &request) : Header(Request::_fieldNames), _state(STARTLINE), _remain(""), _cursor(0)
+{
+	for (int i  = 0; i < ENV_NUM; i++)
+		this->_cgiSerVars.insert(std::pair<std::string const, std::string>(_cgiSerVarNames[i], ""));
+	this->parseRequest(request);
 }
 
 Request::Request(Request const &src) {this->_headerFields = src._headerFields;}
@@ -283,9 +286,28 @@ int				Request::_getNextLine(std::string const &str, std::string &line)
 		line = str.substr(this->_cursor);
 		return 0;
 	}
-	line = str.substr(this->_cursor, tmp_pos-(this->_cursor));
+	line = str.substr(this->_cursor, tmp_pos - this->_cursor);
 	this->_cursor = tmp_pos+2; //might go too far if CRLF doesn't have anything after
 	return 1;
+}
+
+/*
+	Do the same a Request::_getNextLine but will only consider a new line if
+	CRLF is not followed by SP or HTAB.
+	RETURN VALUE : 0 if the last line has been reached. 1 if there is at
+	least one other line after the one put in 'line'.
+*/
+
+int				Request::_getNextField(std::string const &str, std::string &line)
+{
+	size_t pos = str.find("\r\n", this->_cursor);
+	if (pos == std::string::npos || !str[pos] || str[pos] == ' ' || str[pos] == '	')
+	{
+		line = str.substr(this->_cursor);
+		return 0;
+	}
+	line = str.substr(this->_cursor, pos - this->_cursor);
+	this->_cursor = pos+2;
 }
 
 /*
@@ -334,26 +356,24 @@ int				Request::_parseRequestLine(std::string const &request)
 	Take a line as argument and check the syntax. Then check name of the field
 	and trim the spaces around the field-value. The point is to associate a field-value
 	to an already existing field-name.
-	RETURN VALUE : 0 if everything went ok. 400 if syntax was wrong.
+	RETURN VALUE : 0 if everything went ok. 400 if syntax was wrong. -1 if unfinished.
 */
 
 int				Request::_parseHeaderField(std::string const &line)
 {
 	size_t		pos = 0;
+	std::string name;
+	if (getFieldName(line, name))
+		return 400;
 	for (int j = 0; Request::_fieldNames[j][0]; j++)
 	{
-		std::string name;
-		int getName = getFieldName(line, name);
-		if (getName == -1)
-			continue;
-		else if (getName)
-			return getName;
-
 		std::string const str = Request::_fieldNames[j] + ':';
 		if (!str.compare(name))
 		{
 			std::string s = trimSpaces(line.substr(str.length()));
-			if (this->_headerFields[Request::_fieldNames[j]][0])
+			if (Header::_parseFieldValue(s) != s)
+				return 400;
+			else if (this->_headerFields[Request::_fieldNames[j]][0])
 				this->_headerFields[Request::_fieldNames[j]] += ',' + s;
 			else
 				this->_headerFields[Request::_fieldNames[j]] = s;
@@ -391,14 +411,18 @@ int				Request::parseRequest(std::string const &request)
 	if (this->_state == HEADERS)
 	{
 		int ret = 0;
-		while ((ret = this->_getNextLine(full, line)) && line != "")
+		while ((ret = this->_getNextField(full, line)))
 			if (this->_parseHeaderField(line))
 				return 400;
-		if (!ret)
+		if (line.substr(0, 2) != "\r\n")
 		{
+			std::string name;
+			if (!getFieldName(line, name) && name.length() > NAME_MAX)
+					return 400;
 			this->_remain = line;
 			return 1;
 		}
+		this->_cursor += 2;
 		this->_state = BODY;
 		if (this->_findBodyType()) // tderwedu
 			return ret;
