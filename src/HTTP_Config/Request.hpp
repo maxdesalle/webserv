@@ -3,17 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Request.hpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-<<<<<<< HEAD:HTTP_Config/Request.hpp
 /*   By: tderwedu <tderwedu@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/01/26 11:47:16 by ldelmas           #+#    #+#             */
-/*   Updated: 2022/02/09 18:04:27 by tderwedu         ###   ########.fr       */
-=======
-/*   By: lucas <lucas@student.42.fr>                +#+  +:+       +#+        */
-/*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2022/01/26 11:47:16 by ldelmas           #+#    #+#             */
-/*   Updated: 2022/02/19 11:12:39 by lucas            ###   ########.fr       */
->>>>>>> main:src/HTTP_Config/Request.hpp
+/*   Updated: 2022/02/23 11:07:47 by tderwedu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,17 +14,16 @@
 # define REQUEST_HPP
 
 # include "Header.hpp"
-<<<<<<< HEAD:HTTP_Config/Request.hpp
+
 # include <cstdlib>
 # include <cerrno>
-=======
+
 # include "URI.hpp"
 # include "Location.hpp"
 # include "ClientSocket.hpp"
 
 /*Number of CGI's environment variables*/
 # define ENV_NUM 18
->>>>>>> main:src/HTTP_Config/Request.hpp
 
 /*
 ** TO DO
@@ -42,14 +34,10 @@ class Request : public Header
 {
 	public:
 		enum state {STARTLINE, HEADERS, BODY, PROCESSING, DONE};
+		enum chunk {SIZE, DATA, TE}; // tderwedu
 	private:
 		enum body {LEN, CHUNKED, NONE};
-<<<<<<< HEAD:HTTP_Config/Request.hpp
-		enum state {STARTLINE, HEADERS, BODY, PROCESSING, DONE};
-		enum chunk {SIZE, DATA, TE}; // tderwedu
-=======
->>>>>>> main:src/HTTP_Config/Request.hpp
-		
+	
 		static std::string const _fieldNames[33];
 		static std::string const _cgiSerVarNames[ENV_NUM];
 		std::string		_method, _target, _version, _body, _remain;
@@ -87,10 +75,7 @@ class Request : public Header
 
 		int					parseRequest(std::string const &request);
 
-<<<<<<< HEAD:HTTP_Config/Request.hpp
-=======
 		void				reset(void); // tderwedu => state = STARTLINE, CLEAR map, _method, _target, _version, _body, _remain, ...
->>>>>>> main:src/HTTP_Config/Request.hpp
 };
 
 #endif

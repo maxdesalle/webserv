@@ -6,7 +6,7 @@
 /*   By: tderwedu <tderwedu@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/01/31 15:54:27 by tderwedu          #+#    #+#             */
-/*   Updated: 2022/02/14 18:43:23 by tderwedu         ###   ########.fr       */
+/*   Updated: 2022/02/23 10:57:11 by tderwedu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,65 +45,5 @@ public:
 
 	void		handlePollErr(void);
 };
-
-NetworkSocket::NetworkSocket(int port, in_addr_t addr, t_poll& pollfd)
-:_port(port), _addr(addr), _pollfd(pollfd), _state(OPEN)
-{}
-
-NetworkSocket::~NetworkSocket() {}
-
-in_addr_t				NetworkSocket::getIP(void)
-{
-	return _addr;
-}
-
-int						NetworkSocket::getPort(void)
-{
-	return _port;
-}
-
-t_poll&					NetworkSocket::getPollFd(void)
-{
-	return _pollfd;
-}
-
-NetworkSocket::State	NetworkSocket::getState(void)
-{
-	return _state;
-}
-
-void					NetworkSocket::sockShutdown(void)
-{
-	if (_state == OPEN)
-	{
-		shutdown(_pollfd.fd, SHUT_WR);
-		_state = HALF_CLOSED;
-	}
-	else
-		sockClose();
-}
-
-void					NetworkSocket::sockClose(void)
-{
-	shutdown(_pollfd.fd, SHUT_RDWR);
-	close(_pollfd.fd);
-	_pollfd.fd = -1;
-	_state = CLOSED;
-}
-
-void					NetworkSocket::handlePollErr(void)  // TODO: error handling
-{
-	int			err;
-	socklen_t	size;
-
-	size = sizeof(err);
-	std::cout << "Error with FD: " << _pollfd.fd << " and port " << _port << std::endl;
-	if (getsockopt(_pollfd.fd, SOL_SOCKET, SO_ERROR, &err, &size) < 0)
-		std::cout << "Error while getting socket error!" << std::endl;
-	else
-		std::cout << "SO_ERROR: " << err << std::endl;
-	sockClose();
-	// exit(EXIT_FAILURE);
-}
 
 #endif
