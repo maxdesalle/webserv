@@ -6,7 +6,7 @@
 /*   By: ldelmas <ldelmas@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/01/26 14:59:17 by ldelmas           #+#    #+#             */
-/*   Updated: 2022/02/23 15:48:46 by ldelmas          ###   ########.fr       */
+/*   Updated: 2022/02/23 15:54:14 by ldelmas          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,6 +44,13 @@ Request::Request(void) : Header(Request::_fieldNames), _state(STARTLINE), _remai
 {
 	for (int i  = 0; i < ENV_NUM; i++)
 		this->_cgiSerVars.insert(std::pair<std::string const, std::string>(_cgiSerVarNames[i], ""));
+}
+
+Request::Request(std::string const &request) : Header(Request::_fieldNames), _state(STARTLINE), _remain(""), _cursor(0)
+{
+	for (int i  = 0; i < ENV_NUM; i++)
+		this->_cgiSerVars.insert(std::pair<std::string const, std::string>(_cgiSerVarNames[i], ""));
+	this->parseRequest(request);
 }
 
 Request::Request(Request const &src) {this->_headerFields = src._headerFields;}

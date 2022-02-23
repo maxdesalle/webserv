@@ -6,7 +6,7 @@
 /*   By: ldelmas <ldelmas@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/01/26 11:47:16 by ldelmas           #+#    #+#             */
-/*   Updated: 2022/02/23 15:46:26 by ldelmas          ###   ########.fr       */
+/*   Updated: 2022/02/23 15:53:04 by ldelmas          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -49,6 +49,7 @@ class Request : public Header
 
 	public:
 		Request(void);
+		Request(std::string const &request);
 		Request(Request const &src);
 		~Request(void);
 
