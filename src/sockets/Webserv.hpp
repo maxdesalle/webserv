@@ -6,7 +6,7 @@
 /*   By: tderwedu <tderwedu@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/01/31 10:19:04 by tderwedu          #+#    #+#             */
-/*   Updated: 2022/02/23 11:12:49 by tderwedu         ###   ########.fr       */
+/*   Updated: 2022/02/23 11:49:15 by tderwedu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,8 +38,8 @@ class Webserv
 private:
 	static std::string const	_validMethod[4];
 	int							_fdInUse;
-	std::vector<t_poll>			_pollfd;
 	cont_server					_servers;
+	std::vector<t_poll>			_pollfd;
 	cont_netSock				_serverSocks;
 	cont_cliSock				_clientSocks;
 	
@@ -47,7 +47,8 @@ public:
 	Webserv(void);
 	~Webserv(void);
 
-	void				setOpenMax(void);
+	void				_setOpenMax(void) const;
+	void				initServer(std::string const& config);
 
 	cont_server&		getServers(void);
 	

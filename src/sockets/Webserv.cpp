@@ -6,7 +6,7 @@
 /*   By: tderwedu <tderwedu@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/23 10:58:04 by tderwedu          #+#    #+#             */
-/*   Updated: 2022/02/23 11:12:25 by tderwedu         ###   ########.fr       */
+/*   Updated: 2022/02/23 11:49:47 by tderwedu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,7 +24,7 @@ Webserv::~Webserv(void)
 	_clientSocks.clear();
 }
 
-void				Webserv::setOpenMax(void)
+void				Webserv::_setOpenMax(void) const
 {
 	if (!open_max)
 	{
@@ -37,6 +37,14 @@ void				Webserv::setOpenMax(void)
 				std::cerr << "sysconf error for _SC_OPEN_MAX" << std::endl;		//TODO: better error handling
 		}
 	}
+}
+
+void				Webserv::initServer(std::string const& config)
+{
+	_setOpenMax();
+	_fdInUse = 0;
+	_servers = ConfigHandler(config);
+	printServers(_servers);
 }
 
 cont_server&	Webserv::getServers(void)

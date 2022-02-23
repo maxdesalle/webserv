@@ -6,7 +6,7 @@
 #    By: tderwedu <tderwedu@student.s19.be>         +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2022/01/18 10:08:26 by maxdesall         #+#    #+#              #
-#    Updated: 2022/02/22 17:39:36 by tderwedu         ###   ########.fr        #
+#    Updated: 2022/02/23 14:54:17 by tderwedu         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -24,6 +24,14 @@ MAIN		:= Webserv.cpp
 CONFIG		:= ConfigHandler.cpp \
 			   Server.cpp \
 			   Location.cpp
+SOCKETS		:= Webserv.cpp \
+			   ClientSocket.cpp \
+			   NetworkSocket.cpp \
+			   RequestHandler.cpp
+HTTP		:= Request.cpp \
+			   URI.cpp \
+			   Response.cpp \
+			   Header.cpp
 
 # INCLUDES	:= -I ./${SRC_DIR} -I ./${TEST_DIR}
 
@@ -31,9 +39,11 @@ BIN_DIR		:= .bin/
 SRC_DIR		:= src/
 MAIN_DIR	:= $(addprefix src/, $(MAIN))
 CONFIG_DIR	:= $(addprefix src/config/, $(CONFIG))
+SOCKETS		:= $(addprefix src/sockets/, $(SOCKETS))
+HTTP		:= $(addprefix src/HTTP_Config/, $(HTTP))
 
+# SRC			:= $(MAIN_DIR) $(CONFIG_DIR) $(SOCKETS) $(HTTP)
 SRC			:= $(MAIN_DIR) $(CONFIG_DIR)
-# OBJ			:= $(SRC:.cpp=.o)
 OBJ			:= $(subst ${SRC_DIR},${BIN_DIR}, ${SRC:.cpp=.o})
 
 # ================================== RULES =================================== #

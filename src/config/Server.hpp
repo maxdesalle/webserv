@@ -6,14 +6,15 @@
 /*   By: tderwedu <tderwedu@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/01/28 13:37:00 by mdesalle          #+#    #+#             */
-/*   Updated: 2022/02/22 17:13:01 by tderwedu         ###   ########.fr       */
+/*   Updated: 2022/02/23 14:55:07 by tderwedu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef SERVER_HPP
 # define SERVER_HPP
 
-#include "Config.hpp"
+# include "Config.hpp"
+# include "Location.hpp"
 
 class Location;
 

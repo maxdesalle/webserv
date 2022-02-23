@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   URI.cpp                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ldelmas <ldelmas@student.42.fr>            +#+  +:+       +#+        */
+/*   By: tderwedu <tderwedu@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/08 17:02:27 by ldelmas           #+#    #+#             */
-/*   Updated: 2022/02/11 14:53:36 by ldelmas          ###   ########.fr       */
+/*   Updated: 2022/02/23 12:02:15 by tderwedu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -153,7 +153,7 @@ std::string const	URI::_strNormalization(std::string &str, size_t pos,
 	otherwise.
 */
 
-int const			URI::_authNormalization(void)
+int				URI::_authNormalization(void)
 {
 	std::string userinfo = Header::_parseUserInfo(this->_auth);
 	if (this->_auth[userinfo.length()] != '@')

@@ -6,14 +6,14 @@
 /*   By: tderwedu <tderwedu@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/16 15:28:58 by mdesalle          #+#    #+#             */
-/*   Updated: 2022/02/22 15:28:37 by tderwedu         ###   ########.fr       */
+/*   Updated: 2022/02/23 14:33:28 by tderwedu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef LOCATION_HPP
 # define LOCATION_HPP
 
-#include "Config.hpp"
+# include "Config.hpp"
 
 class Location
 {
