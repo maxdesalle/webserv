@@ -6,7 +6,7 @@
 /*   By: tderwedu <tderwedu@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/01/26 14:59:17 by ldelmas           #+#    #+#             */
-/*   Updated: 2022/02/23 16:28:44 by tderwedu         ###   ########.fr       */
+/*   Updated: 2022/02/23 19:29:06 by tderwedu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,13 +40,13 @@ std::string const Request::_cgiSerVarNames[ENV_NUM] = {"SERVER_SOFTWARE", "SERVE
 
 /*CONSTRUCTORS AND DESTRUCTORS*/
 
-Request::Request(void) : Header(Request::_fieldNames), _state(STARTLINE), _remain(""), _cursor(0)
+Request::Request(void) : Header(Request::_fieldNames), _remain(""), _cursor(0), _state(STARTLINE)
 {
 	for (int i  = 0; i < ENV_NUM; i++)
 		this->_cgiSerVars.insert(std::pair<std::string const, std::string>(_cgiSerVarNames[i], ""));
 }
 
-Request::Request(std::string const &request) : Header(Request::_fieldNames), _state(STARTLINE), _remain(""), _cursor(0)
+Request::Request(std::string const &request) : Header(Request::_fieldNames), _remain(""), _cursor(0), _state(STARTLINE)
 {
 	for (int i  = 0; i < ENV_NUM; i++)
 		this->_cgiSerVars.insert(std::pair<std::string const, std::string>(_cgiSerVarNames[i], ""));
@@ -61,7 +61,7 @@ Request::~Request(void) {}
 
 /*OPERATOR OVERLOADS*/
 
-Request const	&Request::operator=(Request const &right)
+Request			&Request::operator=(Request const &right)
 {
 	this->_headerFields = right._headerFields;
 	this->_method = right._method;
@@ -110,6 +110,11 @@ Request::state	Request::getState(void) const
 	return this->_state;
 }
 
+bool	Request::isProcessing(void) const
+{
+	return this->_state == PROCESSING;
+}
+
 std::map<std::string const, std::string> const &Request::getCGIServerVars(void)
 {
 	return this->_cgiSerVars;
@@ -149,7 +154,7 @@ void				Request::setBody(std::string &body)
 		-What happens if wrong PORT, wrong server name, wrong path?
 */
 
-void				Request::setCGIServerVars(Location &CGILocation, ClientSocket &Client)
+void				Request::setCGIServerVars(Location &CGILocation, in_addr_t addr)
 {
 	this->_cgiSerVars["SERVER_SOFTWARE"] = "WEBSERV/1.0";
 	this->_cgiSerVars["SERVER_NAME"] = Header::_parseHost(this->_headerFields["Host"]);
@@ -164,7 +169,7 @@ void				Request::setCGIServerVars(Location &CGILocation, ClientSocket &Client)
 	if (this->_cgiSerVars["PATH_INFO"][this->_cgiSerVars["PATH_INFO"].length()] == '?')
 		this->_cgiSerVars["QUERY_STRING"] = Header::_parseQuery(this->_target, this->_cgiSerVars["PATH_INFO"].length()+1);
 	this->_cgiSerVars["REMOTE_HOST"] = this->_headerFields["Referer"];
-	in_addr_t addr = Client.getIP();
+	// in_addr_t addr = Client.getIP();
 	char buff[16];
 	inet_ntop(AF_INET, &addr, buff, INET_ADDRSTRLEN);
 	this->_cgiSerVars["REMOTE_ADDR"] = buff;
@@ -230,23 +235,6 @@ static int		getFieldName(std::string const &line, std::string &name)
 	return 0;
 }
 
-// tderwedu
-/*
-	Case-insensitive equl
-*/
-
-bool	ci_equal(const std::string &s1, const std::string &s2)
-{
-	if (s1.size() != s2.size())
-		return false;
-	for (size_t i = 0; i < s1.size(); ++i)
-	{
-		if ((s1[i] | 0x2) != (s2[i] | 0x20))
-			return false;
-	}
-	return true;
-}
-
 /*NON-STATIC METHODS*/
 
 /*
@@ -308,6 +296,7 @@ int				Request::_getNextField(std::string const &str, std::string &line)
 	}
 	line = str.substr(this->_cursor, pos - this->_cursor);
 	this->_cursor = pos+2;
+	return 1; //TODO:check if OK ADDED by tderwedu 
 }
 
 /*
@@ -361,7 +350,6 @@ int				Request::_parseRequestLine(std::string const &request)
 
 int				Request::_parseHeaderField(std::string const &line)
 {
-	size_t		pos = 0;
 	std::string name;
 	if (getFieldName(line, name))
 		return 400;
@@ -417,7 +405,7 @@ int				Request::parseRequest(std::string const &request)
 		if (line.substr(0, 2) != "\r\n")
 		{
 			std::string name;
-			if (!getFieldName(line, name) && name.length() > NAME_MAX)
+			if (!getFieldName(line, name) && name.length() > FIELDNAME_MAX)
 					return 400;
 			this->_remain = line;
 			return 1;
@@ -437,7 +425,6 @@ int				Request::parseRequest(std::string const &request)
 int			Request::_findBodyType(void) // tderwedu
 {
 	char			*ptr = NULL;
-	size_t			nbr = 0;
 	std::string		value;
 
 	value = getField("Transfer-Encoding");
@@ -512,5 +499,6 @@ int			Request::_getBody(std::string const &buff) // tderwedu
 			return 1;
 		}
 		this->_state = PROCESSING;
+		return 0;
 	}
 }

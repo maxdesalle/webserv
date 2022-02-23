@@ -6,15 +6,12 @@
 /*   By: tderwedu <tderwedu@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/01/31 15:54:27 by tderwedu          #+#    #+#             */
-/*   Updated: 2022/02/23 10:57:11 by tderwedu         ###   ########.fr       */
+/*   Updated: 2022/02/23 17:36:35 by tderwedu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef NETWORKSOCKET_HPP
 # define NETWORKSOCKET_HPP
-
-# include <unistd.h>
-# include <iostream>
 
 # include "NetworkIPC.hpp"
 
@@ -32,13 +29,15 @@ protected:
 	State			_state;
 
 public:
-	NetworkSocket::NetworkSocket(int port, in_addr_t addr, t_poll& pollfd);
+	NetworkSocket(int port, in_addr_t addr, t_poll& pollfd);
 	virtual ~NetworkSocket(void);
+	NetworkSocket&	operator=(NetworkSocket const& rhs);
 
 	in_addr_t	getIP(void);
 	int			getPort(void);
 	t_poll&		getPollFd(void);
 	State		getState(void);
+	bool		isOpen(void) const;
 
 	void		sockShutdown(void);
 	void		sockClose(void);

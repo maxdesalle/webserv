@@ -6,7 +6,7 @@
 #    By: tderwedu <tderwedu@student.s19.be>         +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2022/01/18 10:08:26 by maxdesall         #+#    #+#              #
-#    Updated: 2022/02/23 14:54:17 by tderwedu         ###   ########.fr        #
+#    Updated: 2022/02/23 19:28:21 by tderwedu         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -24,26 +24,29 @@ MAIN		:= Webserv.cpp
 CONFIG		:= ConfigHandler.cpp \
 			   Server.cpp \
 			   Location.cpp
-SOCKETS		:= Webserv.cpp \
-			   ClientSocket.cpp \
+SOCKETS		:= RequestHandler.cpp \
 			   NetworkSocket.cpp \
-			   RequestHandler.cpp
+			   ClientSocket.cpp \
+			   Webserv.cpp
 HTTP		:= Request.cpp \
 			   URI.cpp \
 			   Response.cpp \
 			   Header.cpp
+UTILS		:= Timer.cpp \
+			   utils.cpp
 
 # INCLUDES	:= -I ./${SRC_DIR} -I ./${TEST_DIR}
 
 BIN_DIR		:= .bin/
 SRC_DIR		:= src/
 MAIN_DIR	:= $(addprefix src/, $(MAIN))
+UTILS		:= $(addprefix src/utils/, $(UTILS))
 CONFIG_DIR	:= $(addprefix src/config/, $(CONFIG))
 SOCKETS		:= $(addprefix src/sockets/, $(SOCKETS))
 HTTP		:= $(addprefix src/HTTP_Config/, $(HTTP))
 
-# SRC			:= $(MAIN_DIR) $(CONFIG_DIR) $(SOCKETS) $(HTTP)
-SRC			:= $(MAIN_DIR) $(CONFIG_DIR)
+SRC			:= $(MAIN_DIR) $(UTILS) $(CONFIG_DIR) $(HTTP) $(SOCKETS)
+# SRC			:= $(MAIN_DIR) $(CONFIG_DIR)
 OBJ			:= $(subst ${SRC_DIR},${BIN_DIR}, ${SRC:.cpp=.o})
 
 # ================================== RULES =================================== #

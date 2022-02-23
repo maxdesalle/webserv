@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Header.hpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ldelmas <ldelmas@student.42.fr>            +#+  +:+       +#+        */
+/*   By: tderwedu <tderwedu@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/01/19 15:31:16 by ldelmas           #+#    #+#             */
-/*   Updated: 2022/02/21 13:50:34 by ldelmas          ###   ########.fr       */
+/*   Updated: 2022/02/23 16:33:55 by tderwedu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,10 +36,10 @@ class Header
 		/*
 			All of the protected methods used to parse the request
 		*/
-		static bool const			_isSpace(unsigned char c);
-		static bool const			_isPrintable(unsigned char c);
-		static bool const			_isObsText(unsigned char c);
-		static bool const			_isFieldVchar(unsigned char c);
+		static bool					_isSpace(unsigned char c);
+		static bool					_isPrintable(unsigned char c);
+		static bool					_isObsText(unsigned char c);
+		static bool					_isFieldVchar(unsigned char c);
 		static std::string const	_parseHTTPVersion(std::string const &str, size_t pos=0);
 		static std::string const	_parseMethod(std::string const &str, size_t pos=0);
 		static std::string const	_parsePctEncoded(std::string const &str, size_t pos=0);

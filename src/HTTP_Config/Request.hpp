@@ -6,7 +6,7 @@
 /*   By: tderwedu <tderwedu@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/01/26 11:47:16 by ldelmas           #+#    #+#             */
-/*   Updated: 2022/02/23 16:29:55 by tderwedu         ###   ########.fr       */
+/*   Updated: 2022/02/23 19:29:26 by tderwedu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,12 +19,13 @@
 # include <cerrno>
 
 # include "URI.hpp"
-# include "../config/Location.hpp"
-# include "../sockets/ClientSocket.hpp"
+# include "../config/Config.hpp"
+# include "../sockets/NetworkIPC.hpp"
+# include "../utils/utils.hpp"
 
 /*Number of CGI's environment variables*/
 # define ENV_NUM 18
-# define NAME_MAX 100
+# define FIELDNAME_MAX 100
 
 /*
 ** TO DO
@@ -62,19 +63,20 @@ class Request : public Header
 		Request(Request const &src);
 		~Request(void);
 
-		Request const		&operator=(Request const &right);
+		Request 			&operator=(Request const &right);
 
 		std::string const	&getMethod(void) const;
 		std::string const	&getTarget(void) const;
 		std::string const	&getVersion(void) const;
 		std::string const	&getBody(void) const;
 		state				getState(void) const;
+		bool				isProcessing(void) const;
 		std::map<std::string const, std::string> const &getCGIServerVars(void);
 		void				setMethod(std::string &method);
 		void				setTarget(std::string &target);
 		void				setVersion(std::string &version);
 		void				setBody(std::string &body);
-		void				setCGIServerVars(Location &CGILocation, ClientSocket &Client);
+		void				setCGIServerVars(Location &CGILocation, in_addr_t addr);
 
 		int					parseRequest(std::string const &request);
 

@@ -6,7 +6,7 @@
 /*   By: tderwedu <tderwedu@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/08 17:02:27 by ldelmas           #+#    #+#             */
-/*   Updated: 2022/02/23 12:02:15 by tderwedu         ###   ########.fr       */
+/*   Updated: 2022/02/23 18:08:52 by tderwedu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -125,8 +125,8 @@ std::string const	URI::_strNormalization(std::string &str, size_t pos,
 	{
 		while ((p = s.find('%', p)) != std::string::npos)
 		{
-			int hval = Header::hexdig.find(s[p+1]);
-			int dval = Header::hexdig.find(s[p+2]);
+			size_t hval = Header::hexdig.find(s[p+1]);
+			size_t dval = Header::hexdig.find(s[p+2]);
 			if (p >= s.length() - 2
 			|| hval == std::string::npos
 			|| dval == std::string::npos)
@@ -189,7 +189,7 @@ int				URI::_authNormalization(void)
 	RETURN VALUE : 400 if wrong use of the reserved chars. 0 otherwise.
 */
 
-int const			URI::_uriNormalization(void)
+int				URI::_uriNormalization(void)
 {
 	this->_scheme = this->_strNormalization(this->_scheme, 0, "+-.", false);
 	if (this->_hpType == AUTHORITY)

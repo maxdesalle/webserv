@@ -6,7 +6,7 @@
 /*   By: tderwedu <tderwedu@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/23 10:56:44 by tderwedu          #+#    #+#             */
-/*   Updated: 2022/02/23 10:57:19 by tderwedu         ###   ########.fr       */
+/*   Updated: 2022/02/23 17:37:06 by tderwedu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,6 +17,18 @@ NetworkSocket::NetworkSocket(int port, in_addr_t addr, t_poll& pollfd)
 {}
 
 NetworkSocket::~NetworkSocket() {}
+
+NetworkSocket&	NetworkSocket::operator=(NetworkSocket const& rhs)
+{
+	if (this != &rhs)
+	{
+		_port = rhs._port;
+		_addr = rhs._addr;
+		_pollfd = rhs._pollfd;
+		_state = rhs._state;
+	}
+	return *this;
+}
 
 in_addr_t				NetworkSocket::getIP(void)
 {
@@ -36,6 +48,11 @@ t_poll&					NetworkSocket::getPollFd(void)
 NetworkSocket::State	NetworkSocket::getState(void)
 {
 	return _state;
+}
+
+bool		NetworkSocket::isOpen(void) const
+{
+	return _state == OPEN;
 }
 
 void					NetworkSocket::sockShutdown(void)

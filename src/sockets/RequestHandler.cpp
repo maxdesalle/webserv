@@ -6,19 +6,42 @@
 /*   By: tderwedu <tderwedu@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/23 10:57:33 by tderwedu          #+#    #+#             */
-/*   Updated: 2022/02/23 10:57:56 by tderwedu         ###   ########.fr       */
+/*   Updated: 2022/02/23 19:31:19 by tderwedu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "RequestHandler.hpp"
 
-RequestHandler::RequestHandler() : _request(Request()){}
+RequestHandler::RequestHandler() {}
 
 RequestHandler::~RequestHandler() {}
+
+RequestHandler&	RequestHandler::operator=(RequestHandler const& rhs)
+{
+	if (this != &rhs)
+	{
+		_request = rhs._request;
+		_server = rhs._server;
+		_location = rhs._location;
+		_response = rhs._response;
+		_state = rhs._state;
+	}
+	return *this;
+}
+
+Request&			RequestHandler::getRequest(void)
+{
+	return _request;
+}
 
 void			RequestHandler::setServer(Server& server)
 {
 	_server = &server;
+}
+
+void				RequestHandler::clearRequestHandler(void)
+{
+	//TODO: to do ...
 }
 
 void			RequestHandler::processRessource(void)
@@ -46,12 +69,12 @@ void			RequestHandler::processRessource(void)
 
 void			RequestHandler::_findLocation(const std::string &path)			//TODO: CORR GetLocations
 {
-	int						len = 0;
-	int						max = 0;
-	Location				*candidate = NULL;
-	std::vector<Location>	locations = _server->GetLocations();
+	int					len = 0;
+	int					max = 0;
+	const Location		*candidate = NULL;
+	vecLocation			locations = _server->GetLocations();
 
-	for (std::vector<Location>::iterator it = locations.begin(); it < locations.end(); ++it)
+	for (citLocation it = locations.begin(); it < locations.end(); ++it)
 	{
 		if (path.find(it->GetPath()) == 0)
 		{

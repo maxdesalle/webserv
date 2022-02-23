@@ -6,7 +6,7 @@
 /*   By: tderwedu <tderwedu@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/23 10:58:04 by tderwedu          #+#    #+#             */
-/*   Updated: 2022/02/23 11:49:47 by tderwedu         ###   ########.fr       */
+/*   Updated: 2022/02/23 17:41:31 by tderwedu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,6 +23,19 @@ Webserv::~Webserv(void)
 	_serverSocks.clear();
 	_clientSocks.clear();
 }
+
+// Webserv&	Webserv::operator=(Webserv const& rhs)
+// {
+// 	if (this != &rhs)
+// 	{
+// 		_fdInUse = rhs._fdInUse;
+// 		_servers = rhs._servers;
+// 		_pollfd = rhs._pollfd;
+// 		_serverSocks = rhs._serverSocks;
+// 		_clientSocks = rhs._clientSocks;
+// 	}
+// 	return *this;
+// }
 
 void				Webserv::_setOpenMax(void) const
 {
@@ -47,7 +60,7 @@ void				Webserv::initServer(std::string const& config)
 	printServers(_servers);
 }
 
-cont_server&	Webserv::getServers(void)
+vecServer&	Webserv::getServers(void)
 {
 	return _servers;
 }
@@ -57,7 +70,6 @@ void				Webserv::addServerSocket(int port, int nbr_queue)
 	int			fd_sock;
 	int			opt;
 	t_poll		pollfd;
-	socklen_t	socklen;
 	t_sockaddr_in	sockaddr;
 
 	opt = 1;
@@ -96,7 +108,7 @@ void				Webserv::checkServerSockets(void)
 	t_sockaddr_in	sockaddr;
 
 
-	for (it_netSock it = _serverSocks.begin(); it != _serverSocks.end(); ++it)
+	for (itNetSock it = _serverSocks.begin(); it != _serverSocks.end(); ++it)
 	{
 		// TODO: check _fdInUse < open_max
 		// TODO: check other values of revents
@@ -125,8 +137,7 @@ void				Webserv::checkServerSockets(void)
 
 void				Webserv::checkClientSockets(void)
 {
-	ssize_t			n;
-	it_cliSock		client;
+	itClieSock		client;
 
 	client = _clientSocks.begin();
 	while (client != _clientSocks.end())
@@ -141,9 +152,9 @@ void				Webserv::checkClientSockets(void)
 
 void				Webserv::reapClosedClientSock(void)
 {
-	for (it_cliSock it = _clientSocks.begin(); it != _clientSocks.end(); ++it)
+	for (itClieSock it = _clientSocks.begin(); it != _clientSocks.end(); ++it)
 	{
-		if (it->getState() != NetworkSocket::State::OPEN && !it->empty())
+		if (!it->isOpen() && !it->empty())
 		{
 			popPollfd(it->getPollFd());
 			_clientSocks.erase(it);

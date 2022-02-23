@@ -6,11 +6,11 @@
 /*   By: tderwedu <tderwedu@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/01/31 10:19:04 by tderwedu          #+#    #+#             */
-/*   Updated: 2022/02/23 11:49:15 by tderwedu         ###   ########.fr       */
+/*   Updated: 2022/02/23 19:19:11 by tderwedu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef WEBSER_HPP
+#ifndef WEBSERV_HPP
 # define WEBSERV_HPP
 
 # include <iostream>
@@ -18,31 +18,34 @@
 # include <map>
 
 # include "NetworkIPC.hpp"
+# include "NetworkSocket.hpp"
+# include "ClientSocket.hpp"
 
 # ifdef OPEN_MAX
-	static long	open_max = OPEN_MAX;
+	static size_t	open_max = OPEN_MAX;
 # else
-	static long	open_max = 0;
+	static size_t	open_max = 0;
 # endif
+
 # define OPEN_MAX_GUESS		256
 # define POLL_FLAGS			POLLIN | POLLOUT	// POLLERR | POLLHUP | POLLNVAL are allways set
 
-typedef std::vector<Server>					cont_server;
-typedef std::vector<NetworkSocket>			cont_netSock;
-typedef std::vector<ClientSocket>			cont_cliSock;
-typedef cont_netSock::iterator				it_netSock;
-typedef cont_cliSock::iterator				it_cliSock; // TODO: Change to deque
+typedef std::vector<NetworkSocket>		vecNetSock;
+typedef vecNetSock::iterator			itNetSock;
+typedef std::deque<ClientSocket>		lstClieSock;
+typedef lstClieSock::iterator			itClieSock;
 
 class Webserv
 {
 private:
 	static std::string const	_validMethod[4];
-	int							_fdInUse;
-	cont_server					_servers;
+	size_t						_fdInUse;
+	vecServer					_servers;
 	std::vector<t_poll>			_pollfd;
-	cont_netSock				_serverSocks;
-	cont_cliSock				_clientSocks;
+	vecNetSock					_serverSocks;
+	lstClieSock					_clientSocks;
 	
+	Webserv&	operator=(Webserv const& rhs);
 public:
 	Webserv(void);
 	~Webserv(void);
@@ -50,7 +53,7 @@ public:
 	void				_setOpenMax(void) const;
 	void				initServer(std::string const& config);
 
-	cont_server&		getServers(void);
+	vecServer&			getServers(void);
 	
 	void				addServerSocket(int port, int nbr_queue);
 

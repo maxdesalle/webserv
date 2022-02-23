@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   URI.hpp                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ldelmas <ldelmas@student.42.fr>            +#+  +:+       +#+        */
+/*   By: tderwedu <tderwedu@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/08 16:52:44 by ldelmas           #+#    #+#             */
-/*   Updated: 2022/02/11 15:21:06 by ldelmas          ###   ########.fr       */
+/*   Updated: 2022/02/23 16:34:54 by tderwedu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -89,8 +89,8 @@ class URI
 		uristatus					_status;
 		void						_uriFormating(void);
 		void						_hierPartFormating(void);
-		int const					_authNormalization(void);
-		int const					_uriNormalization(void);
+		int							_authNormalization(void);
+		int							_uriNormalization(void);
 
 		static std::string const	_strNormalization(std::string &str, size_t pos,
 									std::string const &except, bool pct);

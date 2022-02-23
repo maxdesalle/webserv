@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Header.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ldelmas <ldelmas@student.42.fr>            +#+  +:+       +#+        */
+/*   By: tderwedu <tderwedu@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/01/26 14:57:25 by ldelmas           #+#    #+#             */
-/*   Updated: 2022/02/23 15:09:17 by ldelmas          ###   ########.fr       */
+/*   Updated: 2022/02/23 18:10:38 by tderwedu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -85,7 +85,7 @@ void				Header::setField(std::string const fieldName, std::string fieldValue)
 	false otherwise.
 */
 
-bool const	Header::_isSpace(unsigned char c)
+bool		Header::_isSpace(unsigned char c)
 {
 	return (c == ' ' || c == '\t');
 }
@@ -95,7 +95,7 @@ bool const	Header::_isSpace(unsigned char c)
 	Return false otherwise.
 */
 
-bool const	Header::_isPrintable(unsigned char c)
+bool		Header::_isPrintable(unsigned char c)
 {
 	return (c > 31 && c < 128);	
 }
@@ -107,7 +107,7 @@ bool const	Header::_isPrintable(unsigned char c)
 	Return false otherwise.
 */
 
-bool const	Header::_isObsText(unsigned char c)
+bool		Header::_isObsText(unsigned char c)
 {
 	return (c > 127);
 }
@@ -118,7 +118,7 @@ bool const	Header::_isObsText(unsigned char c)
 	Return false otherwise.
 */
 
-bool const	Header::_isFieldVchar(unsigned char c)
+bool		Header::_isFieldVchar(unsigned char c)
 {
 	return (c > 31);
 }
@@ -332,7 +332,7 @@ std::string const	Header::_parseScheme(std::string const &str, size_t pos)
 	if (Header::alpha.find(s[0]) == std::string::npos)
 		throw(Header::WrongSyntaxException());
 	scheme += s[0];
-	for (int i = 1; i < s.length(); i++)
+	for (size_t i = 1; i < s.length(); i++)
 	{
 		if (charArr.find(s[i]) != std::string::npos)
 			scheme += s[i];
@@ -394,7 +394,7 @@ std::string const	Header::_parsePort(std::string const &str, size_t pos)
 {
 	std::string s = str.substr(pos);
 	std::string port = "";
-	for (int i = 0; i < s.length(); i++)
+	for (size_t i = 0; i < s.length(); i++)
 	{
 		if (Header::digit.find(s[i]) != std::string::npos)
 			port += s[i];
@@ -435,7 +435,7 @@ std::string const	Header::_parseIpv4Address(std::string const &str, size_t pos)
 {
 	std::string s = str.substr(pos);
 	std::string ip = Header::_parseDecOctet(s);
-	for (int i = 0; i < 3; i++)
+	for (size_t i = 0; i < 3; i++)
 	{
 		size_t len = ip.length();
 		if (s[len] != '.')
@@ -590,7 +590,7 @@ std::string const	Header::_parseIpvFuture(std::string const &str, size_t pos)
 	|| Header::hexdig.find(s[1]) == std::string::npos)
 		throw(Header::WrongSyntaxException());
 	std::string ip(s.substr(0, 2));
-	for (int i = 2; i < s.length(); i++)
+	for (size_t i = 2; i < s.length(); i++)
 	{
 		if (Header::hexdig.find(s[i]) == std::string::npos)
 			break ;
@@ -602,7 +602,7 @@ std::string const	Header::_parseIpvFuture(std::string const &str, size_t pos)
 	|| charArr.find(s[len+1]) == std::string::npos)
 		throw(Header::WrongSyntaxException());
 	ip += s.substr(len, 2);
-	for (int i = len + 2; i < s.length(); i++)
+	for (size_t i = len + 2; i < s.length(); i++)
 	{
 		if (charArr.find(s[i]) == std::string::npos)
 			break ;

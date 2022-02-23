@@ -6,7 +6,7 @@
 /*   By: tderwedu <tderwedu@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/23 10:55:52 by tderwedu          #+#    #+#             */
-/*   Updated: 2022/02/23 11:20:08 by tderwedu         ###   ########.fr       */
+/*   Updated: 2022/02/23 17:50:57 by tderwedu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,6 +20,17 @@ ClientSocket::ClientSocket(int port, in_addr_t addr, t_poll& pollfd, Webserv& we
 
 ClientSocket::~ClientSocket()
 {}
+
+ClientSocket&	ClientSocket::operator=(ClientSocket const& rhs)
+{
+	if (this != &rhs)
+	{
+		_messages = rhs._messages;
+		memcpy(_buff, rhs._buff, BUFF_SIZE);
+		_timer = rhs._timer;
+	}
+	return *this;
+}
 
 void		ClientSocket::getNewRequest(void)
 {
@@ -52,7 +63,7 @@ void		ClientSocket::getNewRequest(void)
 		if (_state == HALF_CLOSED)
 			return ;
 		request.parseRequest(std::string(_buff));
-		if (request.getState() == Request::state::PROCESSING)
+		if (request.isProcessing())
 		{
 			if (_webserv.isValidRequest(request.getMethod()))
 				; // TODO: reponse "501 Not Implemented"
@@ -60,7 +71,7 @@ void		ClientSocket::getNewRequest(void)
 			_messages.push_back(RequestHandler());
 		}	
 	}
-	else if (request.getState() < Request::state::PROCESSING && _timer.getElapsedTime() > TIMEOUT)
+	else if (!request.isProcessing() && _timer.getElapsedTime() > TIMEOUT)
 		_clearSocket();
 }
 
@@ -73,7 +84,7 @@ void		ClientSocket::_findServer(void)										// TODO: CORR matchingServers
 {
 	struct in_addr			addr;
 	char					ip[INET_ADDRSTRLEN];
-	cont_server 			*matchingServers;
+	vecServer 			*matchingServers;
 	RequestHandler&			handler = _messages.back();
 	Request&				request = handler.getRequest();
 	std::string const&		host = request.getField("Host");
@@ -85,9 +96,9 @@ void		ClientSocket::_findServer(void)										// TODO: CORR matchingServers
 		; // TODO: reponse "500 Internal Server Error"
 	if (host.empty())															//TODO: Missing HOST field might be an error!
 		handler.setServer(matchingServers->at(0));
-	for (int i; i < matchingServers->size(); ++i)
+	for (size_t i = 0; i < matchingServers->size(); ++i)
 	{
-		for (int j; j < (matchingServers->at(i)).GetServerNames().size(); ++j)
+		for (size_t j = 0; j < (matchingServers->at(i)).GetServerNames().size(); ++j)
 		{
 			if (host == (matchingServers->at(i)).GetServerNames()[j])
 			{
@@ -102,7 +113,7 @@ void		ClientSocket::_findServer(void)										// TODO: CORR matchingServers
 
 void		ClientSocket::_clearSocket(void)
 {
-	for (it_reqHand it = _messages.begin(); it < _messages.end(); ++it)
+	for (itReqHand it = _messages.begin(); it < _messages.end(); ++it)
 	{
 		it->clearRequestHandler();
 	}
