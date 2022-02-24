@@ -6,7 +6,7 @@
 /*   By: ldelmas <ldelmas@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/01/26 14:57:25 by ldelmas           #+#    #+#             */
-/*   Updated: 2022/02/23 15:09:17 by ldelmas          ###   ########.fr       */
+/*   Updated: 2022/02/24 10:23:42 by ldelmas          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -78,7 +78,16 @@ void				Header::setField(std::string const fieldName, std::string fieldValue)
 
 
 
-/*NON MEMBER FUNCTIONS*/
+/*MEMBER METHODS*/
+
+bool const			Header::findField(std::string const fieldName) const
+{
+	return (this->_headerFields.find(fieldName) != this->_headerFields.end());
+}
+
+
+
+/*NON MEMBER METHODS*/
 
 /*
 	RETURN VALUE : Return true if the char 'c' is a space or a tab. Return

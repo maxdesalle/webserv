@@ -6,7 +6,7 @@
 /*   By: ldelmas <ldelmas@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/01/19 15:31:16 by ldelmas           #+#    #+#             */
-/*   Updated: 2022/02/21 13:50:34 by ldelmas          ###   ########.fr       */
+/*   Updated: 2022/02/24 10:20:43 by ldelmas          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -89,6 +89,7 @@ class Header
 
 		std::string const	getField(std::string const fieldName);
 		void				setField(std::string const fieldName, std::string fieldValue);
+		bool const			findField(std::string const fieldName) const;
 };
 
 # endif

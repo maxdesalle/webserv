@@ -6,7 +6,7 @@
 /*   By: ldelmas <ldelmas@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/01/26 11:47:16 by ldelmas           #+#    #+#             */
-/*   Updated: 2022/02/23 15:53:04 by ldelmas          ###   ########.fr       */
+/*   Updated: 2022/02/24 11:49:46 by ldelmas          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -68,8 +68,9 @@ class Request : public Header
 		void				setCGIServerVars(Location &CGILocation, ClientSocket &Client);
 
 		int					parseRequest(std::string const &request);
+		void				printRequest(void);
 
-		void				reset(void); // tderwedu => state = STARTLINE, CLEAR map, _method, _target, _version, _body, _remain, ...
+		void				reset(void);
 };
 
 #endif
