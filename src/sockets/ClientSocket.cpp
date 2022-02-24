@@ -6,7 +6,7 @@
 /*   By: tderwedu <tderwedu@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/23 10:55:52 by tderwedu          #+#    #+#             */
-/*   Updated: 2022/02/24 14:24:38 by tderwedu         ###   ########.fr       */
+/*   Updated: 2022/02/24 15:13:52 by tderwedu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -66,9 +66,8 @@ void		ClientSocket::getNewRequest(void)
 	}
 	else if (_pollfd.revents & POLLIN)
 	{
-		std::cout << " OK OK " << std::endl; // TODO:remove
 		n = recv(_pollfd.fd, _buff, buffSize, 0);
-		std::cout << " OK OK OK " << std::endl; // TODO:remove
+		std::cout << "BUFF:\e[31m>>\e[0m" << _buff << "\e[31m<<\e[0m" << std::endl;
 		if (n < 0)
 			_clearSocket();
 		if (n == 0) // Client initated a gracefull close
@@ -79,7 +78,9 @@ void		ClientSocket::getNewRequest(void)
 		}
 		if (_state == HALF_CLOSED)
 			return ;
+		std::cout << "BEFORE parseRequest" << std::endl;
 		request.parseRequest(std::string(_buff));
+		std::cout << "AFTER parseRequest" << std::endl;
 		if (request.isProcessing())
 		{
 			if (_webserv.isValidRequest(request.getMethod()))
