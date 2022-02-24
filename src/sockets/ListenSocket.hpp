@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   NetworkSocket.hpp                                  :+:      :+:    :+:   */
+/*   ListenSocket.hpp                                   :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: tderwedu <tderwedu@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2022/01/31 15:54:27 by tderwedu          #+#    #+#             */
-/*   Updated: 2022/02/24 13:22:32 by tderwedu         ###   ########.fr       */
+/*   Created: 2022/02/24 16:13:26 by tderwedu          #+#    #+#             */
+/*   Updated: 2022/02/24 19:50:34 by tderwedu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,20 +18,22 @@
 # define	TIMEOUT			3 * 60 * 1000
 # define	TIMEOUT_NVAL	100
 
-class NetworkSocket
+class ListenSocket
 {
 public:
 	enum State {OPEN, HALF_CLOSED, CLOSED};
 protected:
+	t_poll&			_pollfd;
 	int				_port;
 	in_addr_t		_addr;
-	t_poll&			_pollfd;
 	State			_state;
 
 public:
-	NetworkSocket(int port, in_addr_t addr, t_poll& pollfd);
-	virtual ~NetworkSocket(void);
-	NetworkSocket&	operator=(NetworkSocket const& rhs);
+	ListenSocket(t_poll& pollfd);
+	ListenSocket(int port, in_addr_t addr, t_poll& pollfd);
+	ListenSocket(ListenSocket const& rhs);
+	virtual ~ListenSocket(void);
+	ListenSocket&	operator=(ListenSocket const& rhs);
 
 	in_addr_t	getIP(void);
 	int			getPort(void);
@@ -42,7 +44,9 @@ public:
 	void		sockShutdown(void);
 	void		sockClose(void);
 
-	void		handlePollErr(void);
+	friend std::ostream&			operator<<(std::ostream& stream, ListenSocket const& sock);
+private:
+	ListenSocket(void);
 };
 
 #endif

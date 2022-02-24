@@ -6,7 +6,7 @@
 /*   By: tderwedu <tderwedu@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/01/18 18:04:43 by maxdesall         #+#    #+#             */
-/*   Updated: 2022/02/22 17:27:42 by tderwedu         ###   ########.fr       */
+/*   Updated: 2022/02/24 15:35:01 by tderwedu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -175,5 +175,8 @@ void						printServers(std::vector<Server> &Servers)
 {
 	std::cout << "Number of servers: " << Servers.size() << std::endl;
 	for (size_t i = 0; i < Servers.size(); ++i)
-		Servers[i].printServer();
+	{
+		std::cout << "\e[33m##############   SERVER\e[0m" << std::endl;
+		std::cout << Servers[i];
+	}
 }

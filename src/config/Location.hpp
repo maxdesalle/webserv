@@ -6,7 +6,7 @@
 /*   By: tderwedu <tderwedu@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/16 15:28:58 by mdesalle          #+#    #+#             */
-/*   Updated: 2022/02/23 14:33:28 by tderwedu         ###   ########.fr       */
+/*   Updated: 2022/02/24 15:32:37 by tderwedu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,7 +46,8 @@ class Location
 
 		bool							isCgi(void)									const;
 		bool							isMethodValid(const std::string &method)	const;
-		void							printLocation(void) const;
+
+		friend std::ostream&			operator<<(std::ostream& stream, Location const& loc);
 
 	private:
 

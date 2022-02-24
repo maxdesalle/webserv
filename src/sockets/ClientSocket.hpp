@@ -6,7 +6,7 @@
 /*   By: tderwedu <tderwedu@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/01 15:22:19 by tderwedu          #+#    #+#             */
-/*   Updated: 2022/02/23 19:25:18 by tderwedu         ###   ########.fr       */
+/*   Updated: 2022/02/24 19:47:51 by tderwedu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,7 +14,7 @@
 # define CLIENTSOCKET_HPP
 
 # include "NetworkIPC.hpp"
-# include "NetworkSocket.hpp"
+# include "ListenSocket.hpp"
 # include "RequestHandler.hpp"
 
 # define	BUFF_SIZE	1024
@@ -24,7 +24,7 @@ class RequestHandler;
 typedef std::deque<RequestHandler>		lstReqHand;
 typedef lstReqHand::iterator			itReqHand;
 
-class ClientSocket : public NetworkSocket
+class ClientSocket : public ListenSocket
 {
 public:
 	static const int	buffSize = BUFF_SIZE;
@@ -36,6 +36,7 @@ private:
 
 public:
 	ClientSocket(int port, in_addr_t addr, t_poll& pollfd, Webserv& webserv);
+	ClientSocket(ClientSocket const& rhs);
 	virtual ~ClientSocket();
 	ClientSocket&	operator=(ClientSocket const& rhs);
 
@@ -43,7 +44,11 @@ public:
 	void			getRessources(void);
 
 	int				empty(void);
+
+	friend std::ostream&			operator<<(std::ostream& stream, ClientSocket const& sock);
 private:
+	ClientSocket(void);
+
 	void			_findServer(void);
 	void			_clearSocket(void);
 };

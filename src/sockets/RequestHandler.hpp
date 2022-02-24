@@ -6,7 +6,7 @@
 /*   By: tderwedu <tderwedu@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/14 11:49:23 by tderwedu          #+#    #+#             */
-/*   Updated: 2022/02/23 19:00:01 by tderwedu         ###   ########.fr       */
+/*   Updated: 2022/02/24 19:38:12 by tderwedu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,14 +20,15 @@ class RequestHandler
 public:
 	enum State {NEW, CGI, SENDING};
 private:
-	Server const		*_server;
-	Location const		*_location;
 	Request				_request;
 	Response			_response;
+	Server const		*_server;
+	Location const		*_location;
 	State				_state;
 
 public:
 	RequestHandler();
+	RequestHandler(RequestHandler const& rhs);
 	virtual ~RequestHandler();
 	RequestHandler&		operator=(RequestHandler const& rhs);
 

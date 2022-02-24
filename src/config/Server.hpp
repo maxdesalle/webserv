@@ -6,7 +6,7 @@
 /*   By: tderwedu <tderwedu@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/01/28 13:37:00 by mdesalle          #+#    #+#             */
-/*   Updated: 2022/02/23 14:55:07 by tderwedu         ###   ########.fr       */
+/*   Updated: 2022/02/24 15:29:28 by tderwedu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -55,7 +55,8 @@ class Server
 		void			MultiplePorts(std::string Ports, bool DefaultServer);
 		size_t			ReturnEndOfScopeLineNumber(size_t BeginBracketsLineNumber, std::vector<std::string> &ConfigFileContent)	const;
 		std::string		FindPortsInString(std::string ConfigLine);
-		void			printServer(void) const;
+
+		friend std::ostream&			operator<<(std::ostream& stream, Server const& serv);
 
 	private:
 

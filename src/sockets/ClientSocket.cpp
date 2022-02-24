@@ -6,20 +6,20 @@
 /*   By: tderwedu <tderwedu@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/23 10:55:52 by tderwedu          #+#    #+#             */
-/*   Updated: 2022/02/24 15:13:52 by tderwedu         ###   ########.fr       */
+/*   Updated: 2022/02/24 19:52:17 by tderwedu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "ClientSocket.hpp"
 
 
-ClientSocket::ClientSocket(int port, in_addr_t addr, t_poll& pollfd, Webserv& webserv) : NetworkSocket(port, addr, pollfd), _webserv(webserv)
+ClientSocket::ClientSocket(int port, in_addr_t addr, t_poll& pollfd, Webserv& webserv) : ListenSocket(port, addr, pollfd), _webserv(webserv)
 {
 	_timer.start();
-	std::cout << " \e[32m===> ClientSocket \e[0m" << std::endl;
-	std::cout << "     -   Port: " << _port << std::endl;
-	std::cout << "     - PollFD: " << _pollfd.fd << std::endl;
+	_messages.push_back(RequestHandler());
 }
+
+ClientSocket::ClientSocket(ClientSocket const& rhs) : ListenSocket(rhs._pollfd), _webserv(rhs._webserv) { *this = rhs; }
 
 ClientSocket::~ClientSocket()
 {}
@@ -37,14 +37,15 @@ ClientSocket&	ClientSocket::operator=(ClientSocket const& rhs)
 
 void		ClientSocket::getNewRequest(void)
 {
+	int				ret;
 	ssize_t			n;
 	RequestHandler&	handler = _messages.back();
 	Request&		request = handler.getRequest();
+	std::string		buff;
 
-	// std::cout << "\e[34m \t############################# \e[0m" << std::endl;
-	std::cout << "\e[33m \t *** New Request *** \e[0m" << std::endl;
-	std::cout << "\t -   Port: " << _port << std::endl;
-	std::cout << "\t - PollFD: " << _pollfd.fd << " ; " << _pollfd.revents << std::endl;
+	std::cout << "\e[32m ===> New Request\e[0m" << std::endl;
+	std::cout << "     -   Port: " << _port << std::endl;
+	std::cout << "     - PollFD: " << _pollfd.fd << " ; " << _pollfd.revents << std::endl;
 
 	if (_pollfd.fd < 0)
 	{
@@ -67,6 +68,7 @@ void		ClientSocket::getNewRequest(void)
 	else if (_pollfd.revents & POLLIN)
 	{
 		n = recv(_pollfd.fd, _buff, buffSize, 0);
+		buff = std::string(_buff);
 		std::cout << "BUFF:\e[31m>>\e[0m" << _buff << "\e[31m<<\e[0m" << std::endl;
 		if (n < 0)
 			_clearSocket();
@@ -78,9 +80,9 @@ void		ClientSocket::getNewRequest(void)
 		}
 		if (_state == HALF_CLOSED)
 			return ;
-		std::cout << "BEFORE parseRequest" << std::endl;
-		request.parseRequest(std::string(_buff));
-		std::cout << "AFTER parseRequest" << std::endl;
+		ret = request.parseRequest(buff);
+		if (ret > 1) // TODO: add error handling
+			std::cout << "Error parseRequest: " << ret << std::endl;
 		if (request.isProcessing())
 		{
 			if (_webserv.isValidRequest(request.getMethod()))
@@ -106,7 +108,7 @@ void		ClientSocket::_findServer(void)										// TODO: CORR matchingServers
 {
 	struct in_addr			addr;
 	char					ip[INET_ADDRSTRLEN];
-	vecServer 			*matchingServers;
+	vecServer 				*matchingServers;
 	RequestHandler&			handler = _messages.back();
 	Request&				request = handler.getRequest();
 	std::string const&		host = request.getField("Host");
@@ -140,4 +142,13 @@ void		ClientSocket::_clearSocket(void)
 		it->clearRequestHandler();
 	}
 	sockClose();
+}
+
+std::ostream&			operator<<(std::ostream& stream, ClientSocket const& sock)
+{
+	stream << " \e[32m===> ClientSocket \e[0m" << std::endl;
+	stream << "     -   Port: " << sock._port << std::endl;
+	stream << "     - PollFD: " << sock._pollfd.fd << " ; " \
+			<< sock._pollfd.events << " ; " << sock._pollfd.revents;
+	return stream;
 }

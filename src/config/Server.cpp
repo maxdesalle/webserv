@@ -6,7 +6,7 @@
 /*   By: tderwedu <tderwedu@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/01/28 14:07:11 by mdesalle          #+#    #+#             */
-/*   Updated: 2022/02/22 17:12:47 by tderwedu         ###   ########.fr       */
+/*   Updated: 2022/02/24 15:33:28 by tderwedu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -504,33 +504,32 @@ void						Server::AddOutsideInfoToLocation(std::vector<std::string> &ConfigFileC
 	}
 }
 
-void						Server::printServer(void) const
+std::ostream&		operator<<(std::ostream& stream, Server const& serv)
 {
 	std::map<std::string, std::vector<size_t> >::const_iterator	it;
 
-	std::cout << " \e[33m ############## Server ############## \e[0m" << std::endl;
-	std::cout << "\e[36m Server Names: \e[0m" ;
-	for (size_t i = 0; i < _ServerNames.size(); ++i)
-		std::cout << _ServerNames[i] << (i != (_ServerNames.size() - 1) ? ", " : " ");
-	std::cout << std::endl;
-	std::cout << "\e[36m Locations: \e[0m" << _Locations.size() << std::endl;
-	for (size_t i = 0; i < _Locations.size(); ++i)
-		_Locations[i].printLocation();
-	std::cout << "\e[36m _DefaultServer: \e[0m" << std::endl;
-	for (it = _DefaultServer.begin(); it != _DefaultServer.end(); ++it)
+	stream << "\e[36m Server Names: \e[0m" ;
+	for (size_t i = 0; i < serv._ServerNames.size(); ++i)
+		stream << serv._ServerNames[i] << (i != (serv._ServerNames.size() - 1) ? ", " : " ");
+	stream << std::endl;
+	stream << "\e[36m Locations: \e[0m" << serv._Locations.size() << std::endl;
+	for (size_t i = 0; i < serv._Locations.size(); ++i)
+		stream << serv._Locations[i];
+	stream << "\e[36m _DefaultServer: \e[0m" << std::endl;
+	for (it = serv._DefaultServer.begin(); it != serv._DefaultServer.end(); ++it)
 	{
-		std::cout << "\t    Key: " << "\e[31m>>\e[0m" << it->first << "\e[31m<<\e[0m" <<std::endl << "\t Values: ";
+		stream << "\t    Key: " << "\e[31m>>\e[0m" << it->first << "\e[31m<<\e[0m" <<std::endl << "\t Values: ";
 		for (size_t i = 0; i < it->second.size(); ++i)
-			std::cout << "\e[31m|\e[0m" << it->second[i] << "\e[31m|\e[0m ";
-		std::cout << std::endl;
+			stream << "\e[31m|\e[0m" << it->second[i] << "\e[31m|\e[0m ";
+		stream << std::endl;
 	}
-	std::cout << "\e[36m _ListenIPandPorts: \e[0m" << std::endl;
-	for (it = _ListenIPandPorts.begin(); it != _ListenIPandPorts.end(); ++it)
+	stream << "\e[36m _ListenIPandPorts: \e[0m" << std::endl;
+	for (it = serv._ListenIPandPorts.begin(); it != serv._ListenIPandPorts.end(); ++it)
 	{
-		std::cout << "\t    Key: " << "\e[31m>>\e[0m" << it->first << "\e[31m<<\e[0m" <<std::endl << "\t Values: ";
+		stream << "\t    Key: " << "\e[31m>>\e[0m" << it->first << "\e[31m<<\e[0m" <<std::endl << "\t Values: ";
 		for (size_t i = 0; i < it->second.size(); ++i)
-			std::cout << "\e[31m|\e[0m" << it->second[i] << "\e[31m|\e[0m ";
-		std::cout << std::endl;
+			stream << "\e[31m|\e[0m" << it->second[i] << "\e[31m|\e[0m ";
+		stream << std::endl;
 	}
-	std::cout << " \e[33m #################################### \e[0m" << std::endl;
+	return stream;
 }

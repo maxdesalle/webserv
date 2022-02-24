@@ -6,7 +6,7 @@
 /*   By: tderwedu <tderwedu@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/01/26 11:47:16 by ldelmas           #+#    #+#             */
-/*   Updated: 2022/02/23 19:29:26 by tderwedu         ###   ########.fr       */
+/*   Updated: 2022/02/24 18:23:35 by tderwedu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,8 +46,8 @@ class Request : public Header
 		std::map<std::string const, std::string> _cgiSerVars;
 		size_t			_cursor;
 		size_t			_body_size; // tderwedu
-		body			_type;
 		state			_state;
+		body			_type;
 		chunk			_chunk; // tderwedu
 
 		int				_getNextLine(std::string const &str, std::string &line);

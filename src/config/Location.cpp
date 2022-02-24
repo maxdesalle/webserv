@@ -6,7 +6,7 @@
 /*   By: tderwedu <tderwedu@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/01/28 14:30:39 by mdesalle          #+#    #+#             */
-/*   Updated: 2022/02/22 16:49:17 by tderwedu         ###   ########.fr       */
+/*   Updated: 2022/02/24 15:31:22 by tderwedu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -314,9 +314,10 @@ bool		Location::isMethodValid(const std::string &method)	const
 	return (false);
 }
 
-void		Location::printLocation(void) const
+std::ostream&	operator<<(std::ostream& stream, Location const& loc)
 {
-	std::cout << "\t\e[34m Location : \e[0m" << std::endl;
-	std::cout << "\t  - Path : " << "\e[31m>>\e[0m"<< _Path << "\e[31m<<\e[0m"<< std::endl;
-	std::cout << "\t  - Root : " << "\e[31m>>\e[0m" << _Root << "\e[31m<<\e[0m" << std::endl;
+	stream << "\t\e[34m Location : \e[0m" << std::endl;
+	stream << "\t  - Path : " << "\e[31m>>\e[0m"<< loc._Path << "\e[31m<<\e[0m"<< std::endl;
+	stream << "\t  - Root : " << "\e[31m>>\e[0m" << loc._Root << "\e[31m<<\e[0m" << std::endl;
+	return stream;
 }

@@ -6,7 +6,7 @@
 /*   By: tderwedu <tderwedu@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/01/26 14:57:25 by ldelmas           #+#    #+#             */
-/*   Updated: 2022/02/23 18:10:38 by tderwedu         ###   ########.fr       */
+/*   Updated: 2022/02/24 17:48:39 by tderwedu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -120,7 +120,7 @@ bool		Header::_isObsText(unsigned char c)
 
 bool		Header::_isFieldVchar(unsigned char c)
 {
-	return (c > 31);
+	return (c > 31 && c < 127);
 }
 
 
@@ -847,18 +847,21 @@ std::string const	Header::_parseFieldContent(std::string const &str, size_t pos)
 
 std::string const	Header::_parseFieldValue(std::string const &str, size_t pos)
 {
-	std::string s = str.substr(pos);
-	std::string value("");
-	std::string	tmp = Header::_parseObsFold(s);
-	if (tmp == "")
+	std::string				s = str.substr(pos);
+	std::string				value("");
+	std::string				tmp = Header::_parseObsFold(s);
+	if (tmp.empty())
 		tmp = Header::_parseFieldContent(s);
 	value += tmp;
-	while (tmp != "")
+	s = s.substr(1);
+	while (!s.empty())
 	{
 		tmp = Header::_parseObsFold(s);
-		if (tmp == "")
+		tmp = Header::_parseObsFold(s);
+		if (tmp.empty())
 			tmp = Header::_parseFieldContent(s);
 		value += tmp;
+		s = s.substr(1);
 	}
 	return value;
 }

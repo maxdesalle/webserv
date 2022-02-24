@@ -6,7 +6,7 @@
 #    By: tderwedu <tderwedu@student.s19.be>         +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2022/01/18 10:08:26 by maxdesall         #+#    #+#              #
-#    Updated: 2022/02/23 19:28:21 by tderwedu         ###   ########.fr        #
+#    Updated: 2022/02/24 16:12:36 by tderwedu         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -25,7 +25,7 @@ CONFIG		:= ConfigHandler.cpp \
 			   Server.cpp \
 			   Location.cpp
 SOCKETS		:= RequestHandler.cpp \
-			   NetworkSocket.cpp \
+			   ListenSocket.cpp \
 			   ClientSocket.cpp \
 			   Webserv.cpp
 HTTP		:= Request.cpp \

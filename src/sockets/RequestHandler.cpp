@@ -6,13 +6,14 @@
 /*   By: tderwedu <tderwedu@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/23 10:57:33 by tderwedu          #+#    #+#             */
-/*   Updated: 2022/02/23 19:31:19 by tderwedu         ###   ########.fr       */
+/*   Updated: 2022/02/24 19:39:51 by tderwedu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "RequestHandler.hpp"
 
-RequestHandler::RequestHandler() {}
+RequestHandler::RequestHandler(): _request(), _response() {}
+RequestHandler::RequestHandler(RequestHandler const& rhs) { *this = rhs; }
 
 RequestHandler::~RequestHandler() {}
 
@@ -21,9 +22,9 @@ RequestHandler&	RequestHandler::operator=(RequestHandler const& rhs)
 	if (this != &rhs)
 	{
 		_request = rhs._request;
+		_response = rhs._response;
 		_server = rhs._server;
 		_location = rhs._location;
-		_response = rhs._response;
 		_state = rhs._state;
 	}
 	return *this;

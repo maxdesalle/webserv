@@ -6,7 +6,7 @@
 /*   By: tderwedu <tderwedu@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/01/26 14:59:17 by ldelmas           #+#    #+#             */
-/*   Updated: 2022/02/23 19:29:06 by tderwedu         ###   ########.fr       */
+/*   Updated: 2022/02/24 19:21:35 by tderwedu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,13 +40,13 @@ std::string const Request::_cgiSerVarNames[ENV_NUM] = {"SERVER_SOFTWARE", "SERVE
 
 /*CONSTRUCTORS AND DESTRUCTORS*/
 
-Request::Request(void) : Header(Request::_fieldNames), _remain(""), _cursor(0), _state(STARTLINE)
+Request::Request(void) : Header(Request::_fieldNames), _remain(""), _cursor(0), _state(STARTLINE), _type(NONE)
 {
 	for (int i  = 0; i < ENV_NUM; i++)
 		this->_cgiSerVars.insert(std::pair<std::string const, std::string>(_cgiSerVarNames[i], ""));
 }
 
-Request::Request(std::string const &request) : Header(Request::_fieldNames), _remain(""), _cursor(0), _state(STARTLINE)
+Request::Request(std::string const &request) : Header(Request::_fieldNames), _remain(""), _cursor(0), _state(STARTLINE), _type(NONE)
 {
 	for (int i  = 0; i < ENV_NUM; i++)
 		this->_cgiSerVars.insert(std::pair<std::string const, std::string>(_cgiSerVarNames[i], ""));
@@ -56,8 +56,6 @@ Request::Request(std::string const &request) : Header(Request::_fieldNames), _re
 Request::Request(Request const &src) {this->_headerFields = src._headerFields;}
 
 Request::~Request(void) {}
-
-
 
 /*OPERATOR OVERLOADS*/
 
@@ -70,8 +68,8 @@ Request			&Request::operator=(Request const &right)
 	this->_body = right._body;
 	this->_remain = right._remain;
 	this->_cursor = right._cursor;
-	this->_type = right._type;
 	this->_state = right._state;
+	this->_type = right._type;
 	for (int i = 0; i < ENV_NUM; i++)
 	{
 		std::string const &key = Request::_cgiSerVarNames[i];
@@ -289,13 +287,15 @@ int				Request::_getNextLine(std::string const &str, std::string &line)
 int				Request::_getNextField(std::string const &str, std::string &line)
 {
 	size_t pos = str.find("\r\n", this->_cursor);
-	if (pos == std::string::npos || !str[pos] || str[pos] == ' ' || str[pos] == '	')
-	{
-		line = str.substr(this->_cursor);
-		return 0;
-	}
+	// if (pos == std::string::npos || !str[pos] || str[pos] == ' ' || str[pos] == '	')
+	// {
+	// 	line = str.substr(this->_cursor);
+	// 	return 0;
+	// }
 	line = str.substr(this->_cursor, pos - this->_cursor);
 	this->_cursor = pos+2;
+	if (line.empty())
+		return 0;
 	return 1; //TODO:check if OK ADDED by tderwedu 
 }
 
@@ -360,7 +360,10 @@ int				Request::_parseHeaderField(std::string const &line)
 		{
 			std::string s = trimSpaces(line.substr(str.length()));
 			if (Header::_parseFieldValue(s) != s)
+			{
+				std::cout << "OH NOOOOooooo!" << std::endl; // TODO:remove
 				return 400;
+			}
 			else if (this->_headerFields[Request::_fieldNames[j]][0])
 				this->_headerFields[Request::_fieldNames[j]] += ',' + s;
 			else
@@ -368,6 +371,7 @@ int				Request::_parseHeaderField(std::string const &line)
 			return 0;
 		}
 	}
+	std::cout << "OH NOOOOooooo! 2" << std::endl; // TODO:remove
 	return 400;
 }
 
@@ -385,8 +389,12 @@ int				Request::parseRequest(std::string const &request)
 	std::string line;
 	this->_cursor = 0;
 	std::string full = this->_remain + request;
+
+	std::cout << "\e[35m ==0== parseRequest ==0== \e[0m" << std::endl; // TODO:remove
+	std::cout << "\t\t_state: " << _state << " - _type: " << _type << std::endl;
 	if (this->_state == STARTLINE)
 	{
+		std::cout << " ==> STARTLINE" << std::endl; // TODO:remove
 		if (!this->_getNextLine(full, line))
 		{
 			this->_remain = line;
@@ -398,25 +406,29 @@ int				Request::parseRequest(std::string const &request)
 	}
 	if (this->_state == HEADERS)
 	{
+		std::cout << " ==> HEADERS" << std::endl; // TODO:remove
 		int ret = 0;
 		while ((ret = this->_getNextField(full, line)))
+		{
+			std::cout << "RET: " << ret << " LINE: \e[31m>>\e[0m" << line << "\e[31m<<\e[0m" << std::endl; // TODO:remove
 			if (this->_parseHeaderField(line))
 				return 400;
-		if (line.substr(0, 2) != "\r\n")
-		{
-			std::string name;
-			if (!getFieldName(line, name) && name.length() > FIELDNAME_MAX)
-					return 400;
-			this->_remain = line;
-			return 1;
 		}
+		// if (line.substr(0, 2) != "\r\n")
+		// {
+		// 	std::string name;
+		// 	if (!getFieldName(line, name) && name.length() > FIELDNAME_MAX)
+		// 			return 400;
+		// 	this->_remain = line;
+		// 	return 1;
+		// }
 		this->_cursor += 2;
-		this->_state = BODY;
 		if (this->_findBodyType()) // tderwedu
 			return ret;
 	}
-	if (this->_state == BODY)
+	if (this->_type != NONE)
 	{
+		std::cout << " ==> BODY" << std::endl; // TODO:remove
 		return this->_getBody(full);
 	}
 	return 0;
@@ -445,6 +457,10 @@ int			Request::_findBodyType(void) // tderwedu
 			return 400;
 		this->_type = LEN;
 	}
+	if (this->_type == NONE)
+		this->_state = PROCESSING;
+	else
+		this->_state = BODY;
 	return 0;
 }
 
