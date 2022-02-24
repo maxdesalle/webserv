@@ -6,7 +6,7 @@
 /*   By: tderwedu <tderwedu@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/01/31 16:05:34 by tderwedu          #+#    #+#             */
-/*   Updated: 2022/02/23 18:57:38 by tderwedu         ###   ########.fr       */
+/*   Updated: 2022/02/24 13:02:01 by tderwedu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,7 +15,6 @@
 
 # include <unistd.h>		// fcntl, sysconf
 # include <string.h>		// bzero
-# include <iostream>
 # include <errno.h>
 # include <fcntl.h>			// fcntl
 # include <sys/socket.h>	// socket(), shutdown(), bind(), listen(), accept(), recv(), send()
@@ -23,6 +22,8 @@
 # include <netinet/in.h>
 # include <sys/time.h> 		// struct timeval
 # include <limits.h>		// for OPEN_MAX
+# include <iostream>
+# include <typeinfo>
 # include <poll.h>
 # include <vector>
 # include <deque>

@@ -6,7 +6,7 @@
 /*   By: tderwedu <tderwedu@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/23 10:55:52 by tderwedu          #+#    #+#             */
-/*   Updated: 2022/02/23 17:50:57 by tderwedu         ###   ########.fr       */
+/*   Updated: 2022/02/24 14:24:38 by tderwedu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,6 +16,9 @@
 ClientSocket::ClientSocket(int port, in_addr_t addr, t_poll& pollfd, Webserv& webserv) : NetworkSocket(port, addr, pollfd), _webserv(webserv)
 {
 	_timer.start();
+	std::cout << " \e[32m===> ClientSocket \e[0m" << std::endl;
+	std::cout << "     -   Port: " << _port << std::endl;
+	std::cout << "     - PollFD: " << _pollfd.fd << std::endl;
 }
 
 ClientSocket::~ClientSocket()
@@ -38,12 +41,24 @@ void		ClientSocket::getNewRequest(void)
 	RequestHandler&	handler = _messages.back();
 	Request&		request = handler.getRequest();
 
+	// std::cout << "\e[34m \t############################# \e[0m" << std::endl;
+	std::cout << "\e[33m \t *** New Request *** \e[0m" << std::endl;
+	std::cout << "\t -   Port: " << _port << std::endl;
+	std::cout << "\t - PollFD: " << _pollfd.fd << " ; " << _pollfd.revents << std::endl;
+
 	if (_pollfd.fd < 0)
+	{
+		std::cout << " \e[31m \t \t _pollfd.fd < 0 ! \e[0m" << std::endl; // TODO:remove
 		return ;
+	}
 	if (_pollfd.revents & (POLLHUP | POLLERR)) // Client disconnected or Any error
+	{
+		std::cout << " \e[31m \t \t POLLHUP | POLLERR ! \e[0m" << std::endl; // TODO:remove
 		_clearSocket();
+	}
 	else if (_pollfd.revents & POLLNVAL) // FD not open
 	{
+		std::cout << " \e[31m \t \t TIMEOUT ! \e[0m" << std::endl; // TODO:remove
 		if (_timer.getElapsedTime() < TIMEOUT_NVAL)
 			return ;
 		_pollfd.fd = -1;
@@ -51,7 +66,9 @@ void		ClientSocket::getNewRequest(void)
 	}
 	else if (_pollfd.revents & POLLIN)
 	{
+		std::cout << " OK OK " << std::endl; // TODO:remove
 		n = recv(_pollfd.fd, _buff, buffSize, 0);
+		std::cout << " OK OK OK " << std::endl; // TODO:remove
 		if (n < 0)
 			_clearSocket();
 		if (n == 0) // Client initated a gracefull close
@@ -72,7 +89,11 @@ void		ClientSocket::getNewRequest(void)
 		}	
 	}
 	else if (!request.isProcessing() && _timer.getElapsedTime() > TIMEOUT)
+	{
+		std::cout << " \e[31m \t \t TIMEOUT while processing ! \e[0m" << std::endl; // TODO:remove
 		_clearSocket();
+	}
+	std::cout << " Bye! \e[0m" << std::endl; // TODO:remove
 }
 
 int			ClientSocket::empty(void)

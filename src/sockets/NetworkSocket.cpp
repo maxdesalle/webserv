@@ -6,7 +6,7 @@
 /*   By: tderwedu <tderwedu@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/23 10:56:44 by tderwedu          #+#    #+#             */
-/*   Updated: 2022/02/23 17:37:06 by tderwedu         ###   ########.fr       */
+/*   Updated: 2022/02/24 14:08:03 by tderwedu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,7 +14,11 @@
 
 NetworkSocket::NetworkSocket(int port, in_addr_t addr, t_poll& pollfd)
 :_port(port), _addr(addr), _pollfd(pollfd), _state(OPEN)
-{}
+{
+	std::cout << " \e[36m===> NetworkSocket \e[0m" << std::endl;
+	std::cout << "     -   Port: " << _port << std::endl;
+	std::cout << "     - PollFD: " << _pollfd.fd << " ; " << _pollfd.events << " ; " << _pollfd.revents << std::endl;
+}
 
 NetworkSocket::~NetworkSocket() {}
 

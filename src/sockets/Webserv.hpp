@@ -6,7 +6,7 @@
 /*   By: tderwedu <tderwedu@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/01/31 10:19:04 by tderwedu          #+#    #+#             */
-/*   Updated: 2022/02/23 19:19:11 by tderwedu         ###   ########.fr       */
+/*   Updated: 2022/02/24 14:10:00 by tderwedu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,6 +16,7 @@
 # include <iostream>
 # include <vector>
 # include <map>
+# include <set>
 
 # include "NetworkIPC.hpp"
 # include "NetworkSocket.hpp"
@@ -28,7 +29,7 @@
 # endif
 
 # define OPEN_MAX_GUESS		256
-# define POLL_FLAGS			POLLIN | POLLOUT	// POLLERR | POLLHUP | POLLNVAL are allways set
+# define POLL_FLAGS			POLLIN 	// POLLERR | POLLHUP | POLLNVAL are allways set
 
 typedef std::vector<NetworkSocket>		vecNetSock;
 typedef vecNetSock::iterator			itNetSock;
@@ -39,9 +40,9 @@ class Webserv
 {
 private:
 	static std::string const	_validMethod[4];
-	size_t						_fdInUse;
+	size_t						_fdInUse, _nbrPorts, _nbrPoll, _nbrPollMax;
 	vecServer					_servers;
-	std::vector<t_poll>			_pollfd;
+	t_poll						*_pollfd;
 	vecNetSock					_serverSocks;
 	lstClieSock					_clientSocks;
 	
@@ -50,15 +51,19 @@ public:
 	Webserv(void);
 	~Webserv(void);
 
-	void				_setOpenMax(void) const;
-	void				initServer(std::string const& config);
-
 	vecServer&			getServers(void);
-	
-	void				addServerSocket(int port, int nbr_queue);
 
-	void				checkServerSockets(void);
-	void				checkClientSockets(void);
+	void				initServer(std::string const& config);
+	void				_setOpenMax(void) const;
+	void				_setNetworkSockets(void);
+	void				_addNetworkSocket(int port, int nbr_queue);
+
+	void				runWebserv(void);
+	size_t				__getNbrPollNetwork(void) const;
+	size_t				__getNbrPollClient(void) const;
+	void				_checkServerSockets(void);
+
+	void				_checkClientSockets(void);
 	void				reapClosedClientSock(void);
 	
 	t_poll&				addPollfd(int fd_client);

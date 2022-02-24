@@ -6,7 +6,7 @@
 /*   By: tderwedu <tderwedu@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/23 10:58:04 by tderwedu          #+#    #+#             */
-/*   Updated: 2022/02/23 17:41:31 by tderwedu         ###   ########.fr       */
+/*   Updated: 2022/02/24 14:26:21 by tderwedu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,10 +18,10 @@ Webserv::Webserv(void) {}
 
 Webserv::~Webserv(void)
 {
-	_pollfd.clear();
 	_servers.clear();
 	_serverSocks.clear();
 	_clientSocks.clear();
+	delete [] _pollfd;
 }
 
 // Webserv&	Webserv::operator=(Webserv const& rhs)
@@ -36,6 +36,30 @@ Webserv::~Webserv(void)
 // 	}
 // 	return *this;
 // }
+
+vecServer&			Webserv::getServers(void)
+{
+	return _servers;
+}
+
+void				Webserv::initServer(std::string const& config)
+{
+	_setOpenMax();
+	_pollfd = new t_poll[open_max];
+	_fdInUse = 0;
+	_nbrPollMax = 0;
+	std::cout << "\e[32m \t############################# \e[0m" << std::endl; // TODO: DEBUG
+	std::cout << "\e[32m \t#          PARSING          # \e[0m" << std::endl;
+	std::cout << "\e[32m \t############################# \e[0m" << std::endl;
+	_servers = ConfigHandler(config);
+	printServers(_servers);
+	std::cout << "\e[32m \t############################# \e[0m" << std::endl; // TODO: DEBUG
+	std::cout << "\e[32m \t#          WEBSERV          # \e[0m" << std::endl;
+	std::cout << "\e[32m \t############################# \e[0m" << std::endl;
+	_setNetworkSockets();
+	std::cout << " NetworkSockets: \e[31m" << _serverSocks.size() << "\e[0m" << std::endl; // TODO: DEBUG
+	std::cout << "       _fdInUse: \e[31m" << _fdInUse << "\e[0m" << std::endl;
+}
 
 void				Webserv::_setOpenMax(void) const
 {
@@ -52,30 +76,35 @@ void				Webserv::_setOpenMax(void) const
 	}
 }
 
-void				Webserv::initServer(std::string const& config)
+void				Webserv::_setNetworkSockets(void)
 {
-	_setOpenMax();
-	_fdInUse = 0;
-	_servers = ConfigHandler(config);
-	printServers(_servers);
+	std::set<int>	ports;
+	mapServer		ip_ports;
+
+	for (citServer serv = _servers.begin(); serv != _servers.end(); ++serv)
+	{
+		ip_ports = serv->GetListenIPandPorts();
+		for (mapServer::const_iterator cit = ip_ports.begin(); cit != ip_ports.end(); ++cit)
+		{
+			for (std::vector<size_t>::const_iterator port = cit->second.begin(); port != cit->second.end(); ++port)
+				ports.insert(*port);
+		}
+	}
+	_nbrPorts = ports.size();
+	std::cout << " Listening Sockets: \e[31m" << _nbrPorts << "\e[0m" << std::endl; // TODO: DEBUG
+	for (std::set<int>::const_iterator port = ports.begin(); port != ports.end(); ++port)
+		_addNetworkSocket(*port, SOMAXCONN);
 }
 
-vecServer&	Webserv::getServers(void)
+void				Webserv::_addNetworkSocket(int port, int nbr_queue)
 {
-	return _servers;
-}
-
-void				Webserv::addServerSocket(int port, int nbr_queue)
-{
-	int			fd_sock;
-	int			opt;
-	t_poll		pollfd;
+	int				fd_sock;
+	int				opt;
 	t_sockaddr_in	sockaddr;
 
 	opt = 1;
 	if ((fd_sock = socket(AF_INET, SOCK_STREAM, 0)) < 1)
 		exit(EXIT_FAILURE);														//TODO: better error handling
-	
 	// Set NON-BLOCKING and SO_REUSEADDR
 	// Avoid EADDRINUSE -> BIND and LISTEN should not return any error
 	fcntl(fd_sock, F_SETFL, O_NONBLOCK);
@@ -90,16 +119,36 @@ void				Webserv::addServerSocket(int port, int nbr_queue)
 	nbr_queue = (nbr_queue > SOMAXCONN ? SOMAXCONN : nbr_queue);
 	listen(fd_sock, nbr_queue);
 
-	pollfd.fd = fd_sock;
-	pollfd.events = POLL_FLAGS;
-	pollfd.revents = 0;
-	_pollfd.push_back(pollfd);
+	_pollfd[_nbrPollMax].fd = fd_sock;
+	_pollfd[_nbrPollMax].events = POLL_FLAGS;
+	_pollfd[_nbrPollMax].revents = 0;
+	_serverSocks.push_back(NetworkSocket(port, htonl(INADDR_ANY), _pollfd[_nbrPollMax]));
+	++_nbrPollMax;
 	++_fdInUse;
-
-	_serverSocks.push_back(NetworkSocket(fd_sock, htonl(INADDR_ANY), _pollfd.back()));
 }
 
-void				Webserv::checkServerSockets(void)
+void				Webserv::runWebserv(void)
+{
+	while (true)
+	{
+		std::cout << "[Listen: " << _nbrPorts << "; Client: " << _fdInUse - _nbrPorts << "; PollMax:" << _nbrPollMax << "]"<< std::endl;
+		std::cout << "\e[34m *** Waiting for new connection *** \e[0m" << std::endl;
+		
+		_nbrPoll = poll(_pollfd, _nbrPollMax + 1, -1);
+		
+		std::cout << "[Poll: \e[0m" << _nbrPoll <<  "; Listen: " << __getNbrPollNetwork() \
+			<< "; Client: " << __getNbrPollClient() << "]" << std::endl;
+		
+		_checkServerSockets();
+		if (__getNbrPollClient())
+		{
+			_checkClientSockets();
+			pause();
+		}
+	}
+}
+
+void				Webserv::_checkServerSockets(void)
 {
 	int				fd_client;
 	in_addr_t		addr;
@@ -107,19 +156,24 @@ void				Webserv::checkServerSockets(void)
 	short			revents;
 	t_sockaddr_in	sockaddr;
 
-
+	int i = -1;
 	for (itNetSock it = _serverSocks.begin(); it != _serverSocks.end(); ++it)
 	{
+		++i;
 		// TODO: check _fdInUse < open_max
 		// TODO: check other values of revents
 		revents = (it->getPollFd()).revents;
 		if (revents == POLLOUT)
 			continue ;
-		if (revents | POLLIN)
+		if (revents & POLLIN)
 		{
+			std::cout << "\e[35m ===> New connection from PORT: \e[0m" << it->getPort() << std::endl;
 			socklen = sizeof(sockaddr);
 			if ((fd_client = accept((it->getPollFd()).fd, (t_sockaddr *) &sockaddr, &socklen)) < 0)
+			{
+				std::cout << "\e[31m ERROR: accept" << std::endl;
 				exit(EXIT_FAILURE);												//TODO: better error handling;
+			}
 			fcntl(fd_client, F_SETFL, O_NONBLOCK);
 			addr = sockaddr.sin_addr.s_addr;
 			_clientSocks.push_back(ClientSocket(it->getPort(), addr, addPollfd(fd_client), *this));
@@ -129,13 +183,26 @@ void				Webserv::checkServerSockets(void)
 	}
 }
 
-/*
-** - POLLHUP: peer closed its end of the channel
-** - POLLNVAL: fd not open
-** - POLLERR: error
-*/
+size_t				Webserv::__getNbrPollNetwork(void) const
+{
+	size_t	nbr = 0;
 
-void				Webserv::checkClientSockets(void)
+	for (size_t i = 0; i < _nbrPorts; ++i)
+		nbr += (_pollfd[i].revents & POLLIN);
+	return nbr;
+}
+
+size_t				Webserv::__getNbrPollClient(void) const
+{
+	size_t	nbr = 0;
+
+	for (size_t i = _nbrPorts; i <= _nbrPollMax; ++i)
+		nbr += (_pollfd[i].revents & POLLIN);
+	return nbr;
+}
+
+
+void				Webserv::_checkClientSockets(void)
 {
 	itClieSock		client;
 
@@ -164,38 +231,30 @@ void				Webserv::reapClosedClientSock(void)
 
 t_poll&				Webserv::addPollfd(int fd_client)
 {
-	t_poll							new_pollfd;
-	std::vector<t_poll>::iterator	it;
+	size_t	i = 0;
 
-	if (_fdInUse == _pollfd.size())
+	if (_nbrPollMax == _fdInUse)
 	{
-		new_pollfd.fd = fd_client;
-		new_pollfd.events = POLL_FLAGS;
-		new_pollfd.revents = 0;
-		_pollfd.push_back(new_pollfd);
-		++_fdInUse;
-		return _pollfd.back();
+		++_nbrPollMax;
+		i = _nbrPollMax;
 	}
 	else
 	{
-		it = _pollfd.begin();
-		while (it != _pollfd.end())
-		{
-			if (it->fd < 0)
-				break ;
-			 ++it;
-		}
-		it->fd = fd_client;
-		it->events = POLL_FLAGS;
-		it->revents = 0;
-		++_fdInUse;
-		return *it;
+		while (_pollfd[i].fd != -1)
+			++i;
 	}
+	_pollfd[i].fd = fd_client;
+	_pollfd[i].events = POLL_FLAGS;
+	_pollfd[i].revents = 0;
+	++_fdInUse;
+	return _pollfd[i];
 }
 
 void				Webserv::popPollfd(t_poll&	pollfd)
 {
 	pollfd.fd = -1;
+	while (_pollfd[_nbrPollMax].fd == -1)
+		--_nbrPollMax;
 	--_fdInUse;
 }
 
