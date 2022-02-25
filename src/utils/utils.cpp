@@ -6,7 +6,7 @@
 /*   By: tderwedu <tderwedu@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/14 15:31:19 by tderwedu          #+#    #+#             */
-/*   Updated: 2022/02/18 11:53:44 by tderwedu         ###   ########.fr       */
+/*   Updated: 2022/02/25 10:23:33 by tderwedu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,7 +18,7 @@ bool	ci_equal(const std::string &s1, const std::string &s2)
 		return false;
 	for (size_t i = 0; i < s1.size(); ++i)
 	{
-		if ((s1[i] | 0x2) != (s2[i] | 0x20))
+		if ((s1[i] | 0x20) != (s2[i] | 0x20))
 			return false;
 	}
 	return true;

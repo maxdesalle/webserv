@@ -6,7 +6,7 @@
 /*   By: tderwedu <tderwedu@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/01 15:22:19 by tderwedu          #+#    #+#             */
-/*   Updated: 2022/02/24 19:47:51 by tderwedu         ###   ########.fr       */
+/*   Updated: 2022/02/25 10:55:45 by tderwedu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,12 +26,9 @@ typedef lstReqHand::iterator			itReqHand;
 
 class ClientSocket : public ListenSocket
 {
-public:
-	static const int	buffSize = BUFF_SIZE;
 private:
 	Webserv&			_webserv;
 	lstReqHand			_messages;
-	char				_buff[BUFF_SIZE];
 	Timer				_timer;
 
 public:

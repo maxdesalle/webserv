@@ -6,7 +6,7 @@
 /*   By: tderwedu <tderwedu@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/01/26 14:59:17 by ldelmas           #+#    #+#             */
-/*   Updated: 2022/02/25 09:34:48 by tderwedu         ###   ########.fr       */
+/*   Updated: 2022/02/25 12:03:59 by tderwedu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,7 +22,7 @@ std::string const Request::_fieldNames[33] = {"Cache-Control", "Expect", "Host",
 										"Accept-Encoding", "Accept-Language",
 										"Authorization", "Proxy-Authorization",
 										"From", "Referer", "User-Agent",
-										"Transfer-encoding", "Content-Length", 
+										"Transfer-Encoding", "Content-Length", 
 										"TE", "Trailer", "Connection", "Via",
 										"Received", "Warning", "Keep-Alive",
 										"Upgrade", "Content-Type", ""};
@@ -293,9 +293,9 @@ int				Request::_getNextField(std::string const &str, std::string &line)
 	// 	return 0;
 	// }
 	line = str.substr(this->_cursor, pos - this->_cursor);
-	this->_cursor = pos+2;
 	if (line.empty())
 		return 0;
+	this->_cursor = pos+2;
 	return 1; //TODO:check if OK ADDED by tderwedu 
 }
 
@@ -422,18 +422,15 @@ int				Request::parseRequest(std::string const &request)
 		// 	return 1;
 		// }
 		this->_cursor += 2;
-		if (this->_findBodyType()) // tderwedu
+		if ((ret = this->_findBodyType()))
 			return ret;
 	}
 	if (this->_type != NONE)
-	{
-		std::cout << " ==> BODY: " << _type << std::endl; // TODO:remove
 		return this->_getBody(full);
-	}
 	return 0;
 }
 
-int			Request::_findBodyType(void) // tderwedu
+int			Request::_findBodyType(void)
 {
 	char			*ptr = NULL;
 	std::string		value;
@@ -441,11 +438,13 @@ int			Request::_findBodyType(void) // tderwedu
 	value = getField("Transfer-Encoding");
 	if (!value.empty())
 	{
-		if (ci_equal(value, "Chunked"))
+		if (!ci_equal(value, "chunked"))
 			return 501; // (Not Implemented)
+		this->_body_size = 0;
 		this->_type = CHUNKED;
 		this->_chunk = SIZE;
-		this->_body_size = 0;
+		this->_state = BODY;
+		return 0;
 	}
 	value = getField("Content-Length");
 	if (!value.empty())
@@ -455,15 +454,14 @@ int			Request::_findBodyType(void) // tderwedu
 		if (this->_body_size < 0 || ptr != &value[value.size()] || errno)
 			return 400;
 		this->_type = LEN;
-	}
-	if (this->_type == NONE)
-		this->_state = PROCESSING;
-	else
 		this->_state = BODY;
+		return 0;
+	}
+	this->_state = PROCESSING;
 	return 0;
 }
 
-int			Request::_getBody(std::string const &buff) // tderwedu
+int			Request::_getBody(std::string const &buff)
 {
 	int				ret = 0;
 	char			*ptr = NULL;
@@ -471,21 +469,34 @@ int			Request::_getBody(std::string const &buff) // tderwedu
 
 	if (this->_type == LEN)
 	{
-		if (buff.size() < this->_body_size)
+		this->_getNextLine(buff, line);
+		if (line.empty()) // TODO: handling "Expect: 100-continue"
 			return 1;
-		this->_body = buff.substr(this->_body_size);
+		if (buff.size() < this->_body_size)
+		{
+			this->_remain = buff;
+			return 1;
+		}
+		this->_body = buff.substr(0, this->_body_size);
 		this->_state = PROCESSING;
 		return 0;
 	}
 	else if (this->_chunk < TE) // Chunked data
 	{
-		while ((ret = this->_getNextLine(buff, line)) && (this->_chunk < TE))
+		std::cout << "\e[31m ==> PROCESSING CHUNKED BODY<==\e[0m" << std::endl;
+		std::cout << "BUFF:>>" << buff << "<<" << std::endl;
+		while ((ret = this->_getNextField(buff, line)) && (this->_chunk < TE))
 		{
+			std::cout << "LINE:" << line << std::endl;
 			if (this->_chunk == SIZE)
 			{
-				this->_body_size = strtol(buff.c_str(), &ptr, 16);
-				if (this->_body_size < 0 || ptr <= &buff[0] || errno)
+				std::cout << "size?" << std::endl;
+				errno = 0;
+				this->_body_size = strtol(line.c_str(), &ptr, 16);
+				std::cout << "_body_size?" << _body_size << std::endl;
+				if (this->_body_size < 0 || ptr <= line.c_str() || errno)
 					return 400;
+				std::cout << "SIZE:" << this->_body_size << std::endl;
 				if (this->_body_size)
 					this->_chunk = DATA;
 				else
@@ -496,24 +507,54 @@ int			Request::_getBody(std::string const &buff) // tderwedu
 			}
 			else if (this->_chunk == DATA)
 			{
+				if (line.size() < this->_body_size)
+				{
+					this->_remain = line;
+					return 1;
+				}
 				this->_body.append(line);
 				this->_chunk = SIZE;
 			}
 		}
-		this->_remain = line;
-		return 1;
-	}
-	else
-	{
-		while ((ret = this->_getNextLine(buff, line)) && line != "")
-			if (this->_parseHeaderField(line))	//TODO: allowed trailer field!!
-				return 400;
-		if (!ret)
+		if (this->_chunk < TE)
 		{
 			this->_remain = line;
 			return 1;
 		}
-		this->_state = PROCESSING;
-		return 0;
 	}
+	std::cout << "TE::LINE:" << line << std::endl;
+	while ((ret = this->_getNextField(buff, line)))
+		if (this->_parseHeaderField(line))	//TODO: allowed trailer field!!
+			return 400;
+	if (ret)
+	{
+		this->_remain = line;
+		return 1;
+	}
+	this->_state = PROCESSING;
+	return 0;
+}
+
+std::ostream&	operator<<(std::ostream& stream, Request const& req)
+{
+	static const std::string	body_type[] = {"", "Content-Length", "Chunked"};
+
+	stream	<< "\e[36m  Method: \e[0m" << req._method  << "\n" \
+			<< "\e[36m  Target: \e[0m" << req._target  << "\n" \
+			<< "\e[36m Version: \e[0m" << req._version << "\n" \
+			<< "\e[36m Headers \e[0m";
+	for (std::map<std::string const, std::string>::const_iterator it = req._headerFields.begin(); it != req._headerFields.end(); ++it)
+	{
+		if (it->second.empty())
+			continue ;
+		stream	<< "\n" << "\t \e[36m - " << it->first << ": \e[0m" << it->second;
+	}
+	if (!req._body.empty())
+	{
+		stream	<< "\n\e[36m  Body \e[0m";
+		if (req._type)
+			stream	<< " (" << body_type[req._type] << ")";
+		stream	<< "\n" << req._body ;
+	}
+	return stream;
 }

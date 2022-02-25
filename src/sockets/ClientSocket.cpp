@@ -6,7 +6,7 @@
 /*   By: tderwedu <tderwedu@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/23 10:55:52 by tderwedu          #+#    #+#             */
-/*   Updated: 2022/02/25 09:31:24 by tderwedu         ###   ########.fr       */
+/*   Updated: 2022/02/25 11:37:00 by tderwedu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,7 +33,6 @@ ClientSocket&	ClientSocket::operator=(ClientSocket const& rhs)
 		_pollfd = rhs._pollfd;
 		_state = rhs._state;
 		_messages = rhs._messages;
-		memcpy(_buff, rhs._buff, BUFF_SIZE);
 		_timer = rhs._timer;
 	}
 	return *this;
@@ -45,6 +44,7 @@ void		ClientSocket::getNewRequest(void)
 	ssize_t			n;
 	RequestHandler&	handler = _messages.back();
 	Request&		request = handler.getRequest();
+	char			_buff[BUFF_SIZE + 1];
 	std::string		buff;
 
 	std::cout << "\e[32m ===> New Request\e[0m" << std::endl;
@@ -71,16 +71,18 @@ void		ClientSocket::getNewRequest(void)
 	}
 	else if (_pollfd.revents & POLLIN)
 	{
-		n = recv(_pollfd.fd, _buff, buffSize, 0);
+		n = recv(_pollfd.fd, _buff, BUFF_SIZE, 0);
+		_buff[n] = '\0';
 		buff = std::string(_buff);
 		std::cout << "BUFF:\e[31m>>\e[0m" << _buff << "\e[31m<<\e[0m" << std::endl;
 		if (n < 0)
 			_clearSocket();
 		if (n == 0) // Client initated a gracefull close
 		{
+			std::cout << " \e[31m \t \t Connection CLosed ! \e[0m" << std::endl; // TODO:remove
 			request.reset();
-			if (_messages.size() == 1) // Not processing any request
-				sockShutdown();
+			sockClose();
+			return ;
 		}
 		if (_state == HALF_CLOSED)
 			return ;
@@ -89,6 +91,11 @@ void		ClientSocket::getNewRequest(void)
 			std::cout << "Error parseRequest: " << ret << std::endl;
 		if (request.isProcessing())
 		{
+			std::cout	<< "\e[32m"	<< " \t################### \n" \
+									<< " \t#     Request     # \n" \
+									<< " \t################### \e[0m" << std::endl;
+			std::cout	<< request << std::endl;
+			std::cout	<< " \t\e[32m------------------- \e[0m\n" << "";
 			if (_webserv.isValidRequest(request.getMethod()))
 				; // TODO: reponse "501 Not Implemented"
 			_findServer();
@@ -100,7 +107,6 @@ void		ClientSocket::getNewRequest(void)
 		std::cout << " \e[31m \t \t TIMEOUT while processing ! \e[0m" << std::endl; // TODO:remove
 		_clearSocket();
 	}
-	std::cout << " Bye! \e[0m" << std::endl; // TODO:remove
 }
 
 int			ClientSocket::empty(void)

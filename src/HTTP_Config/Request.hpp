@@ -6,7 +6,7 @@
 /*   By: tderwedu <tderwedu@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/01/26 11:47:16 by ldelmas           #+#    #+#             */
-/*   Updated: 2022/02/24 18:23:35 by tderwedu         ###   ########.fr       */
+/*   Updated: 2022/02/25 09:55:28 by tderwedu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,7 +38,7 @@ class Request : public Header
 		enum state {STARTLINE, HEADERS, BODY, PROCESSING, DONE};
 		enum chunk {SIZE, DATA, TE}; // tderwedu
 	private:
-		enum body {LEN, CHUNKED, NONE};
+		enum body {NONE, LEN, CHUNKED};
 	
 		static std::string const _fieldNames[33];
 		static std::string const _cgiSerVarNames[ENV_NUM];
@@ -81,6 +81,8 @@ class Request : public Header
 		int					parseRequest(std::string const &request);
 
 		void				reset(void); // tderwedu => state = STARTLINE, CLEAR map, _method, _target, _version, _body, _remain, ...
+
+		friend std::ostream&	operator<<(std::ostream& stream, Request const& sock);
 };
 
 #endif
