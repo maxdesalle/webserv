@@ -6,7 +6,7 @@
 /*   By: tderwedu <tderwedu@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/01/26 14:59:17 by ldelmas           #+#    #+#             */
-/*   Updated: 2022/02/24 19:21:35 by tderwedu         ###   ########.fr       */
+/*   Updated: 2022/02/25 09:34:48 by tderwedu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -391,7 +391,6 @@ int				Request::parseRequest(std::string const &request)
 	std::string full = this->_remain + request;
 
 	std::cout << "\e[35m ==0== parseRequest ==0== \e[0m" << std::endl; // TODO:remove
-	std::cout << "\t\t_state: " << _state << " - _type: " << _type << std::endl;
 	if (this->_state == STARTLINE)
 	{
 		std::cout << " ==> STARTLINE" << std::endl; // TODO:remove
@@ -428,7 +427,7 @@ int				Request::parseRequest(std::string const &request)
 	}
 	if (this->_type != NONE)
 	{
-		std::cout << " ==> BODY" << std::endl; // TODO:remove
+		std::cout << " ==> BODY: " << _type << std::endl; // TODO:remove
 		return this->_getBody(full);
 	}
 	return 0;

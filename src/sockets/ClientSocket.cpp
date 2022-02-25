@@ -6,7 +6,7 @@
 /*   By: tderwedu <tderwedu@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/23 10:55:52 by tderwedu          #+#    #+#             */
-/*   Updated: 2022/02/24 19:52:17 by tderwedu         ###   ########.fr       */
+/*   Updated: 2022/02/25 09:31:24 by tderwedu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,13 +21,17 @@ ClientSocket::ClientSocket(int port, in_addr_t addr, t_poll& pollfd, Webserv& we
 
 ClientSocket::ClientSocket(ClientSocket const& rhs) : ListenSocket(rhs._pollfd), _webserv(rhs._webserv) { *this = rhs; }
 
-ClientSocket::~ClientSocket()
-{}
+ClientSocket::~ClientSocket() {}
 
 ClientSocket&	ClientSocket::operator=(ClientSocket const& rhs)
 {
 	if (this != &rhs)
 	{
+		// std::cout << "\e[31mHELLO FROM ClientSocket::operator=\e[0m" << std::endl; // TODO:remove
+		_port = rhs._port;
+		_addr = rhs._addr;
+		_pollfd = rhs._pollfd;
+		_state = rhs._state;
 		_messages = rhs._messages;
 		memcpy(_buff, rhs._buff, BUFF_SIZE);
 		_timer = rhs._timer;

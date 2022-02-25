@@ -6,7 +6,7 @@
 /*   By: tderwedu <tderwedu@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/24 16:13:15 by tderwedu          #+#    #+#             */
-/*   Updated: 2022/02/24 19:50:30 by tderwedu         ###   ########.fr       */
+/*   Updated: 2022/02/25 09:29:19 by tderwedu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,6 +24,7 @@ ListenSocket&	ListenSocket::operator=(ListenSocket const& rhs)
 {
 	if (this != &rhs)
 	{
+		// std::cout << "\e[31mHELLO FROM ListenSocket::operator=\e[0m" << std::endl; // TODO:remove
 		_port = rhs._port;
 		_addr = rhs._addr;
 		_pollfd = rhs._pollfd;
