@@ -6,7 +6,7 @@
 /*   By: tderwedu <tderwedu@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/01/26 14:59:17 by ldelmas           #+#    #+#             */
-/*   Updated: 2022/02/25 12:03:59 by tderwedu         ###   ########.fr       */
+/*   Updated: 2022/02/25 13:51:47 by tderwedu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -390,10 +390,8 @@ int				Request::parseRequest(std::string const &request)
 	this->_cursor = 0;
 	std::string full = this->_remain + request;
 
-	std::cout << "\e[35m ==0== parseRequest ==0== \e[0m" << std::endl; // TODO:remove
 	if (this->_state == STARTLINE)
 	{
-		std::cout << " ==> STARTLINE" << std::endl; // TODO:remove
 		if (!this->_getNextLine(full, line))
 		{
 			this->_remain = line;
@@ -405,11 +403,9 @@ int				Request::parseRequest(std::string const &request)
 	}
 	if (this->_state == HEADERS)
 	{
-		std::cout << " ==> HEADERS" << std::endl; // TODO:remove
 		int ret = 0;
 		while ((ret = this->_getNextField(full, line)))
 		{
-			std::cout << "RET: " << ret << " LINE: \e[31m>>\e[0m" << line << "\e[31m<<\e[0m" << std::endl; // TODO:remove
 			if (this->_parseHeaderField(line))
 				return 400;
 		}
@@ -467,7 +463,7 @@ int			Request::_getBody(std::string const &buff)
 	char			*ptr = NULL;
 	std::string		line;
 
-	if (this->_type == LEN)
+	if (this->_type == LEN) // Content-Length
 	{
 		this->_getNextLine(buff, line);
 		if (line.empty()) // TODO: handling "Expect: 100-continue"
@@ -481,22 +477,17 @@ int			Request::_getBody(std::string const &buff)
 		this->_state = PROCESSING;
 		return 0;
 	}
-	else if (this->_chunk < TE) // Chunked data
+	else if (this->_chunk < TE) // Chunked : payload
 	{
-		std::cout << "\e[31m ==> PROCESSING CHUNKED BODY<==\e[0m" << std::endl;
-		std::cout << "BUFF:>>" << buff << "<<" << std::endl;
 		while ((ret = this->_getNextField(buff, line)) && (this->_chunk < TE))
 		{
 			std::cout << "LINE:" << line << std::endl;
 			if (this->_chunk == SIZE)
 			{
-				std::cout << "size?" << std::endl;
 				errno = 0;
 				this->_body_size = strtol(line.c_str(), &ptr, 16);
-				std::cout << "_body_size?" << _body_size << std::endl;
 				if (this->_body_size < 0 || ptr <= line.c_str() || errno)
 					return 400;
-				std::cout << "SIZE:" << this->_body_size << std::endl;
 				if (this->_body_size)
 					this->_chunk = DATA;
 				else
@@ -522,7 +513,7 @@ int			Request::_getBody(std::string const &buff)
 			return 1;
 		}
 	}
-	std::cout << "TE::LINE:" << line << std::endl;
+	// Chunked : Trailer
 	while ((ret = this->_getNextField(buff, line)))
 		if (this->_parseHeaderField(line))	//TODO: allowed trailer field!!
 			return 400;

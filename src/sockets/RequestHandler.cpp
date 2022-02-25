@@ -6,7 +6,7 @@
 /*   By: tderwedu <tderwedu@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/23 10:57:33 by tderwedu          #+#    #+#             */
-/*   Updated: 2022/02/24 19:39:51 by tderwedu         ###   ########.fr       */
+/*   Updated: 2022/02/25 14:10:04 by tderwedu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,6 +37,7 @@ Request&			RequestHandler::getRequest(void)
 
 void			RequestHandler::setServer(Server& server)
 {
+	std::cout << "SERVER:\n" << server << std::endl; // TODO:remove
 	_server = &server;
 }
 

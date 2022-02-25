@@ -6,7 +6,7 @@
 /*   By: tderwedu <tderwedu@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/14 11:49:23 by tderwedu          #+#    #+#             */
-/*   Updated: 2022/02/24 19:38:12 by tderwedu         ###   ########.fr       */
+/*   Updated: 2022/02/25 14:05:33 by tderwedu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,16 +33,16 @@ public:
 	RequestHandler&		operator=(RequestHandler const& rhs);
 
 	Request&			getRequest(void);
-
-	void				setServer(Server& server);
-	void				clearRequestHandler(void);
-	void				processRessource(void);
-
 	std::string			getHost(void); // TODO
 	std::string			getRoot(void); // TODO
 	std::string			getTarget(void); // TODO
 	std::string			getPath(void); // TODO
 
+	void				clearRequestHandler(void);
+	void				processRessource(void);
+
+
+	void				setServer(Server& server);
 	void				_findLocation(const std::string &path);
 };
 

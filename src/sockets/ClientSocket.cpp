@@ -6,7 +6,7 @@
 /*   By: tderwedu <tderwedu@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/23 10:55:52 by tderwedu          #+#    #+#             */
-/*   Updated: 2022/02/25 11:37:00 by tderwedu         ###   ########.fr       */
+/*   Updated: 2022/02/25 14:08:11 by tderwedu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,7 +44,7 @@ void		ClientSocket::getNewRequest(void)
 	ssize_t			n;
 	RequestHandler&	handler = _messages.back();
 	Request&		request = handler.getRequest();
-	char			_buff[BUFF_SIZE + 1];
+	char			_buff[RECV_BUFF_SIZE + 1];
 	std::string		buff;
 
 	std::cout << "\e[32m ===> New Request\e[0m" << std::endl;
@@ -71,10 +71,10 @@ void		ClientSocket::getNewRequest(void)
 	}
 	else if (_pollfd.revents & POLLIN)
 	{
-		n = recv(_pollfd.fd, _buff, BUFF_SIZE, 0);
+		n = recv(_pollfd.fd, _buff, RECV_BUFF_SIZE, 0);
 		_buff[n] = '\0';
 		buff = std::string(_buff);
-		std::cout << "BUFF:\e[31m>>\e[0m" << _buff << "\e[31m<<\e[0m" << std::endl;
+		// std::cout << "BUFF:\e[31m>>\e[0m" << _buff << "\e[31m<<\e[0m" << std::endl;
 		if (n < 0)
 			_clearSocket();
 		if (n == 0) // Client initated a gracefull close
@@ -102,7 +102,7 @@ void		ClientSocket::getNewRequest(void)
 			_messages.push_back(RequestHandler());
 		}	
 	}
-	else if (!request.isProcessing() && _timer.getElapsedTime() > TIMEOUT)
+	else if (!request.isProcessing() && _timer.getElapsedTime() > TIMEOUT) // TODO: check first getElapsedTime and reset timer a each POLLIN
 	{
 		std::cout << " \e[31m \t \t TIMEOUT while processing ! \e[0m" << std::endl; // TODO:remove
 		_clearSocket();

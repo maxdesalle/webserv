@@ -6,7 +6,7 @@
 /*   By: tderwedu <tderwedu@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/01 15:22:19 by tderwedu          #+#    #+#             */
-/*   Updated: 2022/02/25 10:55:45 by tderwedu         ###   ########.fr       */
+/*   Updated: 2022/02/25 14:06:00 by tderwedu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,7 +17,7 @@
 # include "ListenSocket.hpp"
 # include "RequestHandler.hpp"
 
-# define	BUFF_SIZE	1024
+# define RECV_BUFF_SIZE 1024
 
 class Webserv;
 class RequestHandler;
