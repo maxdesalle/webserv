@@ -6,7 +6,7 @@
 /*   By: ldelmas <ldelmas@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/01/26 14:58:24 by ldelmas           #+#    #+#             */
-/*   Updated: 2022/02/28 20:54:48 by mdesalle         ###   ########.fr       */
+/*   Updated: 2022/02/28 21:07:57 by mdesalle         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -65,7 +65,7 @@ std::string	Response::FindStatusMessage(int *StatusCode)
 		case 300:
 			return ("Multiple Choices");
 		case 301:
-			return ("Moved Permanently);
+			return ("Moved Permanently");
 		case 302:
 			return ("Found");
 		case 303:
