@@ -6,7 +6,7 @@
 /*   By: tderwedu <tderwedu@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/01/26 11:48:07 by ldelmas           #+#    #+#             */
-/*   Updated: 2022/02/24 17:03:03 by mdesalle         ###   ########.fr       */
+/*   Updated: 2022/02/28 21:05:55 by mdesalle         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,6 +18,8 @@
 #include <sys/stat.h>
 #include <sys/types.h>
 #include <iostream>
+#include <fstream>
+#include <sstream>
 #include <string>
 #include <time.h>
 #include "Header.hpp"
@@ -38,7 +40,8 @@ class Response : public Header
 		Response const &operator=(Response const &right);
 
 		std::string	GetServerVersion(void);
-		std::string	GetHeaderResponse(Request HTTPRequest, std::string Path);
+		std::string	FindStatusMessage(int *StatusCode);
+		std::string	GetHeaderResponse(int StatusCode);
 		std::string	GetCurrentFormattedTime(void);
 		std::string	GetLastModifiedTimeForFile(std::string Path);
 };

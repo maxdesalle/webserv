@@ -6,13 +6,13 @@
 /*   By: mdesalle <mdesalle@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/09 14:38:27 by mdesalle          #+#    #+#             */
-/*   Updated: 2022/02/16 12:07:09 by mdesalle         ###   ########.fr       */
+/*   Updated: 2022/02/28 21:06:18 by mdesalle         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 //======================== CONSTRUCTORS / DESTRUCTORS ========================//
 
-CommonGatewayInterface::CommonGatewayInterface(Request &CGIRequest, Server &ServerConfig, Header &RequestHeaders)
+CommonGatewayInterface::CommonGatewayInterface(Request &CGIRequest)
 {
 	const std::map<const std::string, std::string>	CGIVariables = CGIRequest.getCGIServerVars();
 
@@ -74,7 +74,7 @@ char					*CommonGatewayInterface::FindValueInMap(const std::map<const std::strin
 	return (Value.c_str());
 }
 
-void					CommonGatewayInterface::ExecuteCGIScript(void)
+unsigned int			CommonGatewayInterface::ExecuteCGIScript(void)
 {
 	FILE				*In = tmpfile();
 	FILE				*Out = tmpfile();
@@ -92,7 +92,7 @@ void					CommonGatewayInterface::ExecuteCGIScript(void)
 	pid = fork();
 
 	if (pid < 0)
-		return ;
+		return (500); // Internal Server Error
 	else if (pid == 0)
 	{
 		dup2(FDin, STDIN_FILENO);
@@ -109,6 +109,7 @@ void					CommonGatewayInterface::ExecuteCGIScript(void)
 	}
 	else if (pid > 0)
 		waitpid(-1, NULL, 0);
+	return (200); // OK
 }
 
 size_t					CommonGatewayInterface::StringLength(char const *String)
