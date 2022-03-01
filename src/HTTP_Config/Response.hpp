@@ -6,7 +6,7 @@
 /*   By: tderwedu <tderwedu@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/01/26 11:48:07 by ldelmas           #+#    #+#             */
-/*   Updated: 2022/02/28 21:05:55 by mdesalle         ###   ########.fr       */
+/*   Updated: 2022/03/01 12:50:48 by mdesalle         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,6 +23,9 @@
 #include <string>
 #include <time.h>
 #include "Header.hpp"
+/* #include "Request.hpp" */
+#include "../cgi/CommonGatewayInterface.hpp"
+#include "../config/Location.hpp"
 
 class Response : public Header
 {
@@ -39,11 +42,19 @@ class Response : public Header
 
 		Response const &operator=(Response const &right);
 
+		bool		FindValueInVector(std::vector<std::string> Haystack, std::string Needle);
 		std::string	GetServerVersion(void);
-		std::string	FindStatusMessage(int *StatusCode);
-		std::string	GetHeaderResponse(int StatusCode);
 		std::string	GetCurrentFormattedTime(void);
+		std::string	FindStatusMessage(unsigned int *StatusCode);
 		std::string	GetLastModifiedTimeForFile(std::string Path);
+		std::string	HandleNormalPostRequest(Request &HTTPRequest, Location &HTTPLocation, unsigned int *StatusCode);
+		std::string	GetHeaderResponse(Request &HTTPRequest, Location &HTTPLocation);
+		std::string	GetErrorPagePath(Location &HTTPLocation, unsigned int *StatusCode);
+		std::string	ReturnError(Request &HTTPRequest, Location &HTTPLocation, unsigned int *StatusCode);
+		std::string	HandleGETRequest(Request &HTTPRequest, Location &HTTPLocation, unsigned int *StatusCode);
+		std::string	HandlePOSTRequest(Request &HTTPRequest, Location &HTTPLocation, unsigned int *StatusCode);
+		std::string	HandleCGIPOSTRequest(Request &HTTPRequest, Location &HTTPLocation, unsigned int *StatusCode);
+		std::string	HandleDELETERequest(Request &HTTPRequest, Location &HTTPLocation, unsigned int *StatusCode);
 };
 
 #endif
