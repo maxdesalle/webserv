@@ -6,7 +6,7 @@
 #    By: tderwedu <tderwedu@student.s19.be>         +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2022/01/18 10:08:26 by maxdesall         #+#    #+#              #
-#    Updated: 2022/03/01 14:46:48 by tderwedu         ###   ########.fr        #
+#    Updated: 2022/03/01 14:49:58 by tderwedu         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -34,6 +34,7 @@ HTTP		:= Request.cpp \
 			   Header.cpp
 UTILS		:= Timer.cpp \
 			   utils.cpp
+CGI			:= CommonGatewayInterface.cpp \
 
 # INCLUDES	:= -I ./${SRC_DIR} -I ./${TEST_DIR}
 
@@ -44,8 +45,9 @@ UTILS		:= $(addprefix src/utils/, $(UTILS))
 CONFIG_DIR	:= $(addprefix src/config/, $(CONFIG))
 SOCKETS		:= $(addprefix src/sockets/, $(SOCKETS))
 HTTP		:= $(addprefix src/HTTP_Config/, $(HTTP))
+HTTP		:= $(addprefix src/cgi/, $(CGI))
 
-SRC			:= $(MAIN_DIR) $(UTILS) $(CONFIG_DIR) $(HTTP) $(SOCKETS)
+SRC			:= $(MAIN_DIR) $(UTILS) $(CONFIG_DIR) $(HTTP) $(SOCKETS) $(CGI)
 # SRC			:= $(MAIN_DIR) $(CONFIG_DIR)
 OBJ			:= $(subst ${SRC_DIR},${BIN_DIR}, ${SRC:.cpp=.o})
 
