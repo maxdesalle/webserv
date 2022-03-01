@@ -6,7 +6,7 @@
 /*   By: tderwedu <tderwedu@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/01/26 14:57:25 by ldelmas           #+#    #+#             */
-/*   Updated: 2022/03/01 09:42:17 by tderwedu         ###   ########.fr       */
+/*   Updated: 2022/03/01 09:54:00 by tderwedu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -80,7 +80,7 @@ void				Header::setField(std::string const fieldName, std::string fieldValue)
 
 /*MEMBER METHODS*/
 
-bool const			Header::findField(std::string const fieldName) const
+bool				Header::findField(std::string const fieldName) const
 {
 	return (this->_headerFields.find(fieldName) != this->_headerFields.end());
 }
