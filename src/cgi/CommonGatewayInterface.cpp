@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   CommonGatewayInterface.cpp                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ldelmas <ldelmas@student.42.fr>            +#+  +:+       +#+        */
+/*   By: tderwedu <tderwedu@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/09 14:38:27 by mdesalle          #+#    #+#             */
-/*   Updated: 2022/03/01 17:21:47 by mdesalle         ###   ########.fr       */
+/*   Updated: 2022/03/01 17:57:33 by tderwedu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -105,7 +105,7 @@ unsigned int			CommonGatewayInterface::ExecuteCGIScript(void)
 		dup2(FDin, STDIN_FILENO);
 		dup2(FDout, STDOUT_FILENO);
 
-		if (execve(GetEnv()[12], NULL, GetEnv()) == -1)
+		if (execve(GetEnv()[12], GetEnv()[12], GetEnv()) == -1)
 			return LUCAS_ERROR;
 
 		close(FDin);

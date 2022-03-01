@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Response.hpp                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ldelmas <ldelmas@student.42.fr>            +#+  +:+       +#+        */
+/*   By: tderwedu <tderwedu@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/01/26 11:48:07 by ldelmas           #+#    #+#             */
-/*   Updated: 2022/03/01 15:47:55 by ldelmas          ###   ########.fr       */
+/*   Updated: 2022/03/01 17:56:20 by tderwedu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,6 +17,7 @@
 # include <stdlib.h>
 # include <sys/stat.h>
 # include <sys/types.h>
+# include <sys/wait.h>
 # include <iostream>
 # include <fstream>
 # include <sstream>

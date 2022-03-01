@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Response.cpp                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ldelmas <ldelmas@student.42.fr>            +#+  +:+       +#+        */
+/*   By: tderwedu <tderwedu@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/01/26 14:58:24 by ldelmas           #+#    #+#             */
-/*   Updated: 2022/03/01 16:17:04 by ldelmas          ###   ########.fr       */
+/*   Updated: 2022/03/01 17:55:00 by tderwedu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -159,8 +159,9 @@ std::string	Response::FindStatusMessage(unsigned int *StatusCode)
 
 std::string	Response::GetHeaderResponse(Request &HTTPRequest, Location &HTTPLocation)
 {
-	std::string		Body;
-	unsigned int	StatusCode = 0;
+	std::string			Body;
+	unsigned int		StatusCode = 0;
+	std::ostringstream	oss;
 
 	if (HTTPRequest.getMethod() == "GET")
 		Body = HandleGETRequest(HTTPRequest, HTTPLocation, &StatusCode);
@@ -174,7 +175,8 @@ std::string	Response::GetHeaderResponse(Request &HTTPRequest, Location &HTTPLoca
 		Body = ReturnError(HTTPRequest, HTTPLocation, &StatusCode);
 	}
 
-	_HeaderResponse =  "HTTP/1.1 " + std::to_string(StatusCode) + " " + FindStatusMessage(&StatusCode);
+	oss << std::dec << StatusCode;
+	_HeaderResponse =  "HTTP/1.1 " + oss.str() + " " + FindStatusMessage(&StatusCode);
 	_HeaderResponse += "Date: " + GetCurrentFormattedTime() + "\n";
 	_HeaderResponse += "Server: " + GetServerVersion() + "\n";
 	/* _HeaderResponse += "Last-Modified: " + GetLastModifiedTimeForFile(Path) + "\n"; */
@@ -204,7 +206,7 @@ std::string	Response::ReturnError(Request &HTTPRequest, Location &HTTPLocation, 
 {
 	std::string			FileContent;
 	std::string			Path = GetErrorPagePath(HTTPLocation, StatusCode);
-	std::ifstream		File(Path);
+	std::ifstream		File(Path.c_str());
 	std::stringstream	Buffer;
 
 	if (!File)
@@ -223,7 +225,7 @@ std::string	Response::HandleGETRequest(Request &HTTPRequest, Location &HTTPLocat
 {
 	std::string			FileContent;
 	std::string			Path = HTTPLocation.GetRoot() + HTTPRequest.getTarget();
-	std::ifstream		File(Path);
+	std::ifstream		File(Path.c_str());
 	std::stringstream	Buffer;
 
 	if (!File)
@@ -254,7 +256,7 @@ std::string	Response::HandlePOSTRequest(Request &HTTPRequest, Location &HTTPLoca
 std::string	Response::HandleNormalPostRequest(Request &HTTPRequest, Location &HTTPLocation, unsigned int *StatusCode)
 {
 	std::string		Path = HTTPLocation.GetRoot() + HTTPRequest.getTarget();
-	std::ofstream	File(Path);
+	std::ofstream	File(Path.c_str());
 
 	if (!File)
 	{
