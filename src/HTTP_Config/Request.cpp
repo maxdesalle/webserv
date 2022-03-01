@@ -6,7 +6,7 @@
 /*   By: tderwedu <tderwedu@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/01/26 14:59:17 by ldelmas           #+#    #+#             */
-/*   Updated: 2022/02/25 13:51:47 by tderwedu         ###   ########.fr       */
+/*   Updated: 2022/02/25 14:19:10 by tderwedu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -360,10 +360,7 @@ int				Request::_parseHeaderField(std::string const &line)
 		{
 			std::string s = trimSpaces(line.substr(str.length()));
 			if (Header::_parseFieldValue(s) != s)
-			{
-				std::cout << "OH NOOOOooooo!" << std::endl; // TODO:remove
 				return 400;
-			}
 			else if (this->_headerFields[Request::_fieldNames[j]][0])
 				this->_headerFields[Request::_fieldNames[j]] += ',' + s;
 			else
@@ -371,7 +368,6 @@ int				Request::_parseHeaderField(std::string const &line)
 			return 0;
 		}
 	}
-	std::cout << "OH NOOOOooooo! 2" << std::endl; // TODO:remove
 	return 400;
 }
 
