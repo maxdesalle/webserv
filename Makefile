@@ -3,10 +3,10 @@
 #                                                         :::      ::::::::    #
 #    Makefile                                           :+:      :+:    :+:    #
 #                                                     +:+ +:+         +:+      #
-#    By: tderwedu <tderwedu@student.s19.be>         +#+  +:+       +#+         #
+#    By: ldelmas <ldelmas@student.42.fr>            +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2022/01/18 10:08:26 by maxdesall         #+#    #+#              #
-#    Updated: 2022/03/01 14:49:58 by tderwedu         ###   ########.fr        #
+#    Updated: 2022/03/01 15:03:17 by ldelmas          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -31,7 +31,8 @@ SOCKETS		:= RequestHandler.cpp \
 HTTP		:= Request.cpp \
 			   URI.cpp \
 			   Response.cpp \
-			   Header.cpp
+			   Header.cpp \
+			   Value.cpp
 UTILS		:= Timer.cpp \
 			   utils.cpp
 CGI			:= CommonGatewayInterface.cpp \

@@ -3,12 +3,14 @@
 /*                                                        :::      ::::::::   */
 /*   CommonGatewayInterface.cpp                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mdesalle <mdesalle@student.s19.be>         +#+  +:+       +#+        */
+/*   By: ldelmas <ldelmas@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/09 14:38:27 by mdesalle          #+#    #+#             */
-/*   Updated: 2022/03/01 14:32:42 by mdesalle         ###   ########.fr       */
+/*   Updated: 2022/03/01 16:08:35 by ldelmas          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
+
+#include "CommonGatewayInterface.hpp"
 
 //======================== CONSTRUCTORS / DESTRUCTORS ========================//
 
@@ -16,7 +18,7 @@ CommonGatewayInterface::CommonGatewayInterface(Request &CGIRequest)
 {
 	const std::map<const std::string, std::string>	CGIVariables = CGIRequest.getCGIServerVars();
 
-	_env[0] = JoinTwoStrings(_env[0], FindValueInMap(CGIVariables, "AUTH_TYPE").c_str());
+	_env[0] = JoinTwoStrings(_env[0], FindValueInMap(CGIVariables, "AUTH_TYPE"));
 	_env[1] = JoinTwoStrings(_env[1], FindValueInMap(CGIVariables, "CONTENT_LENGTH"));
 	_env[2] = JoinTwoStrings(_env[2], FindValueInMap(CGIVariables, "CONTENT_TYPE"));
 	_env[3] = JoinTwoStrings("GATEWAY_INTERFACE=", "CGI/1.1");
@@ -61,7 +63,7 @@ char					**CommonGatewayInterface::GetEnv(void)	const
 
 //================================ FUNCTIONS =================================//
 
-char					*CommonGatewayInterface::FindValueInMap(const std::map<const std::string, std::string> CGIVariables, std::string Key)	const
+char const				*CommonGatewayInterface::FindValueInMap(const std::map<const std::string, std::string> CGIVariables, std::string Key)	const
 {
 	std::string			Value;
 
@@ -74,7 +76,7 @@ char					*CommonGatewayInterface::FindValueInMap(const std::map<const std::strin
 		return (NULL);
 	}
 
-	return (Value.c_str());
+	return Value.c_str();
 }
 
 unsigned int			CommonGatewayInterface::ExecuteCGIScript(void)
@@ -92,17 +94,17 @@ unsigned int			CommonGatewayInterface::ExecuteCGIScript(void)
 	PrevSTDIN = dup(STDIN_FILENO);
 	PrevSTDOUT = dup(STDOUT_FILENO);
 
-	pid = fork();
+	Pid = fork();
 
-	if (pid < 0)
+	if (Pid < 0)
 		return (500); // Internal Server Error
-	else if (pid == 0)
+	else if (Pid == 0)
 	{
 		dup2(FDin, STDIN_FILENO);
 		dup2(FDout, STDOUT_FILENO);
 
-		if (execve(GetEnv[12], NULL, GetEnv()) == -1)
-			return ;
+		if (execve(GetEnv()[12], NULL, GetEnv()) == -1)
+			return LUCAS_ERROR;
 
 		close(FDin);
 		close(FDout);
@@ -110,7 +112,7 @@ unsigned int			CommonGatewayInterface::ExecuteCGIScript(void)
 		dup2(PrevSTDIN, 0);
 		dup2(PrevSTDOUT, 1);
 	}
-	else if (pid > 0)
+	else if (Pid > 0)
 		waitpid(-1, NULL, 0);
 	return (200); // OK
 }
