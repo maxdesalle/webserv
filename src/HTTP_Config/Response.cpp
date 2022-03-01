@@ -6,7 +6,7 @@
 /*   By: ldelmas <ldelmas@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/01/26 14:58:24 by ldelmas           #+#    #+#             */
-/*   Updated: 2022/02/28 21:07:57 by mdesalle         ###   ########.fr       */
+/*   Updated: 2022/03/01 12:51:12 by mdesalle         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,7 +38,7 @@ std::string	Response::GetServerVersion(void)
 	return ("WEBSERV/1.0");
 }
 
-std::string	Response::FindStatusMessage(int *StatusCode)
+std::string	Response::FindStatusMessage(unsigned int *StatusCode)
 {
 	switch (*StatusCode)
 	{
@@ -153,7 +153,7 @@ std::string	Response::FindStatusMessage(int *StatusCode)
 		default:
 			break ;
 	}
-	StatusCode = 500;
+	*StatusCode = 500;
 	return ("Internal Server Error");
 }
 
@@ -174,10 +174,10 @@ std::string	Response::GetHeaderResponse(Request &HTTPRequest, Location &HTTPLoca
 		Body = ReturnError(HTTPRequest, HTTPLocation, &StatusCode)
 	}
 
-	_HeaderResponse =  "HTTP/1.1 " + StatusCode + " " + FindStatusMessage(&StatusCode);
+	_HeaderResponse =  "HTTP/1.1 " + std::to_string(StatusCode) + " " + FindStatusMessage(&StatusCode);
 	_HeaderResponse += "Date: " + GetCurrentFormattedTime() + "\n";
 	_HeaderResponse += "Server: " + GetServerVersion() + "\n";
-	_HeaderResponse += "Last-Modified: " + GetLastModifiedTimeForFile(Path) + "\n";
+	/* _HeaderResponse += "Last-Modified: " + GetLastModifiedTimeForFile(Path) + "\n"; */
 	_HeaderResponse += "Content-Lenght: " + this->_headerFields["Content-Length"] + "\n";
 	_HeaderResponse += "Content-Type: " + this->_headerFields["Content-Type"] + "\n";
 	_HeaderResponse += "Connection: " + this->_headerFields["Connection"] + "\n\n";
@@ -194,7 +194,7 @@ std::string	Response::GetErrorPagePath(Location &HTTPLocation, unsigned int *Sta
 	{
 		return (HTTPLocation.GetRoot() + HTTPLocation.GetPath() + HTTPLocation.GetErrorPage().at(*StatusCode));
 	}
-	catch ()
+	catch (...)
 	{
 		return ("");
 	}
@@ -211,7 +211,7 @@ std::string	Response::ReturnError(Request &HTTPRequest, Location &HTTPLocation, 
 	{
 		if (*StatusCode == 500)
 			return ("500 Internal Server Error");
-		StatusCode = 500;
+		*StatusCode = 500;
 		return (ReturnError(HTTPRequest, HTTPLocation, StatusCode));
 	}
 	Buffer << File.rdbuf();
@@ -228,12 +228,12 @@ std::string	Response::HandleGETRequest(Request &HTTPRequest, Location &HTTPLocat
 
 	if (!File)
 	{
-		StatusCode = 404;
+		*StatusCode = 404;
 		return (ReturnError(HTTPRequest, HTTPLocation, StatusCode));
 	}
 	Buffer << File.rdbuf();
 	FileContent = Buffer.str();
-	StatusCode = 200;
+	*StatusCode = 200;
 	return (FileContent);
 }
 
@@ -241,7 +241,7 @@ std::string	Response::HandlePOSTRequest(Request &HTTPRequest, Location &HTTPLoca
 {
 	if (FindValueInVector(HTTPLocation.GetLimitExcept(), "POST") == false)
 	{
-		StatusCode = 403;
+		*StatusCode = 403;
 		return (ReturnError(HTTPRequest, HTTPLocation, StatusCode));
 	}
 
@@ -251,14 +251,14 @@ std::string	Response::HandlePOSTRequest(Request &HTTPRequest, Location &HTTPLoca
 		return (HandleNormalPostRequest(HTTPRequest, HTTPLocation, StatusCode));
 }
 
-std::string	Response::HandleNormalPostRequest(HTTPRequest, HTTPLocation, StatusCode)
+std::string	Response::HandleNormalPostRequest(Request &HTTPRequest, Location &HTTPLocation, unsigned int *StatusCode)
 {
 	std::string		Path = HTTPLocation.GetRoot() + HTTPRequest.getTarget();
 	std::ofstream	File(Path);
 
 	if (!File)
 	{
-		StatusCode = 500;
+		*StatusCode = 500;
 		return (ReturnError(HTTPRequest, HTTPLocation, StatusCode));
 	}
 	File << HTTPRequest.getBody();
@@ -269,16 +269,16 @@ std::string	Response::HandleCGIPOSTRequest(Request &HTTPRequest, Location &HTTPL
 {
 	CommonGatewayInterface	CGI(HTTPRequest);
 
-	StatusCode = CGI.ExecuteCGIScript();
+	*StatusCode = CGI.ExecuteCGIScript();
 	return ("");
 }
 
-bool		Response::FindValueInVector(std::vector Haystack, std::string Needle)
+bool		Response::FindValueInVector(std::vector<std::string> Haystack, std::string Needle)
 {
 	for (size_t i = 0; i < Haystack.size(); i += 1)
 	{
 		if (Haystack[i] == Needle)
-			return (true)
+			return (true);
 	}
 	return (false);
 }
@@ -289,13 +289,13 @@ std::string	Response::HandleDELETERequest(Request &HTTPRequest, Location &HTTPLo
 	
 	if (FindValueInVector(HTTPLocation.GetLimitExcept(), "DELETE") == false)
 	{
-		StatusCode = 403;
+		*StatusCode = 403;
 		return (ReturnError(HTTPRequest, HTTPLocation, StatusCode));
 	}
 
 	if (remove(Path.c_str()) != 0)
 	{
-		StatusCode = 404;
+		*StatusCode = 404;
 		return (ReturnError(HTTPRequest, HTTPLocation, StatusCode));
 	}
 	return ("File deleted.");
@@ -313,14 +313,14 @@ std::string	Response::GetCurrentFormattedTime(void)
 	return (FormattedString);
 }
 
-std::string	Response::GetLastModifiedTimeForFile(std::string Path)
-{
-	struct		stat attr;
-	struct		tm *tm = gmtime(stat(Path, &attr));
-	std::string	FormattedString;
+/* std::string	Response::GetLastModifiedTimeForFile(std::string Path) */
+/* { */
+/* 	struct		stat attr; */
+/* 	struct		tm *tm = gmtime(stat(Path.c_str(), &attr)); */
+/* 	std::string	FormattedString; */
 
-	FormattedString.resize(29);
-	strftime(&FormattedString[0], FormattedString.size(), "%a, %d %b %Y %X GMT", tm);
+/* 	FormattedString.resize(29); */
+/* 	strftime(&FormattedString[0], FormattedString.size(), "%a, %d %b %Y %X GMT", tm); */
 
-	return (FormattedString);
-}
+/* 	return (FormattedString); */
+/* } */

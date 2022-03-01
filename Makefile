@@ -6,7 +6,7 @@
 #    By: maxdesalle <mdesalle@student.s19.be>       +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2022/01/18 10:08:26 by maxdesall         #+#    #+#              #
-#    Updated: 2022/02/21 14:41:49 by mdesalle         ###   ########.fr        #
+#    Updated: 2022/03/01 12:25:15 by mdesalle         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -16,7 +16,7 @@ NAME			:=	webserv
 
 CC				:= clang++
 TEST			:= clang++ -fsanitize=address -g3
-CFLAGS			:= -Wall -Wextra -Werror -std=c++98
+CFLAGS			:= -Wall -Wextra -std=c++98
 
 # ================================== FILES =================================== #
 
