@@ -6,7 +6,7 @@
 /*   By: tderwedu <tderwedu@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/09 14:38:27 by mdesalle          #+#    #+#             */
-/*   Updated: 2022/03/01 19:02:19 by tderwedu         ###   ########.fr       */
+/*   Updated: 2022/03/01 19:03:29 by tderwedu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,7 +16,7 @@
 
 CommonGatewayInterface::CommonGatewayInterface(Request &CGIRequest)
 {
-	this->_env = new char* [20];
+	this->_env = new char* [18];
 	const std::map<const std::string, std::string>	CGIVariables = CGIRequest.getCGIServerVars();
 
 	_env[0] = JoinTwoStrings("AUTH_TYPE=", FindValueInMap(CGIVariables, "AUTH_TYPE"));
@@ -36,6 +36,7 @@ CommonGatewayInterface::CommonGatewayInterface(Request &CGIRequest)
 	_env[14] = JoinTwoStrings("SEVER_PORT=", FindValueInMap(CGIVariables, "SERVER_PORT"));
 	_env[15] = JoinTwoStrings("SERVER_PROTOCOL=", "HTTP/1.1");
 	_env[16] = JoinTwoStrings("SERVER_SOFTWARE=", "WEBSERV/1.0");
+	_env[17] = NULL;
 }
 
 CommonGatewayInterface::CommonGatewayInterface(const CommonGatewayInterface &ref)
