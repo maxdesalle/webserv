@@ -6,7 +6,7 @@
 /*   By: ldelmas <ldelmas@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/09 13:07:33 by mdesalle          #+#    #+#             */
-/*   Updated: 2022/03/01 16:03:32 by ldelmas          ###   ########.fr       */
+/*   Updated: 2022/03/01 17:18:31 by mdesalle         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,9 +30,8 @@ class CommonGatewayInterface
 		CommonGatewayInterface	&operator=(CommonGatewayInterface const &ref);
 
 		char			**GetEnv(void)	const;
-		char			*JoinTwoStrings(char const *s1, char const *s2);
-		char const		*FindValueInMap(const std::map<const std::string, std::string> CGIVariables, std::string Key)	const;
-		size_t			StringLength(char const *String);
+		std::string		FindValueInMap(const std::map<const std::string, std::string> CGIVariables, std::string Key)	const;
+		char			*JoinTwoStrings(std::string s1, std::string s2);
 		unsigned int	ExecuteCGIScript(void);
 
 	private:
