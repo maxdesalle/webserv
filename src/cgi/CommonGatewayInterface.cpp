@@ -6,7 +6,7 @@
 /*   By: tderwedu <tderwedu@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/09 14:38:27 by mdesalle          #+#    #+#             */
-/*   Updated: 2022/03/01 18:52:32 by mdesalle         ###   ########.fr       */
+/*   Updated: 2022/03/01 19:02:19 by tderwedu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -83,7 +83,8 @@ std::string				CommonGatewayInterface::FindValueInMap(const std::map<const std::
 
 unsigned int			CommonGatewayInterface::ExecuteCGIScript(void)
 {
-	const char			*ScriptPath = CreateSubString(GetEnv()[12], 12, StringLength(GetEnv()[12]) - 12);
+	char				*ScriptPath = CreateSubString(GetEnv()[12], 12, StringLength(GetEnv()[12]) - 12);
+	char				*argv[2] = {ScriptPath, NULL};
 	FILE				*In = tmpfile();
 	FILE				*Out = tmpfile();
 
@@ -109,7 +110,7 @@ unsigned int			CommonGatewayInterface::ExecuteCGIScript(void)
 		dup2(FDin, STDIN_FILENO);
 		dup2(FDout, STDOUT_FILENO);
 
-		if (execve(ScriptPath, NULL, GetEnv()) == -1)
+		if (execve(ScriptPath, argv, GetEnv()) == -1)
 		{
 			delete ScriptPath;
 			return LUCAS_ERROR;
