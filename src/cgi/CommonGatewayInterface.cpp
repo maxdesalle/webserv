@@ -6,7 +6,7 @@
 /*   By: tderwedu <tderwedu@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/09 14:38:27 by mdesalle          #+#    #+#             */
-/*   Updated: 2022/03/01 17:57:33 by tderwedu         ###   ########.fr       */
+/*   Updated: 2022/03/01 18:52:32 by mdesalle         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -83,6 +83,7 @@ std::string				CommonGatewayInterface::FindValueInMap(const std::map<const std::
 
 unsigned int			CommonGatewayInterface::ExecuteCGIScript(void)
 {
+	const char			*ScriptPath = CreateSubString(GetEnv()[12], 12, StringLength(GetEnv()[12]) - 12);
 	FILE				*In = tmpfile();
 	FILE				*Out = tmpfile();
 
@@ -99,14 +100,20 @@ unsigned int			CommonGatewayInterface::ExecuteCGIScript(void)
 	Pid = fork();
 
 	if (Pid < 0)
+	{
+		delete ScriptPath;
 		return (500); // Internal Server Error
+	}
 	else if (Pid == 0)
 	{
 		dup2(FDin, STDIN_FILENO);
 		dup2(FDout, STDOUT_FILENO);
 
-		if (execve(GetEnv()[12], GetEnv()[12], GetEnv()) == -1)
+		if (execve(ScriptPath, NULL, GetEnv()) == -1)
+		{
+			delete ScriptPath;
 			return LUCAS_ERROR;
+		}
 
 		close(FDin);
 		close(FDout);
@@ -116,7 +123,42 @@ unsigned int			CommonGatewayInterface::ExecuteCGIScript(void)
 	}
 	else if (Pid > 0)
 		waitpid(-1, NULL, 0);
+
+	delete ScriptPath;
 	return (200); // OK
+}
+
+size_t					CommonGatewayInterface::StringLength(char const *s)
+{
+	size_t				len = 0;
+
+	if (!s)
+		return (0);
+	while (s[len])
+		len += 1;
+	return (len);
+}
+
+char					*CommonGatewayInterface::CreateSubString(char const *s, unsigned int start, size_t len)
+{
+	unsigned int	i;
+	unsigned int	j = StringLength(s);
+	char			*substring = new char [len + 1];
+
+	i = 0;
+	if (j == 0)
+		return (NULL);
+	if (start < j)
+	{
+		while (s[start] && len-- > 0)
+		{
+			substring[i] = s[start];
+			start++;
+			i++;
+		}
+	}
+	substring[i] = '\0';
+	return (substring);
 }
 
 char					*CommonGatewayInterface::JoinTwoStrings(std::string s1, std::string s2)
