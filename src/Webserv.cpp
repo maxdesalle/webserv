@@ -6,7 +6,7 @@
 /*   By: tderwedu <tderwedu@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/01/18 17:28:20 by maxdesall         #+#    #+#             */
-/*   Updated: 2022/02/24 16:32:02 by tderwedu         ###   ########.fr       */
+/*   Updated: 2022/03/01 09:38:32 by tderwedu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,7 +23,7 @@ int	main(int argc, char **argv)
 {
 	Webserv		server;
 
-	if (argc != 2)
+	if (argc != 2 && argv[0])
 	{
 		std::cerr << "Please add one config file as argument when launching the server" << std::endl;
 		return (1);

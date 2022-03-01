@@ -6,7 +6,7 @@
 /*   By: tderwedu <tderwedu@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/01/19 15:31:16 by ldelmas           #+#    #+#             */
-/*   Updated: 2022/02/23 16:33:55 by tderwedu         ###   ########.fr       */
+/*   Updated: 2022/03/01 09:46:43 by tderwedu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -89,6 +89,7 @@ class Header
 
 		std::string const	getField(std::string const fieldName);
 		void				setField(std::string const fieldName, std::string fieldValue);
+		bool const			findField(std::string const fieldName) const;
 };
 
 # endif
