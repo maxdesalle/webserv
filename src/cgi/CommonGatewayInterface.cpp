@@ -6,7 +6,7 @@
 /*   By: mdesalle <mdesalle@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/09 14:38:27 by mdesalle          #+#    #+#             */
-/*   Updated: 2022/02/28 21:06:18 by mdesalle         ###   ########.fr       */
+/*   Updated: 2022/03/01 14:32:42 by mdesalle         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,9 +16,10 @@ CommonGatewayInterface::CommonGatewayInterface(Request &CGIRequest)
 {
 	const std::map<const std::string, std::string>	CGIVariables = CGIRequest.getCGIServerVars();
 
-	_env[0] = JoinTwoStrings(_env[0], FindValueInMap(CGIVariables, "AUTH_TYPE"));
+	_env[0] = JoinTwoStrings(_env[0], FindValueInMap(CGIVariables, "AUTH_TYPE").c_str());
 	_env[1] = JoinTwoStrings(_env[1], FindValueInMap(CGIVariables, "CONTENT_LENGTH"));
 	_env[2] = JoinTwoStrings(_env[2], FindValueInMap(CGIVariables, "CONTENT_TYPE"));
+	_env[3] = JoinTwoStrings("GATEWAY_INTERFACE=", "CGI/1.1");
 	_env[4] = JoinTwoStrings(_env[4], FindValueInMap(CGIVariables, "PATH_INFO"));
 	_env[5] = JoinTwoStrings(_env[5], FindValueInMap(CGIVariables, "PATH_TRANSLATED"));
 	_env[6] = JoinTwoStrings(_env[6], FindValueInMap(CGIVariables, "QUERY_STRING"));
@@ -30,9 +31,11 @@ CommonGatewayInterface::CommonGatewayInterface(Request &CGIRequest)
 	_env[12] = JoinTwoStrings(_env[12], FindValueInMap(CGIVariables, "SCRIPT_NAME"));
 	_env[13] = JoinTwoStrings(_env[13], FindValueInMap(CGIVariables, "SERVER_NAME"));
 	_env[14] = JoinTwoStrings(_env[14], FindValueInMap(CGIVariables, "SERVER_PORT"));
+	_env[15] = JoinTwoStrings("SERVER_PROTOCOL=", "HTTP/1.1");
+	_env[16] = JoinTwoStrings("SERVER_SOFTWARE=", "WEBSERV/1.0");
 }
 
-CommonGatewayInterface::CommonGatewayInterface(CommonGatewayInterface const &ref)
+CommonGatewayInterface::CommonGatewayInterface(const CommonGatewayInterface &ref)
 {
 	*this = ref;
 }
