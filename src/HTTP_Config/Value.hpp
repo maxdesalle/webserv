@@ -6,14 +6,16 @@
 /*   By: ldelmas <ldelmas@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/23 16:12:03 by ldelmas           #+#    #+#             */
-/*   Updated: 2022/02/28 15:41:52 by ldelmas          ###   ########.fr       */
+/*   Updated: 2022/03/01 11:10:39 by ldelmas          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef VALUE_HPP
 # define VALUE_HPP
 
-#include "Request.hpp"
+# include <string>
+# include <map>
+# include "Header.hpp"
 
 # define NTYPE 5
 # define NTEXT 1
@@ -100,7 +102,7 @@ class Value
 
 		Value &operator=(Value const &src);
 
-		bool checkFieldValue(std::string const &name, std::string &value);
+		static bool checkFieldValue(std::string const &name, std::string &value);
 
 	private:
 		static const	std::string	_tcoding[4];
@@ -111,15 +113,15 @@ class Value
 		static const	std::string _sub_video[NVIDEO];
 		static const	std::string _sub_app[NAPP];
 		static const	std::string *_stypes[NTYPE];
-		static std::map<std::string const, std::string const*>					_subtypes;
-		static std::map<std::string const, int const>							_num_stypes;
-		static std::map<std::string const, bool(&)(std::string const &value)>	_checkers;
+		static std::map<std::string const, std::string const*>			_subtypes;
+		static std::map<std::string const, int const>					_num_stypes;
+		static std::map<std::string const, bool(&)(std::string &value)>	_checkers;
 
 		static void					_initialize(void);
 
-		static std::string const	&_getType(std::string const &value);
-		static std::string const	&_getSubtype(std::string const &type, std::string const &value);
-		static std::string const	&_getAccept(std::string const &value);
+		static std::string const	_getType(std::string const &value);
+		static std::string const	_getSubtype(std::string const &type, std::string const &value);
+		static std::string const	_getAccept(std::string const &value);
 
 		static bool _checkHost(std::string &value);
 		static bool _checkContentType(std::string &value);

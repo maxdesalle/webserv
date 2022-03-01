@@ -6,7 +6,7 @@
 /*   By: ldelmas <ldelmas@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/23 16:26:58 by ldelmas           #+#    #+#             */
-/*   Updated: 2022/02/28 15:55:03 by ldelmas          ###   ########.fr       */
+/*   Updated: 2022/03/01 14:38:57 by ldelmas          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,6 +22,9 @@ const std::string Value::_sub_app[NAPP] = {"octet-stream", "postscript"};
 const std::string *Value::_stypes[5] = {Value::_sub_text, Value::_sub_image, Value::_sub_audio,
 										Value::_sub_video, Value::_sub_app};
 
+std::map<std::string const, std::string const*>				Value::_subtypes;
+std::map<std::string const, int const>						Value::_num_stypes;
+std::map<std::string const, bool(&)(std::string &value)>	Value::_checkers;
 
 
 
@@ -45,7 +48,10 @@ Value::~Value(void) {};
 	OPERATION OVERLOADS
 */
 
-Value	&Value::operator=(Value const &right) {};
+Value	&Value::operator=(Value const &right)
+{
+	return *this;
+};
 
 
 
@@ -67,7 +73,7 @@ bool	Value::checkFieldValue(std::string const &name, std::string &value)
 	Value::_initialize();
 	if (Value::_checkers.find(name) == Value::_checkers.end())
 		return true;
-	return Value::_checkers[name](value);
+	return (Value::_checkers.find(name)->second)(value);
 }
 
 
@@ -107,7 +113,7 @@ void				Value::_initialize(void)
 	Else an empty stirng will be returned.
 */
 
-std::string const	&Value::_getType(std::string const &value)
+std::string const	Value::_getType(std::string const &value)
 {
 	for (int i = 0; i < NTYPE; i++)
 	{
@@ -118,7 +124,7 @@ std::string const	&Value::_getType(std::string const &value)
 	return "";
 }
 
-std::string const	&Value::_getSubtype(std::string const &type, std::string const &value)
+std::string const	Value::_getSubtype(std::string const &type, std::string const &value)
 {
 	for (int j = 0; j < Value::_num_stypes[type]; j++)
 	{
@@ -129,7 +135,7 @@ std::string const	&Value::_getSubtype(std::string const &type, std::string const
 	return "";
 }
 
-std::string const &Value::_getAccept(std::string const &value)
+std::string const Value::_getAccept(std::string const &value)
 {
 	std::string const &type = Value::_getType(value)==""?(value[0]== '*'?"*":""):Value::_getType(value);
 	if (value[type.length()] != '/')
@@ -207,6 +213,7 @@ bool	Value::_checkContentLength(std::string &value)
 bool	Value::_checkTransferEncoding(std::string &value)
 {
 	size_t pos = 0;
+	size_t old_pos = 0;
 	while (value[pos])
 	{
 		for (int i = 0; i < 4; i++)
@@ -221,7 +228,9 @@ bool	Value::_checkTransferEncoding(std::string &value)
 				continue;
 			}
 		}
-		return false;
+		if (pos == old_pos)
+			return false;
+		old_pos = pos;
 	}
 	return true;
 }
