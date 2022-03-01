@@ -6,7 +6,7 @@
 /*   By: ldelmas <ldelmas@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/01/26 14:58:24 by ldelmas           #+#    #+#             */
-/*   Updated: 2022/03/01 12:51:12 by mdesalle         ###   ########.fr       */
+/*   Updated: 2022/03/01 16:17:04 by ldelmas          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -171,7 +171,7 @@ std::string	Response::GetHeaderResponse(Request &HTTPRequest, Location &HTTPLoca
 	else
 	{
 		StatusCode = 405; // Error 405: Method Not Allowed
-		Body = ReturnError(HTTPRequest, HTTPLocation, &StatusCode)
+		Body = ReturnError(HTTPRequest, HTTPLocation, &StatusCode);
 	}
 
 	_HeaderResponse =  "HTTP/1.1 " + std::to_string(StatusCode) + " " + FindStatusMessage(&StatusCode);
@@ -267,6 +267,7 @@ std::string	Response::HandleNormalPostRequest(Request &HTTPRequest, Location &HT
 
 std::string	Response::HandleCGIPOSTRequest(Request &HTTPRequest, Location &HTTPLocation, unsigned int *StatusCode)
 {
+	(void)HTTPLocation;
 	CommonGatewayInterface	CGI(HTTPRequest);
 
 	*StatusCode = CGI.ExecuteCGIScript();

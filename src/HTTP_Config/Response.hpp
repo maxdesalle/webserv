@@ -3,29 +3,31 @@
 /*                                                        :::      ::::::::   */
 /*   Response.hpp                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: tderwedu <tderwedu@student.s19.be>         +#+  +:+       +#+        */
+/*   By: ldelmas <ldelmas@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/01/26 11:48:07 by ldelmas           #+#    #+#             */
-/*   Updated: 2022/03/01 12:50:48 by mdesalle         ###   ########.fr       */
+/*   Updated: 2022/03/01 15:47:55 by ldelmas          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef RESPONSE_HPP
 # define RESPONSE_HPP
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <sys/stat.h>
-#include <sys/types.h>
-#include <iostream>
-#include <fstream>
-#include <sstream>
-#include <string>
-#include <time.h>
-#include "Header.hpp"
-/* #include "Request.hpp" */
-#include "../cgi/CommonGatewayInterface.hpp"
-#include "../config/Location.hpp"
+# include <stdio.h>
+# include <stdlib.h>
+# include <sys/stat.h>
+# include <sys/types.h>
+# include <iostream>
+# include <fstream>
+# include <sstream>
+# include <string>
+# include <time.h>
+# include "Header.hpp"
+# include "Request.hpp"
+# include "../cgi/CommonGatewayInterface.hpp"
+# include "../config/Location.hpp"
+
+class Request;
 
 class Response : public Header
 {

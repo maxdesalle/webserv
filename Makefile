@@ -6,7 +6,7 @@
 #    By: ldelmas <ldelmas@student.42.fr>            +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2022/01/18 10:08:26 by maxdesall         #+#    #+#              #
-#    Updated: 2022/03/01 15:03:17 by ldelmas          ###   ########.fr        #
+#    Updated: 2022/03/01 16:16:01 by ldelmas          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -46,7 +46,7 @@ UTILS		:= $(addprefix src/utils/, $(UTILS))
 CONFIG_DIR	:= $(addprefix src/config/, $(CONFIG))
 SOCKETS		:= $(addprefix src/sockets/, $(SOCKETS))
 HTTP		:= $(addprefix src/HTTP_Config/, $(HTTP))
-HTTP		:= $(addprefix src/cgi/, $(CGI))
+CGI		:= $(addprefix src/cgi/, $(CGI))
 
 SRC			:= $(MAIN_DIR) $(UTILS) $(CONFIG_DIR) $(HTTP) $(SOCKETS) $(CGI)
 # SRC			:= $(MAIN_DIR) $(CONFIG_DIR)

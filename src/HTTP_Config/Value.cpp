@@ -6,7 +6,7 @@
 /*   By: ldelmas <ldelmas@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/23 16:26:58 by ldelmas           #+#    #+#             */
-/*   Updated: 2022/03/01 14:38:57 by ldelmas          ###   ########.fr       */
+/*   Updated: 2022/03/01 16:17:38 by ldelmas          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -50,6 +50,7 @@ Value::~Value(void) {};
 
 Value	&Value::operator=(Value const &right)
 {
+	(void)right;
 	return *this;
 };
 
