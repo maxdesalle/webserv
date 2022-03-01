@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Location.cpp                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mdesalle <mdesalle@student.s19.be>         +#+  +:+       +#+        */
+/*   By: tderwedu <tderwedu@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/01/28 14:30:39 by mdesalle          #+#    #+#             */
-/*   Updated: 2022/02/16 16:46:04 by mdesalle         ###   ########.fr       */
+/*   Updated: 2022/02/24 15:31:22 by tderwedu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -118,8 +118,13 @@ size_t		Location::FindPath(std::string LocationContent)
 		if (LocationContent[i] == '{')
 			break ;
 	}
-	NewPath = LocationContent.substr(1, i - 1);
+	NewPath = LocationContent.substr(0, i - 1);
 	NewPath.erase(std::remove(NewPath.begin(), NewPath.end(), ' '), NewPath.end());
+	if (NewPath.empty()) // TODO: move in function call
+	{
+		std::cerr << "Error found when parsing file" << std::endl;
+		exit(1);
+	}
 	_Path = NewPath;
 	return (i + 1);
 }
@@ -141,22 +146,16 @@ std::string	Location::FindKeyValue(std::string LocationContent, size_t &End)
 }
 
 /*
- * Compares the given stirng with special keys which have a different behaviour than "normal" keys
+ * Compares the given string with special keys which have a different behaviour than "normal" keys
  */
 
 bool		Location::SubStringCompare(std::string KeyValue)
 {
-	size_t							j = 0;
-	std::array<std::string, 2>		SpecialKeys = { "return", "error_page" };
+	static const std::string	SpecialKeys[] = { "return", "error_page" };
 
-	for (size_t i = 0; i < SpecialKeys.size(); i += 1)
+	for (size_t i = 0; i < sizeof(SpecialKeys)/ sizeof(std::string); ++i)
 	{
-		for (j = 0; j < SpecialKeys[i].size(); j += 1)
-		{
-			if (SpecialKeys[i][j] != KeyValue[j])
-				break ;
-		}
-		if (j == SpecialKeys[i].size())
+		if (KeyValue == SpecialKeys[i])
 			return (true);
 	}
 	return (false);
@@ -230,7 +229,7 @@ void		Location::SaveReturn(std::string Value)
 
 	if ((FirstSpaceInString = Value.find_first_of(' ', 0)) != std::string::npos)
 	{
-		ReturnCode = size_t(stoi(Value.substr(0, FirstSpaceInString)));
+		ReturnCode = size_t(atoi((Value.substr(0, FirstSpaceInString)).c_str()));
 		ReturnURL = Value.substr(FirstSpaceInString + 1, Value.size());
 		_Return.insert(make_pair(ReturnCode, ReturnURL));
 	}
@@ -248,7 +247,7 @@ void		Location::SaveErrorPage(std::string Value)
 
 	if ((FirstSpaceInString = Value.find_first_of(' ', 0)) != std::string::npos)
 	{
-		ErrorCode = size_t(stoi(Value.substr(0, FirstSpaceInString)));
+		ErrorCode = size_t(atoi((Value.substr(0, FirstSpaceInString).c_str())));
 		ErrorPageURL = Value.substr(FirstSpaceInString + 1, Value.size());
 		_ErrorPage.insert(make_pair(ErrorCode, ErrorPageURL));
 	}
@@ -269,13 +268,17 @@ void		Location::Assignator(std::string Key, std::string Value)
 	else if (Key == "limit_except")
 		SaveLimitExcept(Value);
 	else if (Key == "client_max_body_size")
-		_ClientMaxBodySize = size_t(stoi(Value));
+		_ClientMaxBodySize = size_t(atoi(Value.c_str()));
 	else if (Key == "return")
 		SaveReturn(Value);
 	else if (Key == "error_page")
 		SaveErrorPage(Value);
 	else if (Key == "root")
+	{
+		if (Value[Value.size() - 1] == '/')
+			Value.resize(Value.size() - 1);
 		_Root = Value;
+	}
 }
 
 /*
@@ -309,4 +312,12 @@ bool		Location::isMethodValid(const std::string &method)	const
 			return (true);
 	}
 	return (false);
+}
+
+std::ostream&	operator<<(std::ostream& stream, Location const& loc)
+{
+	stream << "\t\e[34m Location : \e[0m" << std::endl;
+	stream << "\t  - Path : " << "\e[31m>>\e[0m"<< loc._Path << "\e[31m<<\e[0m"<< std::endl;
+	stream << "\t  - Root : " << "\e[31m>>\e[0m" << loc._Root << "\e[31m<<\e[0m" << std::endl;
+	return stream;
 }

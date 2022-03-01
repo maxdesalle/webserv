@@ -3,17 +3,18 @@
 /*                                                        :::      ::::::::   */
 /*   Server.hpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mdesalle <mdesalle@student.s19.be>         +#+  +:+       +#+        */
+/*   By: tderwedu <tderwedu@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/01/28 13:37:00 by mdesalle          #+#    #+#             */
-/*   Updated: 2022/02/16 15:23:17 by mdesalle         ###   ########.fr       */
+/*   Updated: 2022/02/24 15:29:28 by tderwedu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef SERVER_HPP
 # define SERVER_HPP
 
-#include "Config.hpp"
+# include "Config.hpp"
+# include "Location.hpp"
 
 class Location;
 
@@ -28,8 +29,8 @@ class Server
 
 		std::vector<Location> const								&GetLocations(void)			const;
 		std::vector<std::string> const							GetServerNames(void)		const;
-		std::map<std::string, std::vector<size_t> > const		GetDefaultServer(void)		const;
-		std::map<std::string, std::vector<size_t> > const		GetListenIPandPorts(void)	const;
+		std::map<std::string, std::vector<size_t> > const&		GetDefaultServer(void)		const;
+		std::map<std::string, std::vector<size_t> > const&		GetListenIPandPorts(void)	const;
 
 		bool			CheckBrackets(std::vector<std::string> &ConfigFileContent)				const;
 		bool			LastCharIsASemiColon(std::vector<std::string> &ConfigFileContent)		const;
@@ -54,6 +55,8 @@ class Server
 		void			MultiplePorts(std::string Ports, bool DefaultServer);
 		size_t			ReturnEndOfScopeLineNumber(size_t BeginBracketsLineNumber, std::vector<std::string> &ConfigFileContent)	const;
 		std::string		FindPortsInString(std::string ConfigLine);
+
+		friend std::ostream&			operator<<(std::ostream& stream, Server const& serv);
 
 	private:
 

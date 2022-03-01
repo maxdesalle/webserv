@@ -6,7 +6,7 @@
 /*   By: tderwedu <tderwedu@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/01/26 14:59:17 by ldelmas           #+#    #+#             */
-/*   Updated: 2022/03/01 09:47:44 by tderwedu         ###   ########.fr       */
+/*   Updated: 2022/02/25 14:19:10 by tderwedu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -544,42 +544,4 @@ std::ostream&	operator<<(std::ostream& stream, Request const& req)
 		stream	<< "\n" << req._body ;
 	}
 	return stream;
-}
-
-/*
-	Print important information about the request in this order:
-		-method
-		-request-target
-		-HTTP version
-		-current state
-		-any header field that have been set
-		-body
-*/
-
-void		Request::printRequest(void)
-{
-	std::cout << "Method : " << this->_method << std::endl;
-	std::cout << "Target : " << this->_target << std::endl;
-	std::cout << "Version : " << this->_version << std::endl;
-	switch (this->_state)
-	{
-		case STARTLINE :
-			std::cout << "State : startline" << std::endl;
-			break;
-		case HEADERS :
-			std::cout << "State : headers" << std::endl;
-			break;
-		case BODY :
-			std::cout << "State : body" << std::endl;
-			break;
-		case PROCESSING :
-			std::cout << "State : processing" << std::endl;
-			break;
-		case DONE :
-			std::cout << "State : done" << std::endl;
-	}
-	std::cout << "Header fields :" << std::endl;
-	for (size_t i = 0; i < this->_headerFields.size(); i++)
-		if (this->_headerFields[this->_fieldNames[i]] != "")
-			std::cout << "\t-" << this->_fieldNames[i] << " : " << this->_headerFields[this->_fieldNames[i]];
 }

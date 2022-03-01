@@ -3,17 +3,17 @@
 /*                                                        :::      ::::::::   */
 /*   Location.hpp                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mdesalle <mdesalle@student.s19.be>         +#+  +:+       +#+        */
+/*   By: tderwedu <tderwedu@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/16 15:28:58 by mdesalle          #+#    #+#             */
-/*   Updated: 2022/02/16 16:45:12 by mdesalle         ###   ########.fr       */
+/*   Updated: 2022/02/24 15:32:37 by tderwedu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef LOCATION_HPP
 # define LOCATION_HPP
 
-#include "Config.hpp"
+# include "Config.hpp"
 
 class Location
 {
@@ -46,6 +46,8 @@ class Location
 
 		bool							isCgi(void)									const;
 		bool							isMethodValid(const std::string &method)	const;
+
+		friend std::ostream&			operator<<(std::ostream& stream, Location const& loc);
 
 	private:
 

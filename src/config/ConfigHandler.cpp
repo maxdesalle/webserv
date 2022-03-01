@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   ConfigHandler.cpp                                  :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: maxdesalle <mdesalle@student.s19.be>       +#+  +:+       +#+        */
+/*   By: tderwedu <tderwedu@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/01/18 18:04:43 by maxdesall         #+#    #+#             */
-/*   Updated: 2022/02/16 14:15:20 by mdesalle         ###   ########.fr       */
+/*   Updated: 2022/02/24 15:35:01 by tderwedu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,7 +20,7 @@ static bool 					FirstCharIsAHashtag(std::string line)
 {
 	size_t						i = 0;
 
-	while (i < line.size() && std::isblank(line[i]))
+	while (i < line.size() && std::isspace(line[i]))
 		i += 1;
 	return (line[i] == '#');
 }
@@ -39,7 +39,7 @@ static Server					CreateServerObject(std::vector<std::string> ServerContent)
 std::vector<Server>				ConfigHandler(std::string ConfigFileName)
 {
 	std::string					Line;
-	std::ifstream				File(ConfigFileName);
+	std::ifstream				File(ConfigFileName.c_str());
 	std::vector<std::string>	ServerContent;
 	std::vector<Server>			Servers;
 
@@ -51,6 +51,7 @@ std::vector<Server>				ConfigHandler(std::string ConfigFileName)
 
 	while (std::getline(File, Line))
 	{
+		std::replace(Line.begin(), Line.end(), '\t', ' ');
 		if (Line.rfind("server ", 0) == 0 && !ServerContent.empty())
 		{
 			Servers.push_back(CreateServerObject(ServerContent));
@@ -67,31 +68,61 @@ std::vector<Server>				ConfigHandler(std::string ConfigFileName)
 
 static std::vector<size_t>		ReturnDefaultPorts(Server ServerBlock, std::string IP)
 {
-	std::vector<size_t>			PossiblePorts;
+	std::vector<size_t>									PossiblePorts;
+	std::map<std::string, std::vector<size_t> > const&	defaultServers = ServerBlock.GetDefaultServer();
 
-	try
+	for (std::map<std::string, std::vector<size_t> >::const_iterator it = defaultServers.begin(); it != defaultServers.end(); ++it)
 	{
-		PossiblePorts = ServerBlock.GetDefaultServer().at(IP);
-	}
-	catch (std::exception &e)
-	{
+		if (it->first == "0.0.0.0")
+			PossiblePorts.insert(PossiblePorts.end(), it->second.begin(), it->second.end());
+		else if (it->first == IP)
+			PossiblePorts.insert(PossiblePorts.end(), it->second.begin(), it->second.end());
 	}
 	return (PossiblePorts);
 }
 
 static std::vector<size_t>		ReturnNormalPorts(Server ServerBlock, std::string IP)
 {
-	std::vector<size_t>			PossiblePorts;
+	std::vector<size_t>									PossiblePorts;
+	std::map<std::string, std::vector<size_t> > const&	listen = ServerBlock.GetListenIPandPorts();
 
-	try
+	for (std::map<std::string, std::vector<size_t> >::const_iterator it = listen.begin(); it != listen.end(); ++it)
 	{
-		PossiblePorts = ServerBlock.GetListenIPandPorts().at(IP);
-	}
-	catch (std::exception &e)
-	{
+		if (it->first == "0.0.0.0")
+			PossiblePorts.insert(PossiblePorts.end(), it->second.begin(), it->second.end());
+		else if (it->first == IP)
+			PossiblePorts.insert(PossiblePorts.end(), it->second.begin(), it->second.end());
 	}
 	return (PossiblePorts);
 }
+
+// static std::vector<size_t>		ReturnDefaultPorts(Server ServerBlock, std::string IP)
+// {
+// 	std::vector<size_t>			PossiblePorts;
+
+// 	try
+// 	{
+// 		PossiblePorts = ServerBlock.GetDefaultServer().at(IP);
+// 	}
+// 	catch (std::exception &e)
+// 	{
+// 	}
+// 	return (PossiblePorts);
+// }
+
+// static std::vector<size_t>		ReturnNormalPorts(Server ServerBlock, std::string IP)
+// {
+// 	std::vector<size_t>			PossiblePorts;
+
+// 	try
+// 	{
+// 		PossiblePorts = ServerBlock.GetListenIPandPorts().at(IP);
+// 	}
+// 	catch (std::exception &e)
+// 	{
+// 	}
+// 	return (PossiblePorts);
+// }
 
 static bool						DefaultServerCheck(Server ServerBlock, std::vector<Server> *MatchingServers, size_t Port, std::string IP)
 {
@@ -138,4 +169,14 @@ std::vector<Server>				*FindMatchingServers(std::vector<Server> &Servers, size_t
 	for (size_t i = 0; i < Servers.size(); i += 1)
 		NormalServerCheck(Servers[i], MatchingServers, Port, IP);
 	return (MatchingServers);
+}
+
+void						printServers(std::vector<Server> &Servers)
+{
+	std::cout << "Number of servers: " << Servers.size() << std::endl;
+	for (size_t i = 0; i < Servers.size(); ++i)
+	{
+		std::cout << "\e[33m##############   SERVER\e[0m" << std::endl;
+		std::cout << Servers[i];
+	}
 }

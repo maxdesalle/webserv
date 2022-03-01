@@ -6,7 +6,7 @@
 #    By: tderwedu <tderwedu@student.s19.be>         +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2022/01/18 10:08:26 by maxdesall         #+#    #+#              #
-#    Updated: 2022/03/01 14:45:05 by tderwedu         ###   ########.fr        #
+#    Updated: 2022/03/01 14:46:48 by tderwedu         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -14,44 +14,59 @@ NAME			:=	webserv
 
 # =============================== COMPILATION ================================ #
 
-CC				:= clang++
-TEST			:= clang++ -fsanitize=address -g3
-CFLAGS			:= -Wall -Wextra -std=c++98
+CC			:= clang++
+CFLAGS		:= -Wall -Wextra -Werror -std=c++98
 
 # ================================== FILES =================================== #
 
-OBJ				:= $(SRC:.cpp=.o)
 
-MAIN			:= Webserv.cpp
-CONFIG			:= ConfigHandler.cpp \
-				   Server.cpp \
-				   Location.cpp
-HTTP_CONFIG		:= Response.cpp
+MAIN		:= Webserv.cpp
+CONFIG		:= ConfigHandler.cpp \
+			   Server.cpp \
+			   Location.cpp
+SOCKETS		:= RequestHandler.cpp \
+			   ListenSocket.cpp \
+			   ClientSocket.cpp \
+			   Webserv.cpp
+HTTP		:= Request.cpp \
+			   URI.cpp \
+			   Response.cpp \
+			   Header.cpp
+UTILS		:= Timer.cpp \
+			   utils.cpp
 
-MAIN_DIR		:= $(addprefix src/, $(MAIN))
-CONFIG_DIR		:= $(addprefix src/config/, $(CONFIG))
-HTTP_CONFIG_DIR := $(addprefix src/HTTP_CONFIG/, $(HTTP_CONFIG))
+# INCLUDES	:= -I ./${SRC_DIR} -I ./${TEST_DIR}
 
-SRC				:= $(MAIN_DIR) $(CONFIG_DIR) $(HTTP_CONFIG_DIR)
+BIN_DIR		:= .bin/
+SRC_DIR		:= src/
+MAIN_DIR	:= $(addprefix src/, $(MAIN))
+UTILS		:= $(addprefix src/utils/, $(UTILS))
+CONFIG_DIR	:= $(addprefix src/config/, $(CONFIG))
+SOCKETS		:= $(addprefix src/sockets/, $(SOCKETS))
+HTTP		:= $(addprefix src/HTTP_Config/, $(HTTP))
+
+SRC			:= $(MAIN_DIR) $(UTILS) $(CONFIG_DIR) $(HTTP) $(SOCKETS)
+# SRC			:= $(MAIN_DIR) $(CONFIG_DIR)
+OBJ			:= $(subst ${SRC_DIR},${BIN_DIR}, ${SRC:.cpp=.o})
 
 # ================================== RULES =================================== #
 
+$(BIN_DIR)%.o:	$(SRC_DIR)%.cpp
+				@mkdir -p $(dir $@)
+				$(CC) $(CFLAGS) -c $< -o $@
+
+$(NAME):		$(OBJ)
+				@$(CC) $(CFLAGS) $(OBJ) -o $(NAME)
+
 all:			$(NAME)
-
-$(NAME):
-				@$(CC) $(CFLAGS) $(SRC) -o $(NAME)
-
-test:		
-				@$(TEST) $(CFLAGS) $(SRC) -o $(NAME)
 
 clean:
 				@rm -rf $(OBJ)
 				@rm -rf *.dSYM
 
-fclean:
-				@rm -rf $(OBJ)
+fclean:			clean
+				@rm -rf $(BIN_DIR)
 				@rm -rf $(NAME)
-				@rm -rf *.dSYM
 
 re:				fclean all
 
