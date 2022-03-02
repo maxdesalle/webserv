@@ -6,7 +6,7 @@
 /*   By: tderwedu <tderwedu@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/01/26 11:48:07 by ldelmas           #+#    #+#             */
-/*   Updated: 2022/03/02 10:56:11 by tderwedu         ###   ########.fr       */
+/*   Updated: 2022/03/02 20:37:37 by mdesalle         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -51,7 +51,8 @@ class Response : public Header
 		std::string			FindStatusMessage(unsigned int *StatusCode);
 		std::string			GetLastModifiedTimeForFile(std::string Path);
 		std::string			HandleNormalPostRequest(Request &HTTPRequest, Location &HTTPLocation, unsigned int *StatusCode);
-		std::string const&	GetHeaderResponse(Request &HTTPRequest, Location &HTTPLocation);
+		std::string const	&GetHeaderResponse(Request &HTTPRequest, Location &HTTPLocation);
+		std::string const	&GetBadRequestResponse(Request &HTTPRequest, Location &HTTPLocation, unsigned int StatusCode);
 		std::string			GetErrorPagePath(Location &HTTPLocation, unsigned int *StatusCode);
 		std::string			ReturnError(Request &HTTPRequest, Location &HTTPLocation, unsigned int *StatusCode);
 		std::string			HandleGETRequest(Request &HTTPRequest, Location &HTTPLocation, unsigned int *StatusCode);
