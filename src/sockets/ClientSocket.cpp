@@ -6,7 +6,7 @@
 /*   By: tderwedu <tderwedu@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/23 10:55:52 by tderwedu          #+#    #+#             */
-/*   Updated: 2022/02/25 14:08:11 by tderwedu         ###   ########.fr       */
+/*   Updated: 2022/03/02 13:18:57 by tderwedu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -109,6 +109,23 @@ void		ClientSocket::getNewRequest(void)
 	}
 }
 
+void		ClientSocket::sendResponse(void)
+{
+	ssize_t			n;
+	RequestHandler&	handler = _messages.front();
+	Response&		response = handler.getResponse();
+	Request&		request = handler.getRequest();
+
+	handler._findLocation(request.getTarget());
+	std::string const& buff = response.GetHeaderResponse(request, const_cast<Location&>(handler.getLocation())); //TODO: THIS IS UGLY!!!!
+	n = send(_pollfd.fd, buff.c_str(), buff.size(), 0);
+	if (n < 0)
+	{
+		std::cout << " \e[31m \t \t TIMEOUT while processing ! \e[0m" << std::endl; // TODO:remove
+		_clearSocket();
+	}
+}
+
 int			ClientSocket::empty(void)
 {
 	return (_messages.size() <= 1);
@@ -116,32 +133,34 @@ int			ClientSocket::empty(void)
 
 void		ClientSocket::_findServer(void)										// TODO: CORR matchingServers
 {
-	struct in_addr			addr;
-	char					ip[INET_ADDRSTRLEN];
-	vecServer 				*matchingServers;
-	RequestHandler&			handler = _messages.back();
-	Request&				request = handler.getRequest();
-	std::string const&		host = request.getField("Host");
+	struct in_addr				addr;
+	char						ip[INET_ADDRSTRLEN];
+	std::vector<Server const*>	*matchingServers;
+	RequestHandler&				handler = _messages.back();
+	Request&					request = handler.getRequest();
+	std::string const&			host = request.getField("Host");
 
+	// std::cout << "======================> _findServer" << std::endl; //TODO: remove
 	addr.s_addr = _addr;
 	inet_ntop(AF_INET, &addr, ip, INET_ADDRSTRLEN);
 	matchingServers = FindMatchingServers(_webserv.getServers(), _port, ip);
 	if (matchingServers->empty())
 		; // TODO: reponse "500 Internal Server Error"
 	if (host.empty())															//TODO: Missing HOST field might be an error!
-		handler.setServer(matchingServers->at(0));
+		handler.setServer(*matchingServers->at(0));
 	for (size_t i = 0; i < matchingServers->size(); ++i)
 	{
-		for (size_t j = 0; j < (matchingServers->at(i)).GetServerNames().size(); ++j)
+		for (size_t j = 0; j < (matchingServers->at(i))->GetServerNames().size(); ++j)
 		{
-			if (host == (matchingServers->at(i)).GetServerNames()[j])
+			if (host == (matchingServers->at(i))->GetServerNames()[j])
 			{
-				handler.setServer(matchingServers->at(i));
+				handler.setServer(*matchingServers->at(i));
+				delete matchingServers;
 				return ;
 			}
 		}
 	}
-	handler.setServer(matchingServers->at(0));
+	handler.setServer(*matchingServers->at(0));
 	delete matchingServers;
 }
 

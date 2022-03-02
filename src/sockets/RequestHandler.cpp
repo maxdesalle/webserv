@@ -6,7 +6,7 @@
 /*   By: tderwedu <tderwedu@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/23 10:57:33 by tderwedu          #+#    #+#             */
-/*   Updated: 2022/02/25 14:10:04 by tderwedu         ###   ########.fr       */
+/*   Updated: 2022/03/02 13:18:35 by tderwedu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,18 +35,58 @@ Request&			RequestHandler::getRequest(void)
 	return _request;
 }
 
-void			RequestHandler::setServer(Server& server)
+Response&			RequestHandler::getResponse(void)
 {
-	std::cout << "SERVER:\n" << server << std::endl; // TODO:remove
+	return _response;
+}
+
+Location const&			RequestHandler::getLocation(void)
+{
+	return *_location;
+}
+
+void			RequestHandler::setServer(Server const& server)
+{
 	_server = &server;
 }
+
+void			RequestHandler::setStateDownloaded(void)
+{
+	_state = DOWNLOADED;
+}
+
+void			RequestHandler::setStateSending(void)
+{
+	_state = SENDING;
+}
+
+void			RequestHandler::setStateDone(void)
+{
+	_state = DONE;
+}
+
+bool			RequestHandler::isStateDownloaded(void)
+{
+	return _state == DOWNLOADED;
+}
+
+bool			RequestHandler::isStateSending(void)
+{
+	return _state == DOWNLOADED;
+}
+
+bool			RequestHandler::isStateDone(void)
+{
+	return _state == DONE;
+}
+
 
 void				RequestHandler::clearRequestHandler(void)
 {
 	//TODO: to do ...
 }
 
-void			RequestHandler::processRessource(void)
+void			RequestHandler::processRessource(void) // TODO:remove
 {
 	if (_state == NEW)
 	{
@@ -61,11 +101,6 @@ void			RequestHandler::processRessource(void)
 			_state = SENDING;
 			;	// TODO: return 405 Method Not Allowed!
 		}
-		if (!_location->isCgi())
-		{
-			_state = CGI;
-			;	// TODO: HANDLING CGI
-		}
 	}
 }
 
@@ -73,14 +108,16 @@ void			RequestHandler::_findLocation(const std::string &path)			//TODO: CORR Get
 {
 	int					len = 0;
 	int					max = 0;
-	const Location		*candidate = NULL;
-	vecLocation			locations = _server->GetLocations();
+	Location const		*candidate = NULL;
+	vecLocation const&	locations = _server->GetLocations();
+	std::string			loc;
 
 	for (citLocation it = locations.begin(); it < locations.end(); ++it)
 	{
-		if (path.find(it->GetPath()) == 0)
+		loc = it->GetPath();
+		if (path.find(loc) == 0)
 		{
-			len = (it->GetPath()).size();
+			len = (loc).size();
 			if (len > max)
 			{
 				candidate = &*it;
@@ -89,4 +126,8 @@ void			RequestHandler::_findLocation(const std::string &path)			//TODO: CORR Get
 		}
 	}
 	_location = candidate;
+	if (!candidate)
+		; //TODO: error 404 !!!
+	std::cout << "  SERVER\n"  << *_server << std::endl; // TODO:remove
+	std::cout << "LOCATION\n" << *_location << std::endl;
 }

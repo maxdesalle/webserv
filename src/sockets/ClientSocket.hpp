@@ -6,7 +6,7 @@
 /*   By: tderwedu <tderwedu@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/01 15:22:19 by tderwedu          #+#    #+#             */
-/*   Updated: 2022/02/25 14:06:00 by tderwedu         ###   ########.fr       */
+/*   Updated: 2022/03/02 11:01:40 by tderwedu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,7 +38,7 @@ public:
 	ClientSocket&	operator=(ClientSocket const& rhs);
 
 	void			getNewRequest(void);
-	void			getRessources(void);
+	void			sendResponse(void);
 
 	int				empty(void);
 

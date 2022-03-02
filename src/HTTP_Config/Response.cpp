@@ -6,7 +6,7 @@
 /*   By: tderwedu <tderwedu@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/01/26 14:58:24 by ldelmas           #+#    #+#             */
-/*   Updated: 2022/03/01 17:55:00 by tderwedu         ###   ########.fr       */
+/*   Updated: 2022/03/02 11:29:50 by tderwedu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -157,7 +157,7 @@ std::string	Response::FindStatusMessage(unsigned int *StatusCode)
 	return ("Internal Server Error");
 }
 
-std::string	Response::GetHeaderResponse(Request &HTTPRequest, Location &HTTPLocation)
+std::string const&		Response::GetHeaderResponse(Request &HTTPRequest, Location &HTTPLocation)
 {
 	std::string			Body;
 	unsigned int		StatusCode = 0;

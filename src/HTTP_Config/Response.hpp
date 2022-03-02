@@ -6,7 +6,7 @@
 /*   By: tderwedu <tderwedu@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/01/26 11:48:07 by ldelmas           #+#    #+#             */
-/*   Updated: 2022/03/01 17:56:20 by tderwedu         ###   ########.fr       */
+/*   Updated: 2022/03/02 10:56:11 by tderwedu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,19 +45,19 @@ class Response : public Header
 
 		Response const &operator=(Response const &right);
 
-		bool		FindValueInVector(std::vector<std::string> Haystack, std::string Needle);
-		std::string	GetServerVersion(void);
-		std::string	GetCurrentFormattedTime(void);
-		std::string	FindStatusMessage(unsigned int *StatusCode);
-		std::string	GetLastModifiedTimeForFile(std::string Path);
-		std::string	HandleNormalPostRequest(Request &HTTPRequest, Location &HTTPLocation, unsigned int *StatusCode);
-		std::string	GetHeaderResponse(Request &HTTPRequest, Location &HTTPLocation);
-		std::string	GetErrorPagePath(Location &HTTPLocation, unsigned int *StatusCode);
-		std::string	ReturnError(Request &HTTPRequest, Location &HTTPLocation, unsigned int *StatusCode);
-		std::string	HandleGETRequest(Request &HTTPRequest, Location &HTTPLocation, unsigned int *StatusCode);
-		std::string	HandlePOSTRequest(Request &HTTPRequest, Location &HTTPLocation, unsigned int *StatusCode);
-		std::string	HandleCGIPOSTRequest(Request &HTTPRequest, Location &HTTPLocation, unsigned int *StatusCode);
-		std::string	HandleDELETERequest(Request &HTTPRequest, Location &HTTPLocation, unsigned int *StatusCode);
+		bool				FindValueInVector(std::vector<std::string> Haystack, std::string Needle);
+		std::string			GetServerVersion(void);
+		std::string			GetCurrentFormattedTime(void);
+		std::string			FindStatusMessage(unsigned int *StatusCode);
+		std::string			GetLastModifiedTimeForFile(std::string Path);
+		std::string			HandleNormalPostRequest(Request &HTTPRequest, Location &HTTPLocation, unsigned int *StatusCode);
+		std::string const&	GetHeaderResponse(Request &HTTPRequest, Location &HTTPLocation);
+		std::string			GetErrorPagePath(Location &HTTPLocation, unsigned int *StatusCode);
+		std::string			ReturnError(Request &HTTPRequest, Location &HTTPLocation, unsigned int *StatusCode);
+		std::string			HandleGETRequest(Request &HTTPRequest, Location &HTTPLocation, unsigned int *StatusCode);
+		std::string			HandlePOSTRequest(Request &HTTPRequest, Location &HTTPLocation, unsigned int *StatusCode);
+		std::string			HandleCGIPOSTRequest(Request &HTTPRequest, Location &HTTPLocation, unsigned int *StatusCode);
+		std::string			HandleDELETERequest(Request &HTTPRequest, Location &HTTPLocation, unsigned int *StatusCode);
 };
 
 #endif

@@ -6,7 +6,7 @@
 /*   By: tderwedu <tderwedu@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/23 10:58:04 by tderwedu          #+#    #+#             */
-/*   Updated: 2022/02/25 09:24:49 by tderwedu         ###   ########.fr       */
+/*   Updated: 2022/03/02 11:33:27 by tderwedu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -143,10 +143,12 @@ void				Webserv::runWebserv(void)
 			<< ", Client " << __getNbrPollClient() << "]" << std::endl;
 		
 		std::cout << "\e[33m###################   Listen Sockets\e[0m" << std::endl;
-		_checkServerSockets();
+		_checkServerSockets(); //TODO: change
 		std::cout << "\e[33m###################   Client Sockets\e[0m" << std::endl;
-		if (__getNbrPollClient())
+		if (__getNbrPollClient()) //TODO: change
 			_checkClientSockets();
+
+		
 	}
 }
 
@@ -212,6 +214,7 @@ void				Webserv::_checkClientSockets(void)
 	while (client != _clientSocks.end())
 	{
 		client->getNewRequest();
+		client->sendResponse();
 		// Handle Request's Stack - 
 		// Handle Response's Stack
 		// Update DEQUE
