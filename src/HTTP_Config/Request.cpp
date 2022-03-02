@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Request.cpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: tderwedu <tderwedu@student.s19.be>         +#+  +:+       +#+        */
+/*   By: ldelmas <ldelmas@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/01/26 14:59:17 by ldelmas           #+#    #+#             */
-/*   Updated: 2022/03/01 09:47:44 by tderwedu         ###   ########.fr       */
+/*   Updated: 2022/03/02 12:03:42 by ldelmas          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -359,7 +359,7 @@ int				Request::_parseHeaderField(std::string const &line)
 		if (!str.compare(name))
 		{
 			std::string s = trimSpaces(line.substr(str.length()));
-			if (Header::_parseFieldValue(s) != s)
+			if (Header::_parseFieldValue(s) != s || !Value::checkFieldValue(name, s))
 				return 400;
 			else if (this->_headerFields[Request::_fieldNames[j]][0])
 				this->_headerFields[Request::_fieldNames[j]] += ',' + s;
