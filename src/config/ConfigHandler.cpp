@@ -6,7 +6,11 @@
 /*   By: tderwedu <tderwedu@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/01/18 18:04:43 by maxdesall         #+#    #+#             */
+<<<<<<< HEAD
 /*   Updated: 2022/03/02 19:13:04 by mdesalle         ###   ########.fr       */
+=======
+/*   Updated: 2022/03/02 18:40:33 by tderwedu         ###   ########.fr       */
+>>>>>>> tderwedu
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,12 +48,12 @@ static std::string				&Trim(std::string &str)
  * Returns a vector with a Server object for each server block in the provided config file
  */
 
-std::vector<Server>				ConfigHandler(std::string ConfigFileName)
+vecServer				ConfigHandler(std::string ConfigFileName)
 {
 	std::string					Line;
 	std::ifstream				File(ConfigFileName.c_str());
 	std::vector<std::string>	ServerContent;
-	std::vector<Server>			Servers;
+	vecServer			Servers;
 
 	if (!File.is_open())
 	{
@@ -139,7 +143,7 @@ static void						NormalServerCheck(Server const& ServerBlock, std::vector<Server
  * Returns a vector of Server objects which match a given port and IP
  */
 
-std::vector<Server const*>				*FindMatchingServers(std::vector<Server> &Servers, size_t Port, std::string IP)
+std::vector<Server const*>				*FindMatchingServers(vecServer const& Servers, size_t Port, std::string IP)
 {
 	std::vector<size_t>			PossiblePorts;
 	std::vector<Server const*>	*MatchingServers = new std::vector<Server const*>;
@@ -151,7 +155,7 @@ std::vector<Server const*>				*FindMatchingServers(std::vector<Server> &Servers,
 	return (MatchingServers);
 }
 
-void						printServers(std::vector<Server> &Servers)
+void						printServers(vecServer const& Servers)
 {
 	std::cout << "Number of servers: " << Servers.size() << std::endl;
 	for (size_t i = 0; i < Servers.size(); ++i)

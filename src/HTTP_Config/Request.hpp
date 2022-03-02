@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Request.hpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ldelmas <ldelmas@student.42.fr>            +#+  +:+       +#+        */
+/*   By: tderwedu <tderwedu@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/01/26 11:47:16 by ldelmas           #+#    #+#             */
-/*   Updated: 2022/03/02 11:59:10 by ldelmas          ###   ########.fr       */
+/*   Updated: 2022/03/02 21:20:53 by tderwedu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,7 +36,7 @@
 class Request : public Header
 {
 	public:
-		enum state {STARTLINE, HEADERS, BODY, PROCESSING, DONE};
+		enum state {STARTLINE, HEADERS, BODY, DONE};
 		enum chunk {SIZE, DATA, TE}; // tderwedu
 	private:
 		enum body {NONE, LEN, CHUNKED};
@@ -71,7 +71,7 @@ class Request : public Header
 		std::string const	&getVersion(void) const;
 		std::string const	&getBody(void) const;
 		state				getState(void) const;
-		bool				isProcessing(void) const;
+		bool				isDone(void) const;
 		std::map<std::string const, std::string> const &getCGIServerVars(void);
 		void				setMethod(std::string &method);
 		void				setTarget(std::string &target);

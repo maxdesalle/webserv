@@ -6,13 +6,49 @@
 /*   By: tderwedu <tderwedu@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/23 10:58:04 by tderwedu          #+#    #+#             */
-/*   Updated: 2022/03/02 11:33:27 by tderwedu         ###   ########.fr       */
+/*   Updated: 2022/03/02 21:55:35 by tderwedu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "Webserv.hpp"
 
-std::string const Webserv::_validMethod[4] = {"GET", "HEAD", "POST", "DELETE"};
+inline static void	__debug_header__(char const *header)	// TODO: DEBUG
+{
+	std::cout	<< "\e[32m \t############################# \n" \
+				<< " \t#           " << header << "          # \n" \
+				<< " \t############################# \e[0m" << std::endl;
+}
+
+inline static void	__debug_section__(char const *section)
+{
+	std::cout << "\e[33m###################   "<< section << "\e[0m" << std::endl;
+}
+
+inline static void	__debug_poll__(void)	// TODO: DEBUG
+{
+		std::cout << "\e[34m ####################################\n" \
+					<< " #   Poll, Waiting For An Revents   #\n" \
+					<< " #################################### \e[0m" << std::endl;
+}
+
+inline void		Webserv::__debug_before_poll__(void) const	// TODO: DEBUG
+{
+	std::cout	<< "\n[Listen: " << _nbrPorts << "; Client: " \
+				<< _fdInUse - _nbrPorts << "; PollMax:" << _nbrPollMax\
+				<< "]"<< std::endl;
+}
+
+inline void		Webserv::__debug_after_poll__(void) const	// TODO: DEBUG
+{
+	std::cout	<< "[Poll: \e[0m" << _nbrPoll <<  ": Listen " \
+				<< __getNbrPollNetwork() << ", Client " \
+				<< __getNbrPollClient() << "]" << std::endl;
+}
+
+/*
+** Webserv
+** ================================ Constructors ===============================
+*/
 
 Webserv::Webserv(void) {}
 
@@ -24,20 +60,12 @@ Webserv::~Webserv(void)
 	delete [] _pollfd;
 }
 
-// Webserv&	Webserv::operator=(Webserv const& rhs)
-// {
-// 	if (this != &rhs)
-// 	{
-// 		_fdInUse = rhs._fdInUse;
-// 		_servers = rhs._servers;
-// 		_pollfd = rhs._pollfd;
-// 		_listenSocks = rhs._listenSocks;
-// 		_clientSocks = rhs._clientSocks;
-// 	}
-// 	return *this;
-// }
+/*
+** Webserv
+** ============================== Member functions =============================
+*/
 
-vecServer&			Webserv::getServers(void)
+vecServer const&	Webserv::getServers(void) const
 {
 	return _servers;
 }
@@ -48,17 +76,27 @@ void				Webserv::initWebserv(std::string const& config)
 	_pollfd = new t_poll[open_max];
 	_fdInUse = 0;
 	_nbrPollMax = 0;
-	std::cout	<< "\e[32m \t############################# \n" \
-				<< " \t#          PARSING          # \n" \
-				<< " \t############################# \e[0m" << std::endl;
 	_servers = ConfigHandler(config);
+	__debug_header__("PARSING");
 	printServers(_servers);
-	std::cout	<< "\e[32m \t#############################\n" \
-				<< " \t#          WEBSERV          #\n" \
-				<< " \t############################# \e[0m" << std::endl;
+	__debug_header__("WEBSERV");
 	_setNetworkSockets();
-	std::cout	<< " NetworkSockets: \e[31m" << _listenSocks.size() << "\e[0m\n" \
-				<< "       _fdInUse: \e[31m" << _fdInUse << "\e[0m" << std::endl;
+}
+
+void				Webserv::runWebserv(void)
+{
+	while (true)
+	{
+		__debug_before_poll__();
+		__debug_poll__();
+		_nbrPoll = poll(_pollfd, _nbrPollMax + 1, 0);
+		__debug_after_poll__();
+		__debug_section__("Listen Sockets");
+		_checkListenSockets();
+		__debug_section__("Client Sockets");
+		_checkClientSockets();
+		sleep(1); // TODO: DEBUG
+	}
 }
 
 void				Webserv::_setOpenMax(void) const
@@ -128,31 +166,7 @@ void				Webserv::_addNetworkSocket(int port, int nbr_queue)
 	std::cout << _listenSocks.back() << std::endl; // TODO: DEBUG
 }
 
-void				Webserv::runWebserv(void)
-{
-	while (true)
-	{
-		std::cout << "\n[Listen: " << _nbrPorts << "; Client: " << _fdInUse - _nbrPorts << "; PollMax:" << _nbrPollMax << "]"<< std::endl;
-		std::cout << "\e[34m ####################################\n" \
-					<< " #   Poll, Waiting For An Revents   #\n" \
-					<< " #################################### \e[0m" << std::endl;
-		
-		_nbrPoll = poll(_pollfd, _nbrPollMax + 1, -1);
-		
-		std::cout << "[Poll: \e[0m" << _nbrPoll <<  ": Listen " << __getNbrPollNetwork() \
-			<< ", Client " << __getNbrPollClient() << "]" << std::endl;
-		
-		std::cout << "\e[33m###################   Listen Sockets\e[0m" << std::endl;
-		_checkServerSockets(); //TODO: change
-		std::cout << "\e[33m###################   Client Sockets\e[0m" << std::endl;
-		if (__getNbrPollClient()) //TODO: change
-			_checkClientSockets();
-
-		
-	}
-}
-
-void				Webserv::_checkServerSockets(void)
+void				Webserv::_checkListenSockets(void)
 {
 	int				fd_client;
 	in_addr_t		addr;
@@ -180,30 +194,12 @@ void				Webserv::_checkServerSockets(void)
 			}
 			fcntl(fd_client, F_SETFL, O_NONBLOCK);
 			addr = sockaddr.sin_addr.s_addr;
-			_clientSocks.push_back(ClientSocket(it->getPort(), addr, addPollfd(fd_client), *this));
+			_clientSocks.push_back(ClientSocket(it->getPort(), addr, _pushPollfd(fd_client), *this));
 			std::cout << _clientSocks.back() << std::endl; // TODO: DEBUG
 			if (_fdInUse == open_max)
 				break ;
 		}
 	}
-}
-
-size_t				Webserv::__getNbrPollNetwork(void) const
-{
-	size_t	nbr = 0;
-
-	for (size_t i = 0; i < _nbrPorts; ++i)
-		nbr += (_pollfd[i].revents & POLLIN);
-	return nbr;
-}
-
-size_t				Webserv::__getNbrPollClient(void) const
-{
-	size_t	nbr = 0;
-
-	for (size_t i = _nbrPorts; i <= _nbrPollMax; ++i)
-		nbr += (_pollfd[i].revents & POLLIN);
-	return nbr;
 }
 
 void				Webserv::_checkClientSockets(void)
@@ -213,28 +209,17 @@ void				Webserv::_checkClientSockets(void)
 	client = _clientSocks.begin();
 	while (client != _clientSocks.end())
 	{
-		client->getNewRequest();
-		client->sendResponse();
-		// Handle Request's Stack - 
-		// Handle Response's Stack
-		// Update DEQUE
-		++client;
-	}
-}
-
-void				Webserv::reapClosedClientSock(void)
-{
-	for (itClieSock it = _clientSocks.begin(); it != _clientSocks.end(); ++it)
-	{
-		if (!it->isOpen() && !it->empty())
+		if (client->handleSocket())
 		{
-			popPollfd(it->getPollFd());
-			_clientSocks.erase(it);
+			_popPollfd(client->getPollFd());
+			client = _clientSocks.erase(client);
 		}
+		else
+			++client;
 	}
 }
 
-t_poll&				Webserv::addPollfd(int fd_client)
+t_poll&				Webserv::_pushPollfd(int fd_client)
 {
 	size_t	i = 0;
 
@@ -255,7 +240,7 @@ t_poll&				Webserv::addPollfd(int fd_client)
 	return _pollfd[i];
 }
 
-void				Webserv::popPollfd(t_poll&	pollfd)
+void				Webserv::_popPollfd(t_poll&	pollfd)
 {
 	pollfd.fd = -1;
 	while (_pollfd[_nbrPollMax].fd == -1)
@@ -263,12 +248,20 @@ void				Webserv::popPollfd(t_poll&	pollfd)
 	--_fdInUse;
 }
 
-int					Webserv::isValidRequest(const std::string& method)
+size_t				Webserv::__getNbrPollNetwork(void) const
 {
-	for (std::string::size_type i = 0; i < sizeof(_validMethod)/sizeof(std::string); ++i)
-	{
-		if (ci_equal(method, _validMethod[i]))
-			return 1;
-	}
-	return 0;
+	size_t	nbr = 0;
+
+	for (size_t i = 0; i < _nbrPorts; ++i)
+		nbr += (_pollfd[i].revents & POLLIN);
+	return nbr;
+}
+
+size_t				Webserv::__getNbrPollClient(void) const
+{
+	size_t	nbr = 0;
+
+	for (size_t i = _nbrPorts; i <= _nbrPollMax; ++i)
+		nbr += (_pollfd[i].revents & POLLIN);
+	return nbr;
 }

@@ -6,7 +6,11 @@
 /*   By: tderwedu <tderwedu@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/01/26 14:58:24 by ldelmas           #+#    #+#             */
+<<<<<<< HEAD
 /*   Updated: 2022/03/02 20:49:54 by mdesalle         ###   ########.fr       */
+=======
+/*   Updated: 2022/03/02 18:35:41 by tderwedu         ###   ########.fr       */
+>>>>>>> tderwedu
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -346,3 +350,8 @@ std::string	Response::GetCurrentFormattedTime(void)
 
 /* 	return (FormattedString); */
 /* } */
+
+void				Response::reset(void)
+{
+	_HeaderResponse.clear();
+}

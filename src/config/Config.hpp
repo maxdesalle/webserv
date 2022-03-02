@@ -6,7 +6,11 @@
 /*   By: tderwedu <tderwedu@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/01/19 11:19:44 by mdesalle          #+#    #+#             */
+<<<<<<< HEAD
 /*   Updated: 2022/03/02 19:02:49 by mdesalle         ###   ########.fr       */
+=======
+/*   Updated: 2022/03/02 18:40:29 by tderwedu         ###   ########.fr       */
+>>>>>>> tderwedu
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,8 +41,8 @@ typedef std::vector<Location>::iterator						itLocation;
 typedef std::vector<Location>::const_iterator				citLocation;
 typedef std::map<std::string, std::vector<size_t> >			mapServer;
 
-std::vector<Server>			ConfigHandler(std::string ConfigFileName);
-std::vector<Server const*>	*FindMatchingServers(std::vector<Server> &Servers, size_t Port, std::string IP);
-void						printServers(std::vector<Server> &Servers);
+vecServer					ConfigHandler(std::string ConfigFileName);
+std::vector<Server const*>	*FindMatchingServers(vecServer const& Servers, size_t Port, std::string IP);
+void						printServers(vecServer const& Servers);
 
 #endif

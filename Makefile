@@ -3,10 +3,10 @@
 #                                                         :::      ::::::::    #
 #    Makefile                                           :+:      :+:    :+:    #
 #                                                     +:+ +:+         +:+      #
-#    By: ldelmas <ldelmas@student.42.fr>            +#+  +:+       +#+         #
+#    By: tderwedu <tderwedu@student.s19.be>         +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2022/01/18 10:08:26 by maxdesall         #+#    #+#              #
-#    Updated: 2022/03/01 16:16:01 by ldelmas          ###   ########.fr        #
+#    Updated: 2022/03/02 18:26:47 by tderwedu         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -24,8 +24,7 @@ MAIN		:= Webserv.cpp
 CONFIG		:= ConfigHandler.cpp \
 			   Server.cpp \
 			   Location.cpp
-SOCKETS		:= RequestHandler.cpp \
-			   ListenSocket.cpp \
+SOCKETS		:= ListenSocket.cpp \
 			   ClientSocket.cpp \
 			   Webserv.cpp
 HTTP		:= Request.cpp \

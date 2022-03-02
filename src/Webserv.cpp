@@ -6,7 +6,7 @@
 /*   By: tderwedu <tderwedu@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/01/18 17:28:20 by maxdesall         #+#    #+#             */
-/*   Updated: 2022/03/01 09:38:32 by tderwedu         ###   ########.fr       */
+/*   Updated: 2022/03/02 18:27:11 by tderwedu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,7 +16,6 @@
 #include "./config/Config.hpp"
 #include "sockets/ClientSocket.hpp"
 #include "sockets/ListenSocket.hpp"
-#include "sockets/RequestHandler.hpp"
 #include "sockets/Webserv.hpp"
 
 int	main(int argc, char **argv)
