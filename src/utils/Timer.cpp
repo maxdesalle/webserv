@@ -6,11 +6,12 @@
 /*   By: tderwedu <tderwedu@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/01/03 10:22:54 by tderwedu          #+#    #+#             */
-/*   Updated: 2022/02/03 15:23:54 by tderwedu         ###   ########.fr       */
+/*   Updated: 2022/03/02 21:56:38 by tderwedu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "Timer.hpp"
+#include <iostream>
 
 Timer::Timer(void)
 {

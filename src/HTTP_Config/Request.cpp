@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Request.cpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ldelmas <ldelmas@student.42.fr>            +#+  +:+       +#+        */
+/*   By: tderwedu <tderwedu@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/01/26 14:59:17 by ldelmas           #+#    #+#             */
-/*   Updated: 2022/03/02 12:03:42 by ldelmas          ###   ########.fr       */
+/*   Updated: 2022/03/02 22:17:35 by tderwedu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -108,9 +108,9 @@ Request::state	Request::getState(void) const
 	return this->_state;
 }
 
-bool	Request::isProcessing(void) const
+bool	Request::isDone(void) const
 {
-	return this->_state == PROCESSING;
+	return this->_state == DONE;
 }
 
 std::map<std::string const, std::string> const &Request::getCGIServerVars(void)
@@ -449,7 +449,7 @@ int			Request::_findBodyType(void)
 		this->_state = BODY;
 		return 0;
 	}
-	this->_state = PROCESSING;
+	this->_state = DONE;
 	return 0;
 }
 
@@ -463,21 +463,20 @@ int			Request::_getBody(std::string const &buff)
 	{
 		this->_getNextLine(buff, line);
 		if (line.empty()) // TODO: handling "Expect: 100-continue"
-			return 1;
+			return 0;
 		if (buff.size() < this->_body_size)
 		{
 			this->_remain = buff;
-			return 1;
+			return 0;
 		}
 		this->_body = buff.substr(0, this->_body_size);
-		this->_state = PROCESSING;
+		this->_state = DONE;
 		return 0;
 	}
 	else if (this->_chunk < TE) // Chunked : payload
 	{
 		while ((ret = this->_getNextField(buff, line)) && (this->_chunk < TE))
 		{
-			std::cout << "LINE:" << line << std::endl;
 			if (this->_chunk == SIZE)
 			{
 				errno = 0;
@@ -497,7 +496,7 @@ int			Request::_getBody(std::string const &buff)
 				if (line.size() < this->_body_size)
 				{
 					this->_remain = line;
-					return 1;
+					return 0;
 				}
 				this->_body.append(line);
 				this->_chunk = SIZE;
@@ -506,7 +505,7 @@ int			Request::_getBody(std::string const &buff)
 		if (this->_chunk < TE)
 		{
 			this->_remain = line;
-			return 1;
+			return 0;
 		}
 	}
 	// Chunked : Trailer
@@ -516,9 +515,9 @@ int			Request::_getBody(std::string const &buff)
 	if (ret)
 	{
 		this->_remain = line;
-		return 1;
+		return 0;
 	}
-	this->_state = PROCESSING;
+	this->_state = DONE;
 	return 0;
 }
 
@@ -571,9 +570,6 @@ void		Request::printRequest(void)
 			break;
 		case BODY :
 			std::cout << "State : body" << std::endl;
-			break;
-		case PROCESSING :
-			std::cout << "State : processing" << std::endl;
 			break;
 		case DONE :
 			std::cout << "State : done" << std::endl;

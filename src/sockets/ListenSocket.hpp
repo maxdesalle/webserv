@@ -6,7 +6,7 @@
 /*   By: tderwedu <tderwedu@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/24 16:13:26 by tderwedu          #+#    #+#             */
-/*   Updated: 2022/03/02 18:23:32 by tderwedu         ###   ########.fr       */
+/*   Updated: 2022/03/02 21:52:18 by tderwedu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,7 +15,7 @@
 
 # include "NetworkIPC.hpp"
 
-# define	TIMEOUT			3 * 60 * 1000
+# define	TIMEOUT			10 * 1000 // 3 * 60 * 1000
 # define	TIMEOUT_NVAL	100
 
 class ListenSocket

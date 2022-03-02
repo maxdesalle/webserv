@@ -6,7 +6,7 @@
 /*   By: tderwedu <tderwedu@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/23 10:55:52 by tderwedu          #+#    #+#             */
-/*   Updated: 2022/03/02 19:00:18 by tderwedu         ###   ########.fr       */
+/*   Updated: 2022/03/02 22:18:21 by tderwedu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,23 +17,25 @@ inline static void		__debug_msg__(char const *msg) // TODO: DEBUG
 	std::cout << "\t\e[31m" << msg <<" \e[0m" << std::endl;
 }
 
-inline void				ClientSocket::__debug_request__(void) const // TODO: DEBUG
+inline void				ClientSocket::__debug_request__(int code) const // TODO: DEBUG
 {
 	std::cout	<< "\e[32m"	<< " \t------------------- \n" \
 							<< " \t-     Request     - \n" \
 							<< " \t------------------- \e[0m" << std::endl;
+	std::cout	<< "\e[35m  ===> CODE: \e[31m " << code << "\e[0m\n";
+	std::cout	<< "\e[35m  ===> Request:\e[0m\n";
 	std::cout	<< _request << std::endl;
 	if (_server)
 	{
-		std::cout	<< "\e[34m  ===> Server:\e[0m\n";
-		std::cout	<< _server << std::endl;
+		std::cout	<< "\e[35m  ===> Server:\e[0m\n";
+		std::cout	<< *_server << std::endl;
 	}
 	if (_location)
 	{
-		std::cout	<< "\e[34m  ===> Location:\e[0m\n";
-		std::cout	<< _location << std::endl;
+		std::cout	<< "\e[35m  ===> Location:\e[0m\n";
+		std::cout	<< *_location << std::endl;
 	}
-	std::cout	<< "\e[32m"	<< " \t------------------- " << std::endl;
+	std::cout	<< "\e[32m"	<< " \t------------------- \e[0m" << std::endl;
 }
 
 /*
@@ -92,10 +94,11 @@ int				ClientSocket::handleSocket(void)
 {
 	int		ret;
 	std::cout << *this << std::endl; // TODO: DEBUG
+	std::cout << "_reqState: " << _reqState << std::endl; // TODO: DEBUG
 	// Client disconnected or Any error
 	if (_pollfd.revents & (POLLHUP | POLLERR))
 	{
-		__debug_msg__("POLLHUP | POLLERR !");
+		__debug_msg__((_sockState == HALF_CLOSED) ? "Closing" : "POLLHUP | POLLERR !");
 		sockClose();
 		return 1;
 	}
@@ -109,15 +112,13 @@ int				ClientSocket::handleSocket(void)
 		return 1;
 	}
 	// New Request
-	// std::cout << "_pollfd.revents & POLLIN: " << (_pollfd.revents & POLLIN) << std::endl; // TODO: remove
-	// std::cout << "_reqState <= DOWNLOADING: " << (_reqState <= DOWNLOADING) << std::endl; // TODO: remove
-	if (_pollfd.revents & POLLIN && _reqState <= DOWNLOADING)
+	if (_pollfd.revents & POLLIN && _reqState <= RECEIVING)
 	{
 		// std::cout << "OK OK OK " << std::endl;  // TODO: remove
 		ret = _getRequest();
 	}
 	// Handle Request
-	if (_pollfd.revents & POLLOUT && _reqState >= PROCESSING)
+	if (_pollfd.revents & POLLOUT && _reqState == SENDING)
 	{
 		_sendResponse(ret);
 	}
@@ -138,9 +139,9 @@ int				ClientSocket::_getRequest(void)
 
 	n = recv(_pollfd.fd, _buff, RECV_BUFF_SIZE, 0);
 	_buff[n] = '\0';
+	// std::cout << "\e[31m>>\e[0m" << _buff << "\e[31m>>\e[0m" << std::endl; //TODO:remove
 	_timer.start();
 	std::string		buff = std::string(_buff);
-	std::cout << "OK OK OK : " << buff << std::endl;  // TODO: remove
 	// Error => Should already be handled by `handleSocket()`
 	if (n < 0)
 	{
@@ -152,16 +153,17 @@ int				ClientSocket::_getRequest(void)
 	{
 		__debug_msg__("*Gracefull Close*");
 		if (_sockState == OPEN)
-			sockClose();
-		else
 			sockShutdown();
-		return 0;
+		else
+			sockClose();
+		return (_sockState == CLOSED);
 	}
 	// Can't write anything => no need to process inputs
 	if (_sockState == HALF_CLOSED)
 		return 0;
 	ret = _request.parseRequest(buff);
-	_reqState = (ret ? PROCESSING : DOWNLOADING);
+	// std::cout << "\e[31mret: " << ret << "\e[0m" << std::endl; //TODO:remove
+	_reqState = ((_request.isDone() || ret) ? SENDING : RECEIVING);
 	return ret;
 }
 
@@ -170,17 +172,19 @@ void			ClientSocket::_sendResponse(int code)
 	/*
 	** TODO: Add the possibility to call Response with an error code number!!
 	*/
-	int 		ret;
 	ssize_t		n;
 
-	(void)code;
-	ret = _findServer();
-	if (!ret)
-		ret = _findLocation();
-
-	__debug_request__();
-
+	if (!code)
+		code = _findServer();
+	if (!code)
+		code = _findLocation();
+	__debug_request__(code);
 	std::string const& buff = _response.GetHeaderResponse(_request, const_cast<Location&>(*_location)); //TODO: THIS IS UGLY!!!!
+	if (buff.empty()) // TODO: DEBUG
+	{
+		__debug_msg__("RESPONSE EMPTY !");
+		sockClose();
+	}
 	n = send(_pollfd.fd, buff.c_str(), buff.size(), 0);
 	if (n < 0)
 	{

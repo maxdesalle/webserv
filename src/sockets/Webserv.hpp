@@ -6,7 +6,7 @@
 /*   By: tderwedu <tderwedu@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/01/31 10:19:04 by tderwedu          #+#    #+#             */
-/*   Updated: 2022/03/02 18:49:33 by tderwedu         ###   ########.fr       */
+/*   Updated: 2022/03/02 21:21:36 by tderwedu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,7 +29,7 @@
 # endif
 
 # define OPEN_MAX_GUESS		256
-# define POLL_FLAGS			POLLIN 	// TODO: `| POLLOUT` if not DEBUG
+# define POLL_FLAGS			POLLIN | POLLOUT 	// TODO: `| POLLOUT` if not DEBUG
 
 typedef std::vector<ListenSocket>		vecListSock;
 typedef vecListSock::iterator			itlistSock;

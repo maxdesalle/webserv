@@ -6,7 +6,7 @@
 /*   By: tderwedu <tderwedu@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/01 15:22:19 by tderwedu          #+#    #+#             */
-/*   Updated: 2022/03/02 18:55:17 by tderwedu         ###   ########.fr       */
+/*   Updated: 2022/03/02 22:09:04 by tderwedu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,7 +23,7 @@ class Webserv;
 class ClientSocket : public ListenSocket
 {
 private:
-	enum reqState {WAITING, DOWNLOADING, PROCESSING, SENDING};
+	enum reqState {WAITING, RECEIVING, SENDING};
 
 	Webserv const&		_webserv;
 	Request				_request;
@@ -51,7 +51,7 @@ private:
 	int							_findLocation(void);
 	void						_resetSocket(void);
 
-	inline void					__debug_request__(void) const;
+	inline void					__debug_request__(int code) const;
 
 public:
 	friend std::ostream&		operator<<(std::ostream& stream, ClientSocket const& sock);

@@ -6,7 +6,7 @@
 /*   By: tderwedu <tderwedu@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/23 10:58:04 by tderwedu          #+#    #+#             */
-/*   Updated: 2022/03/02 18:53:56 by tderwedu         ###   ########.fr       */
+/*   Updated: 2022/03/02 21:55:35 by tderwedu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -89,13 +89,13 @@ void				Webserv::runWebserv(void)
 	{
 		__debug_before_poll__();
 		__debug_poll__();
-		_nbrPoll = poll(_pollfd, _nbrPollMax + 1, -1);
+		_nbrPoll = poll(_pollfd, _nbrPollMax + 1, 0);
 		__debug_after_poll__();
 		__debug_section__("Listen Sockets");
-		_checkListenSockets(); //TODO: change
+		_checkListenSockets();
 		__debug_section__("Client Sockets");
 		_checkClientSockets();
-		sleep(1); // TODO: remove
+		sleep(1); // TODO: DEBUG
 	}
 }
 
@@ -212,9 +212,10 @@ void				Webserv::_checkClientSockets(void)
 		if (client->handleSocket())
 		{
 			_popPollfd(client->getPollFd());
-			_clientSocks.erase(client);
+			client = _clientSocks.erase(client);
 		}
-		++client;
+		else
+			++client;
 	}
 }
 
