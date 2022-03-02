@@ -6,7 +6,7 @@
 /*   By: tderwedu <tderwedu@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/01/28 14:30:39 by mdesalle          #+#    #+#             */
-/*   Updated: 2022/03/02 12:36:22 by tderwedu         ###   ########.fr       */
+/*   Updated: 2022/03/02 19:14:01 by mdesalle         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -56,47 +56,47 @@ Location	&Location::operator=(Location const &ref)
 
 //============================ GETTERS / SETTERS =============================//
 
-bool							Location::GetAutoIndex(void)			const
+bool const							&Location::GetAutoIndex(void)			const
 {
 	return (_AutoIndex);
 }
 
-size_t							Location::GetClientMaxBodySize(void)	const
+size_t const						&Location::GetClientMaxBodySize(void)	const
 {
 	return (_ClientMaxBodySize);
 }
 
-std::string						Location::GetPath(void)					const
+std::string const					&Location::GetPath(void)					const
 {
 	return (_Path);
 }
 
-std::string						Location::GetRoot(void)					const
+std::string	const					&Location::GetRoot(void)					const
 {
 	return (_Root);
 }
 
-std::string						Location::GetPass(void)					const
+std::string const					&Location::GetPass(void)					const
 {
 	return (_Pass);
 }
 
-std::vector<std::string>		Location::GetIndex(void)				const
+std::vector<std::string> const		&Location::GetIndex(void)				const
 {
 	return (_Index);
 }
 
-std::vector<std::string>		Location::GetLimitExcept(void)			const
+std::vector<std::string> const		&Location::GetLimitExcept(void)			const
 {
 	return (_LimitExcept);
 }
 
-std::map<size_t, std::string>	Location::GetErrorPage(void)			const
+std::map<size_t, std::string> const	&Location::GetErrorPage(void)			const
 {
 	return (_ErrorPage);
 }
 
-std::map<size_t, std::string>	Location::GetReturn(void)				const
+std::map<size_t, std::string> const	&Location::GetReturn(void)				const
 {
 	return (_Return);
 }

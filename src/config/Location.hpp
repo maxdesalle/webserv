@@ -6,7 +6,7 @@
 /*   By: tderwedu <tderwedu@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/16 15:28:58 by mdesalle          #+#    #+#             */
-/*   Updated: 2022/03/02 11:40:12 by tderwedu         ###   ########.fr       */
+/*   Updated: 2022/03/02 19:14:15 by mdesalle         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,15 +24,15 @@ class Location
 		~Location(void);
 		Location						&operator=(Location const &ref);
 
-		bool							GetAutoIndex(void)			const;
-		size_t							GetClientMaxBodySize(void)	const;
-		std::string						GetPath(void)				const;
-		std::string						GetPass(void)				const;
-		std::string						GetRoot(void)				const;
-		std::vector<std::string>		GetIndex(void)				const;
-		std::vector<std::string>		GetLimitExcept(void)		const;
-		std::map<size_t, std::string>	GetErrorPage(void)			const;
-		std::map<size_t, std::string>	GetReturn(void)				const;
+		bool const							&GetAutoIndex(void)			const;
+		size_t const						&GetClientMaxBodySize(void)	const;
+		std::string const					&GetPath(void)				const;
+		std::string const					&GetPass(void)				const;
+		std::string const					&GetRoot(void)				const;
+		std::vector<std::string> const		&GetIndex(void)				const;
+		std::vector<std::string> const		&GetLimitExcept(void)		const;
+		std::map<size_t, std::string> const	&GetErrorPage(void)			const;
+		std::map<size_t, std::string> const	&GetReturn(void)			const;
 
 		bool							SubStringCompare(std::string KeyValue);
 		void							SaveLimitExcept(std::string Value);

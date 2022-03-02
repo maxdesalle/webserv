@@ -6,7 +6,7 @@
 /*   By: tderwedu <tderwedu@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/01/28 14:07:11 by mdesalle          #+#    #+#             */
-/*   Updated: 2022/03/02 19:00:01 by mdesalle         ###   ########.fr       */
+/*   Updated: 2022/03/02 19:13:33 by mdesalle         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -54,7 +54,7 @@ Server						&Server::operator=(Server const &ref)
 
 //============================ GETTERS / SETTERS =============================//
 
-std::vector<std::string> const						Server::GetServerNames(void)	const
+std::vector<std::string> const						&Server::GetServerNames(void)	const
 {
 	return (_ServerNames);
 }
@@ -64,12 +64,12 @@ std::vector<Location> const							&Server::GetLocations(void)	const
 	return (_Locations);
 }
 
-std::map<std::string, std::vector<size_t> > const&	Server::GetListenIPandPorts(void)	const
+std::map<std::string, std::vector<size_t> > const	&Server::GetListenIPandPorts(void)	const
 {
 	return (_ListenIPandPorts);
 }
 
-std::map<std::string, std::vector<size_t> > const&	Server::GetDefaultServer(void)	const
+std::map<std::string, std::vector<size_t> > const	&Server::GetDefaultServer(void)	const
 {
 	return (_DefaultServer);
 }

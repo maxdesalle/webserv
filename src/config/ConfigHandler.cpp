@@ -6,7 +6,7 @@
 /*   By: tderwedu <tderwedu@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/01/18 18:04:43 by maxdesall         #+#    #+#             */
-/*   Updated: 2022/03/02 19:04:34 by mdesalle         ###   ########.fr       */
+/*   Updated: 2022/03/02 19:13:04 by mdesalle         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -103,34 +103,6 @@ static std::vector<size_t>		ReturnNormalPorts(Server const& ServerBlock, std::st
 	}
 	return (PossiblePorts);
 }
-
-// static std::vector<size_t>		ReturnDefaultPorts(Server ServerBlock, std::string IP)
-// {
-// 	std::vector<size_t>			PossiblePorts;
-
-// 	try
-// 	{
-// 		PossiblePorts = ServerBlock.GetDefaultServer().at(IP);
-// 	}
-// 	catch (std::exception &e)
-// 	{
-// 	}
-// 	return (PossiblePorts);
-// }
-
-// static std::vector<size_t>		ReturnNormalPorts(Server ServerBlock, std::string IP)
-// {
-// 	std::vector<size_t>			PossiblePorts;
-
-// 	try
-// 	{
-// 		PossiblePorts = ServerBlock.GetListenIPandPorts().at(IP);
-// 	}
-// 	catch (std::exception &e)
-// 	{
-// 	}
-// 	return (PossiblePorts);
-// }
 
 static bool						DefaultServerCheck(Server const& ServerBlock, std::vector<Server const*> *MatchingServers, size_t Port, std::string IP)
 {
