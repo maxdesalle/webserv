@@ -6,7 +6,7 @@
 /*   By: tderwedu <tderwedu@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/14 15:30:54 by tderwedu          #+#    #+#             */
-/*   Updated: 2022/02/18 11:22:23 by tderwedu         ###   ########.fr       */
+/*   Updated: 2022/03/02 18:26:52 by tderwedu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,8 +22,6 @@
 # include <deque>
 
 # include <iostream> // TODO:remove
-
-// # include "RequestHandler.hpp"
 
 bool			ci_equal(const std::string &s1, const std::string &s2);
 std::string		getLastModified(const std::string &path);

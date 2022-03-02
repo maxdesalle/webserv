@@ -6,7 +6,7 @@
 /*   By: tderwedu <tderwedu@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/01/31 10:19:04 by tderwedu          #+#    #+#             */
-/*   Updated: 2022/02/24 16:32:02 by tderwedu         ###   ########.fr       */
+/*   Updated: 2022/03/02 18:49:33 by tderwedu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,7 +29,7 @@
 # endif
 
 # define OPEN_MAX_GUESS		256
-# define POLL_FLAGS			POLLIN 	// POLLERR | POLLHUP | POLLNVAL are allways set
+# define POLL_FLAGS			POLLIN 	// TODO: `| POLLOUT` if not DEBUG
 
 typedef std::vector<ListenSocket>		vecListSock;
 typedef vecListSock::iterator			itlistSock;
@@ -39,38 +39,36 @@ typedef lstClieSock::iterator			itClieSock;
 class Webserv
 {
 private:
-	static std::string const	_validMethod[4];
 	size_t						_fdInUse, _nbrPorts, _nbrPoll, _nbrPollMax;
 	vecServer					_servers;
 	t_poll						*_pollfd;
 	vecListSock					_listenSocks;
 	lstClieSock					_clientSocks;
-	
-	Webserv&	operator=(Webserv const& rhs);
+
 public:
 	Webserv(void);
 	~Webserv(void);
+private:
+	Webserv(Webserv const& rhs);
+	Webserv&			operator=(Webserv const& rhs);
 
-	vecServer&			getServers(void);
-
+public:
+	vecServer const&	getServers(void) const;
 	void				initWebserv(std::string const& config);
+	void				runWebserv(void);
+private:
 	void				_setOpenMax(void) const;
 	void				_setNetworkSockets(void);
 	void				_addNetworkSocket(int port, int nbr_queue);
+	void				_checkListenSockets(void);
+	void				_checkClientSockets(void);
+	t_poll&				_pushPollfd(int fd_client);
+	void				_popPollfd(t_poll& pollfd);
 
-	void				runWebserv(void);
 	size_t				__getNbrPollNetwork(void) const;
 	size_t				__getNbrPollClient(void) const;
-	void				_checkServerSockets(void);
-
-	void				_checkClientSockets(void);
-	void				reapClosedClientSock(void);
-	
-	t_poll&				addPollfd(int fd_client);
-	void				popPollfd(t_poll& pollfd);
-
-	int					isValidRequest(const std::string& method);
-
+	inline void			__debug_before_poll__(void) const;
+	inline void			__debug_after_poll__(void) const;
 };
 
 #endif

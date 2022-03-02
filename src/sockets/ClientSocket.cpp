@@ -6,174 +6,268 @@
 /*   By: tderwedu <tderwedu@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/23 10:55:52 by tderwedu          #+#    #+#             */
-/*   Updated: 2022/03/02 13:18:57 by tderwedu         ###   ########.fr       */
+/*   Updated: 2022/03/02 19:00:18 by tderwedu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "ClientSocket.hpp"
 
-
-ClientSocket::ClientSocket(int port, in_addr_t addr, t_poll& pollfd, Webserv& webserv) : ListenSocket(port, addr, pollfd), _webserv(webserv)
+inline static void		__debug_msg__(char const *msg) // TODO: DEBUG
 {
-	_timer.start();
-	_messages.push_back(RequestHandler());
+	std::cout << "\t\e[31m" << msg <<" \e[0m" << std::endl;
 }
 
-ClientSocket::ClientSocket(ClientSocket const& rhs) : ListenSocket(rhs._pollfd), _webserv(rhs._webserv) { *this = rhs; }
+inline void				ClientSocket::__debug_request__(void) const // TODO: DEBUG
+{
+	std::cout	<< "\e[32m"	<< " \t------------------- \n" \
+							<< " \t-     Request     - \n" \
+							<< " \t------------------- \e[0m" << std::endl;
+	std::cout	<< _request << std::endl;
+	if (_server)
+	{
+		std::cout	<< "\e[34m  ===> Server:\e[0m\n";
+		std::cout	<< _server << std::endl;
+	}
+	if (_location)
+	{
+		std::cout	<< "\e[34m  ===> Location:\e[0m\n";
+		std::cout	<< _location << std::endl;
+	}
+	std::cout	<< "\e[32m"	<< " \t------------------- " << std::endl;
+}
+
+/*
+** ClientSocket
+** ================================ Constructors ===============================
+*/
+
+ClientSocket::ClientSocket(int port, in_addr_t addr, t_poll& pollfd, Webserv& webserv)
+	: ListenSocket(port, addr, pollfd), _webserv(webserv), _request(), _response(),
+	_server(NULL), _location(NULL), _reqState(WAITING)
+{
+	_timer.start();
+}
+
+ClientSocket::ClientSocket(ClientSocket const& rhs) // TODO: check usefull ?
+	: ListenSocket(rhs._pollfd), _webserv(rhs._webserv), _request(), _response(),
+	_server(NULL), _location(NULL), _reqState(WAITING)
+{
+	*this = rhs;
+}
 
 ClientSocket::~ClientSocket() {}
 
-ClientSocket&	ClientSocket::operator=(ClientSocket const& rhs)
+ClientSocket&	ClientSocket::operator=(ClientSocket const& rhs)  // TODO: check usefull ?
 {
 	if (this != &rhs)
 	{
-		// std::cout << "\e[31mHELLO FROM ClientSocket::operator=\e[0m" << std::endl; // TODO:remove
 		_port = rhs._port;
 		_addr = rhs._addr;
 		_pollfd = rhs._pollfd;
-		_state = rhs._state;
-		_messages = rhs._messages;
+		_sockState = rhs._sockState;
+		_request = rhs._request;
+		_response = rhs._response;
+		_server = rhs._server;
+		_location = rhs._location;
 		_timer = rhs._timer;
+		_reqState = rhs._reqState;
 	}
 	return *this;
 }
 
-void		ClientSocket::getNewRequest(void)
+/*
+** ClientSocket
+** ============================== Member functions =============================
+*/
+
+/*
+** int   handleSocket(void);
+**
+** Handle client's connection from request dowloading to response sending
+**
+** return: 0 : connection alive
+**         1 : connection closed
+*/
+int				ClientSocket::handleSocket(void)
+{
+	int		ret;
+	std::cout << *this << std::endl; // TODO: DEBUG
+	// Client disconnected or Any error
+	if (_pollfd.revents & (POLLHUP | POLLERR))
+	{
+		__debug_msg__("POLLHUP | POLLERR !");
+		sockClose();
+		return 1;
+	}
+	// FD not open
+	else if (_pollfd.revents & POLLNVAL)
+	{
+		__debug_msg__("POLLNVAL !");
+		if (_timer.getElapsedTime() < TIMEOUT_NVAL)
+			return 0;
+		sockClose();
+		return 1;
+	}
+	// New Request
+	// std::cout << "_pollfd.revents & POLLIN: " << (_pollfd.revents & POLLIN) << std::endl; // TODO: remove
+	// std::cout << "_reqState <= DOWNLOADING: " << (_reqState <= DOWNLOADING) << std::endl; // TODO: remove
+	if (_pollfd.revents & POLLIN && _reqState <= DOWNLOADING)
+	{
+		// std::cout << "OK OK OK " << std::endl;  // TODO: remove
+		ret = _getRequest();
+	}
+	// Handle Request
+	if (_pollfd.revents & POLLOUT && _reqState >= PROCESSING)
+	{
+		_sendResponse(ret);
+	}
+	// Check for timeout
+	if (_timer.getElapsedTime() > TIMEOUT)
+	{
+		__debug_msg__("TIMEOUT !");
+		sockShutdown();
+	}
+	return (_sockState == CLOSED);
+}
+
+int				ClientSocket::_getRequest(void)
 {
 	int				ret;
 	ssize_t			n;
-	RequestHandler&	handler = _messages.back();
-	Request&		request = handler.getRequest();
 	char			_buff[RECV_BUFF_SIZE + 1];
-	std::string		buff;
 
-	std::cout << "\e[32m ===> New Request\e[0m" << std::endl;
-	std::cout << "     -   Port: " << _port << std::endl;
-	std::cout << "     - PollFD: " << _pollfd.fd << " ; " << _pollfd.revents << std::endl;
-
-	if (_pollfd.fd < 0)
+	n = recv(_pollfd.fd, _buff, RECV_BUFF_SIZE, 0);
+	_buff[n] = '\0';
+	_timer.start();
+	std::string		buff = std::string(_buff);
+	std::cout << "OK OK OK : " << buff << std::endl;  // TODO: remove
+	// Error => Should already be handled by `handleSocket()`
+	if (n < 0)
 	{
-		std::cout << " \e[31m \t \t _pollfd.fd < 0 ! \e[0m" << std::endl; // TODO:remove
-		return ;
+		sockClose();
+		return 0;
 	}
-	if (_pollfd.revents & (POLLHUP | POLLERR)) // Client disconnected or Any error
+	// Gracefull Close
+	if (n == 0)
 	{
-		std::cout << " \e[31m \t \t POLLHUP | POLLERR ! \e[0m" << std::endl; // TODO:remove
-		_clearSocket();
-	}
-	else if (_pollfd.revents & POLLNVAL) // FD not open
-	{
-		std::cout << " \e[31m \t \t TIMEOUT ! \e[0m" << std::endl; // TODO:remove
-		if (_timer.getElapsedTime() < TIMEOUT_NVAL)
-			return ;
-		_pollfd.fd = -1;
-		_state = CLOSED;
-	}
-	else if (_pollfd.revents & POLLIN)
-	{
-		n = recv(_pollfd.fd, _buff, RECV_BUFF_SIZE, 0);
-		_buff[n] = '\0';
-		buff = std::string(_buff);
-		// std::cout << "BUFF:\e[31m>>\e[0m" << _buff << "\e[31m<<\e[0m" << std::endl;
-		if (n < 0)
-			_clearSocket();
-		if (n == 0) // Client initated a gracefull close
-		{
-			std::cout << " \e[31m \t \t Connection CLosed ! \e[0m" << std::endl; // TODO:remove
-			request.reset();
+		__debug_msg__("*Gracefull Close*");
+		if (_sockState == OPEN)
 			sockClose();
-			return ;
-		}
-		if (_state == HALF_CLOSED)
-			return ;
-		ret = request.parseRequest(buff);
-		if (ret > 1) // TODO: add error handling
-			std::cout << "Error parseRequest: " << ret << std::endl;
-		if (request.isProcessing())
-		{
-			std::cout	<< "\e[32m"	<< " \t################### \n" \
-									<< " \t#     Request     # \n" \
-									<< " \t################### \e[0m" << std::endl;
-			std::cout	<< request << std::endl;
-			std::cout	<< " \t\e[32m------------------- \e[0m\n" << "";
-			if (_webserv.isValidRequest(request.getMethod()))
-				; // TODO: reponse "501 Not Implemented"
-			_findServer();
-			_messages.push_back(RequestHandler());
-		}	
+		else
+			sockShutdown();
+		return 0;
 	}
-	else if (!request.isProcessing() && _timer.getElapsedTime() > TIMEOUT) // TODO: check first getElapsedTime and reset timer a each POLLIN
-	{
-		std::cout << " \e[31m \t \t TIMEOUT while processing ! \e[0m" << std::endl; // TODO:remove
-		_clearSocket();
-	}
+	// Can't write anything => no need to process inputs
+	if (_sockState == HALF_CLOSED)
+		return 0;
+	ret = _request.parseRequest(buff);
+	_reqState = (ret ? PROCESSING : DOWNLOADING);
+	return ret;
 }
 
-void		ClientSocket::sendResponse(void)
+void			ClientSocket::_sendResponse(int code)
 {
-	ssize_t			n;
-	RequestHandler&	handler = _messages.front();
-	Response&		response = handler.getResponse();
-	Request&		request = handler.getRequest();
+	/*
+	** TODO: Add the possibility to call Response with an error code number!!
+	*/
+	int 		ret;
+	ssize_t		n;
 
-	handler._findLocation(request.getTarget());
-	std::string const& buff = response.GetHeaderResponse(request, const_cast<Location&>(handler.getLocation())); //TODO: THIS IS UGLY!!!!
+	(void)code;
+	ret = _findServer();
+	if (!ret)
+		ret = _findLocation();
+
+	__debug_request__();
+
+	std::string const& buff = _response.GetHeaderResponse(_request, const_cast<Location&>(*_location)); //TODO: THIS IS UGLY!!!!
 	n = send(_pollfd.fd, buff.c_str(), buff.size(), 0);
 	if (n < 0)
 	{
-		std::cout << " \e[31m \t \t TIMEOUT while processing ! \e[0m" << std::endl; // TODO:remove
-		_clearSocket();
+		__debug_msg__("SEND ERROR !");
+		sockClose();
 	}
+	_resetSocket();
 }
 
-int			ClientSocket::empty(void)
-{
-	return (_messages.size() <= 1);
-}
-
-void		ClientSocket::_findServer(void)										// TODO: CORR matchingServers
+int				ClientSocket::_findServer(void)
 {
 	struct in_addr				addr;
 	char						ip[INET_ADDRSTRLEN];
 	std::vector<Server const*>	*matchingServers;
-	RequestHandler&				handler = _messages.back();
-	Request&					request = handler.getRequest();
-	std::string const&			host = request.getField("Host");
 
-	// std::cout << "======================> _findServer" << std::endl; //TODO: remove
+	std::string const&			host = _request.getField("Host");
 	addr.s_addr = _addr;
 	inet_ntop(AF_INET, &addr, ip, INET_ADDRSTRLEN);
 	matchingServers = FindMatchingServers(_webserv.getServers(), _port, ip);
-	if (matchingServers->empty())
-		; // TODO: reponse "500 Internal Server Error"
-	if (host.empty())															//TODO: Missing HOST field might be an error!
-		handler.setServer(*matchingServers->at(0));
+	if (matchingServers->empty() || host.empty())
+	{
+		delete matchingServers;
+		return (matchingServers->empty() ? 500 : 400);
+	}
+	_server = matchingServers->at(0);
 	for (size_t i = 0; i < matchingServers->size(); ++i)
 	{
 		for (size_t j = 0; j < (matchingServers->at(i))->GetServerNames().size(); ++j)
 		{
 			if (host == (matchingServers->at(i))->GetServerNames()[j])
 			{
-				handler.setServer(*matchingServers->at(i));
+				_server = matchingServers->at(i);
 				delete matchingServers;
-				return ;
+				return 0;
 			}
 		}
 	}
-	handler.setServer(*matchingServers->at(0));
 	delete matchingServers;
+	return 0;
 }
 
-void		ClientSocket::_clearSocket(void)
+int				ClientSocket::_findLocation(void)
 {
-	for (itReqHand it = _messages.begin(); it < _messages.end(); ++it)
+	/*
+	** TODO: GetPath update get a reference!
+	*/
+	int					len = 0;
+	int					max = 0;
+	Location const		*candidate = NULL;
+	std::string const&	path = _request.getTarget();
+	vecLocation const&	locations = _server->GetLocations();
+	std::string			loc;
+
+	for (citLocation it = locations.begin(); it < locations.end(); ++it)
 	{
-		it->clearRequestHandler();
+		loc = it->GetPath();
+		if (path.find(loc) == 0)
+		{
+			len = (loc).size();
+			if (len > max)
+			{
+				candidate = &*it;
+				max = len;
+			}
+		}
 	}
-	sockClose();
+	_location = candidate;
+	return (_location ? 404 : 0);
 }
 
-std::ostream&			operator<<(std::ostream& stream, ClientSocket const& sock)
+void			ClientSocket::_resetSocket(void)
+{
+	_request.reset();
+	_response.reset();
+	_timer.start();
+	_reqState = WAITING;
+	_server = NULL;
+	_location = NULL;
+}
+
+
+/*
+** ClientSocket
+** ============================ Non-Member functions ===========================
+*/
+
+std::ostream&	operator<<(std::ostream& stream, ClientSocket const& sock)
 {
 	stream << " \e[32m===> ClientSocket \e[0m" << std::endl;
 	stream << "     -   Port: " << sock._port << std::endl;

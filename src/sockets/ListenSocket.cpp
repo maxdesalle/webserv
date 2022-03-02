@@ -6,15 +6,20 @@
 /*   By: tderwedu <tderwedu@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/24 16:13:15 by tderwedu          #+#    #+#             */
-/*   Updated: 2022/02/25 09:29:19 by tderwedu         ###   ########.fr       */
+/*   Updated: 2022/03/02 18:23:40 by tderwedu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "ListenSocket.hpp"
 
+/*
+** ListenSocket
+** ================================ Constructors ===============================
+*/
+
 ListenSocket::ListenSocket(t_poll& pollfd): _pollfd(pollfd) {}
 ListenSocket::ListenSocket(int port, in_addr_t addr, t_poll& pollfd)
-: _pollfd(pollfd), _port(port), _addr(addr), _state(OPEN)
+: _pollfd(pollfd), _port(port), _addr(addr), _sockState(OPEN)
 {}
 
 ListenSocket::ListenSocket(ListenSocket const& rhs) : _pollfd(rhs._pollfd) { *this = rhs; }
@@ -24,60 +29,59 @@ ListenSocket&	ListenSocket::operator=(ListenSocket const& rhs)
 {
 	if (this != &rhs)
 	{
-		// std::cout << "\e[31mHELLO FROM ListenSocket::operator=\e[0m" << std::endl; // TODO:remove
 		_port = rhs._port;
 		_addr = rhs._addr;
 		_pollfd = rhs._pollfd;
-		_state = rhs._state;
+		_sockState = rhs._sockState;
 	}
 	return *this;
 }
 
-in_addr_t				ListenSocket::getIP(void)
+/*
+** ListenSocket
+** ============================== Member functions =============================
+*/
+
+in_addr_t					ListenSocket::getIP(void)
 {
 	return _addr;
 }
 
-int						ListenSocket::getPort(void)
+int							ListenSocket::getPort(void)
 {
 	return _port;
 }
 
-t_poll&					ListenSocket::getPollFd(void)
+t_poll&						ListenSocket::getPollFd(void)
 {
 	return _pollfd;
 }
 
-ListenSocket::State	ListenSocket::getState(void)
+void						ListenSocket::sockShutdown(void)
 {
-	return _state;
-}
-
-bool		ListenSocket::isOpen(void) const
-{
-	return _state == OPEN;
-}
-
-void					ListenSocket::sockShutdown(void)
-{
-	if (_state == OPEN)
+	if (_sockState == OPEN)
 	{
 		shutdown(_pollfd.fd, SHUT_WR);
-		_state = HALF_CLOSED;
+		_sockState = HALF_CLOSED;
 	}
 	else
 		sockClose();
 }
 
-void					ListenSocket::sockClose(void)
+void						ListenSocket::sockClose(void)
 {
 	shutdown(_pollfd.fd, SHUT_RDWR);
 	close(_pollfd.fd);
 	_pollfd.fd = -1;
-	_state = CLOSED;
+	_sockState = CLOSED;
 }
 
-std::ostream&			operator<<(std::ostream& stream, ListenSocket const& sock)
+/*
+** ListenSocket
+** ============================ Non-Member functions ===========================
+*/
+
+std::ostream&				operator<<(std::ostream& stream, ListenSocket const& sock)
 {
 	stream << " \e[36m===> ListenSocket \e[0m" << std::endl;
 	stream << "     -   Port: " << sock._port << std::endl;
