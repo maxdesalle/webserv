@@ -6,7 +6,7 @@
 /*   By: ldelmas <ldelmas@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/01/26 11:47:16 by ldelmas           #+#    #+#             */
-/*   Updated: 2022/03/01 15:51:14 by ldelmas          ###   ########.fr       */
+/*   Updated: 2022/03/02 11:59:10 by ldelmas          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,6 +19,7 @@
 # include <cerrno>
 
 # include "URI.hpp"
+# include "Value.hpp"
 # include "../config/Config.hpp"
 # include "../sockets/NetworkIPC.hpp"
 # include "../utils/utils.hpp"
