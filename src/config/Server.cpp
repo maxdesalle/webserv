@@ -6,7 +6,7 @@
 /*   By: tderwedu <tderwedu@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/01/28 14:07:11 by mdesalle          #+#    #+#             */
-/*   Updated: 2022/03/02 12:36:43 by tderwedu         ###   ########.fr       */
+/*   Updated: 2022/03/02 19:00:01 by mdesalle         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,6 +16,11 @@
 
 Server::Server(std::vector<std::string> ConfigFileContent)
 {
+	/* for (size_t i = 0; i < ConfigFileContent.size(); i += 1) */
+	/* { */
+	/* 	std::cout << ConfigFileContent[i]; */
+	/* 	std::cout << std::endl; */
+	/* } */
 	CommentEraser(ConfigFileContent);
 	FrontSpaceEraser(ConfigFileContent);
 	ErrorChecker(ConfigFileContent);

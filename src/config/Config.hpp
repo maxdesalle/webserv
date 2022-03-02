@@ -6,7 +6,7 @@
 /*   By: tderwedu <tderwedu@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/01/19 11:19:44 by mdesalle          #+#    #+#             */
-/*   Updated: 2022/03/02 13:02:23 by tderwedu         ###   ########.fr       */
+/*   Updated: 2022/03/02 19:02:49 by mdesalle         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,6 +20,7 @@
 # include <fstream>
 # include <algorithm>
 # include <vector>
+#include <locale>
 # include <map>
 
 # include "Location.hpp"

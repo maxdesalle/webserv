@@ -6,7 +6,7 @@
 /*   By: tderwedu <tderwedu@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/01/18 18:04:43 by maxdesall         #+#    #+#             */
-/*   Updated: 2022/03/02 13:02:57 by tderwedu         ###   ########.fr       */
+/*   Updated: 2022/03/02 19:04:34 by mdesalle         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,6 +32,14 @@ static Server					CreateServerObject(std::vector<std::string> ServerContent)
 	return (ServerConfig);
 }
 
+static std::string				&Trim(std::string &str)
+{
+    str.erase(str.find_last_not_of(' ')+1);
+    str.erase(0, str.find_first_not_of(' '));
+
+    return (str);
+}
+
 /*
  * Returns a vector with a Server object for each server block in the provided config file
  */
@@ -52,7 +60,7 @@ std::vector<Server>				ConfigHandler(std::string ConfigFileName)
 	while (std::getline(File, Line))
 	{
 		std::replace(Line.begin(), Line.end(), '\t', ' ');
-		if (Line.rfind("server ", 0) == 0 && !ServerContent.empty())
+		if (Trim(Line).rfind("server ", 0) == 0 && !ServerContent.empty())
 		{
 			Servers.push_back(CreateServerObject(ServerContent));
 			ServerContent.clear();
