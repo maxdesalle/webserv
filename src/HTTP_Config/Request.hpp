@@ -6,7 +6,7 @@
 /*   By: tderwedu <tderwedu@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/01/26 11:47:16 by ldelmas           #+#    #+#             */
-/*   Updated: 2022/03/02 21:20:53 by tderwedu         ###   ########.fr       */
+/*   Updated: 2022/03/03 11:47:14 by tderwedu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,7 +26,7 @@
 
 /*Number of CGI's environment variables*/
 # define ENV_NUM 18
-# define FIELDNAME_MAX 100
+# define FIELDNAME_MAX 1024
 
 /*
 ** TO DO

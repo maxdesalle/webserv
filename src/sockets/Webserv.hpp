@@ -6,7 +6,7 @@
 /*   By: tderwedu <tderwedu@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/01/31 10:19:04 by tderwedu          #+#    #+#             */
-/*   Updated: 2022/03/02 21:21:36 by tderwedu         ###   ########.fr       */
+/*   Updated: 2022/03/03 09:31:42 by tderwedu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -67,8 +67,8 @@ private:
 
 	size_t				__getNbrPollNetwork(void) const;
 	size_t				__getNbrPollClient(void) const;
-	inline void			__debug_before_poll__(void) const;
-	inline void			__debug_after_poll__(void) const;
+	inline void			___debug_before_poll___(void) const;
+	inline void			___debug_after_poll___(void) const;
 };
 
 #endif

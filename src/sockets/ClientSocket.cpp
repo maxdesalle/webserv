@@ -6,35 +6,38 @@
 /*   By: tderwedu <tderwedu@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/23 10:55:52 by tderwedu          #+#    #+#             */
-/*   Updated: 2022/03/02 22:18:21 by tderwedu         ###   ########.fr       */
+/*   Updated: 2022/03/03 12:18:59 by tderwedu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "ClientSocket.hpp"
 
-inline static void		__debug_msg__(char const *msg) // TODO: DEBUG
+inline static void		___debug_msg___(char const *msg) // TODO: DEBUG
 {
 	std::cout << "\t\e[31m" << msg <<" \e[0m" << std::endl;
 }
 
-inline void				ClientSocket::__debug_request__(int code) const // TODO: DEBUG
+inline void				ClientSocket::___debug_request___(int code) const // TODO: DEBUG
 {
 	std::cout	<< "\e[32m"	<< " \t------------------- \n" \
 							<< " \t-     Request     - \n" \
 							<< " \t------------------- \e[0m" << std::endl;
-	std::cout	<< "\e[35m  ===> CODE: \e[31m " << code << "\e[0m\n";
+	if (code)
+		std::cout	<< "\e[35m  ===> CODE: \e[31m /!\\ " << code << " /!\\ \e[0m\n";
+	else
+		std::cout	<< "\e[35m  ===> CODE: \e[32m " << code << "\e[0m\n";
 	std::cout	<< "\e[35m  ===> Request:\e[0m\n";
 	std::cout	<< _request << std::endl;
+	std::cout	<< "\e[35m  ===> Server:\e[0m\n";
 	if (_server)
-	{
-		std::cout	<< "\e[35m  ===> Server:\e[0m\n";
 		std::cout	<< *_server << std::endl;
-	}
+	else 
+		std::cout	<< "\e[31m NULL \e[0m" << std::endl;
+	std::cout	<< "\e[35m  ===> Location:\e[0m\n";
 	if (_location)
-	{
-		std::cout	<< "\e[35m  ===> Location:\e[0m\n";
 		std::cout	<< *_location << std::endl;
-	}
+	else
+		std::cout	<< "\e[31m NULL \e[0m" << std::endl;
 	std::cout	<< "\e[32m"	<< " \t------------------- \e[0m" << std::endl;
 }
 
@@ -94,18 +97,17 @@ int				ClientSocket::handleSocket(void)
 {
 	int		ret;
 	std::cout << *this << std::endl; // TODO: DEBUG
-	std::cout << "_reqState: " << _reqState << std::endl; // TODO: DEBUG
 	// Client disconnected or Any error
 	if (_pollfd.revents & (POLLHUP | POLLERR))
 	{
-		__debug_msg__((_sockState == HALF_CLOSED) ? "Closing" : "POLLHUP | POLLERR !");
 		sockClose();
+		___debug_msg___((_sockState == HALF_CLOSED) ? "Closed" : "POLLHUP | POLLERR !");
 		return 1;
 	}
 	// FD not open
 	else if (_pollfd.revents & POLLNVAL)
 	{
-		__debug_msg__("POLLNVAL !");
+		___debug_msg___("POLLNVAL !");
 		if (_timer.getElapsedTime() < TIMEOUT_NVAL)
 			return 0;
 		sockClose();
@@ -125,12 +127,20 @@ int				ClientSocket::handleSocket(void)
 	// Check for timeout
 	if (_timer.getElapsedTime() > TIMEOUT)
 	{
-		__debug_msg__("TIMEOUT !");
+		___debug_msg___("TIMEOUT !");
 		sockShutdown();
 	}
 	return (_sockState == CLOSED);
 }
 
+/*
+** int   _getRequest(void);
+**
+** Downloads the request from the client's socket and transfers it to parseRequest()
+**
+** return:  0 : allright
+**         >0 : HTTP error code
+*/
 int				ClientSocket::_getRequest(void)
 {
 	int				ret;
@@ -139,10 +149,10 @@ int				ClientSocket::_getRequest(void)
 
 	n = recv(_pollfd.fd, _buff, RECV_BUFF_SIZE, 0);
 	_buff[n] = '\0';
-	// std::cout << "\e[31m>>\e[0m" << _buff << "\e[31m>>\e[0m" << std::endl; //TODO:remove
+	std::cout << "\e[31m---\n\e[0m" << _buff << "\e[31m---\e[0m" << std::endl; //TODO:remove
 	_timer.start();
 	std::string		buff = std::string(_buff);
-	// Error => Should already be handled by `handleSocket()`
+	// Error => Should already be handled by 'handleSocket()'
 	if (n < 0)
 	{
 		sockClose();
@@ -151,7 +161,7 @@ int				ClientSocket::_getRequest(void)
 	// Gracefull Close
 	if (n == 0)
 	{
-		__debug_msg__("*Gracefull Close*");
+		___debug_msg___("***Gracefull Close***");
 		if (_sockState == OPEN)
 			sockShutdown();
 		else
@@ -167,33 +177,59 @@ int				ClientSocket::_getRequest(void)
 	return ret;
 }
 
+/*
+** void  _sendResponse(int code);
+**
+** code: 0 or an HTTP error code
+**
+** 1. Find the 'Server' and 'Location';
+** 2. Call GetHeaderResponse() to generate a request's response;
+** 3. Send the response;
+** 4. Decides to close the connection or to keep it alive based on the request
+**    or error code.
+*/
 void			ClientSocket::_sendResponse(int code)
 {
 	/*
 	** TODO: Add the possibility to call Response with an error code number!!
 	*/
+	int			ret;
 	ssize_t		n;
+	std::string const* buff;
 
-	if (!code)
-		code = _findServer();
-	if (!code)
+	ret = _findServer();
+	code = (code ? code : ret);
+	if (_server)
 		code = _findLocation();
-	__debug_request__(code);
-	std::string const& buff = _response.GetHeaderResponse(_request, const_cast<Location&>(*_location)); //TODO: THIS IS UGLY!!!!
-	if (buff.empty()) // TODO: DEBUG
+	code = (code ? code : ret);
+	___debug_request___(code);
+	if (code)
+		buff = &_response.GetBadRequestResponse(_request, const_cast<Location&>(*_location), code); //TODO: THIS IS UGLY!!!!
+	else
+		buff = &_response.GetHeaderResponse(_request, const_cast<Location&>(*_location)); //TODO: THIS IS UGLY!!!!
+	if (buff->empty()) // TODO: DEBUG ==> How to handle 'Response' error ?
 	{
-		__debug_msg__("RESPONSE EMPTY !");
+		___debug_msg___("RESPONSE EMPTY !");
 		sockClose();
 	}
-	n = send(_pollfd.fd, buff.c_str(), buff.size(), 0);
+	n = send(_pollfd.fd, buff->c_str(), buff->size(), 0);
 	if (n < 0)
 	{
-		__debug_msg__("SEND ERROR !");
+		___debug_msg___("SEND ERROR !");
 		sockClose();
 	}
+	
+	// std::string	_cnt; // TODO
+	// _request.getField("Connection");
+	
 	_resetSocket();
 }
 
+/*
+** int   _findServer(void);
+**
+** Find the request's 'Server' block and update '_server' ptr
+*/
 int				ClientSocket::_findServer(void)
 {
 	struct in_addr				addr;
@@ -210,6 +246,7 @@ int				ClientSocket::_findServer(void)
 		return (matchingServers->empty() ? 500 : 400);
 	}
 	_server = matchingServers->at(0);
+	std::cout << std::endl << std::endl << _server->GetServerNames()[0] << std::endl << std::endl; // TODO: remove
 	for (size_t i = 0; i < matchingServers->size(); ++i)
 	{
 		for (size_t j = 0; j < (matchingServers->at(i))->GetServerNames().size(); ++j)
@@ -226,6 +263,11 @@ int				ClientSocket::_findServer(void)
 	return 0;
 }
 
+/*
+** int   _findLocation(void);
+**
+** Find the request's 'Location' block and update '_location' ptr
+*/
 int				ClientSocket::_findLocation(void)
 {
 	/*
@@ -233,17 +275,16 @@ int				ClientSocket::_findLocation(void)
 	*/
 	int					len = 0;
 	int					max = 0;
-	Location const		*candidate = NULL;
+	Location const*		candidate = NULL;
 	std::string const&	path = _request.getTarget();
 	vecLocation const&	locations = _server->GetLocations();
-	std::string			loc;
 
 	for (citLocation it = locations.begin(); it < locations.end(); ++it)
 	{
-		loc = it->GetPath();
+		std::string const& loc = it->GetPath();
 		if (path.find(loc) == 0)
 		{
-			len = (loc).size();
+			len = loc.size();
 			if (len > max)
 			{
 				candidate = &*it;
@@ -252,7 +293,12 @@ int				ClientSocket::_findLocation(void)
 		}
 	}
 	_location = candidate;
-	return (_location ? 404 : 0);
+	if (!_location)
+		return 404;
+	else if (path[path.size() - 1] != '/')
+		return 301;
+	else
+		return 0;
 }
 
 void			ClientSocket::_resetSocket(void)

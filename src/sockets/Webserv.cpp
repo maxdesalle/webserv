@@ -6,39 +6,39 @@
 /*   By: tderwedu <tderwedu@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/23 10:58:04 by tderwedu          #+#    #+#             */
-/*   Updated: 2022/03/02 21:55:35 by tderwedu         ###   ########.fr       */
+/*   Updated: 2022/03/03 10:37:57 by tderwedu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "Webserv.hpp"
 
-inline static void	__debug_header__(char const *header)	// TODO: DEBUG
+inline static void	___debug_header___(char const *header)	// TODO: DEBUG
 {
 	std::cout	<< "\e[32m \t############################# \n" \
 				<< " \t#           " << header << "          # \n" \
 				<< " \t############################# \e[0m" << std::endl;
 }
 
-inline static void	__debug_section__(char const *section)
+inline static void	___debug_section___(char const *section)
 {
 	std::cout << "\e[33m###################   "<< section << "\e[0m" << std::endl;
 }
 
-inline static void	__debug_poll__(void)	// TODO: DEBUG
+inline static void	___debug_poll___(void)	// TODO: DEBUG
 {
 		std::cout << "\e[34m ####################################\n" \
 					<< " #   Poll, Waiting For An Revents   #\n" \
 					<< " #################################### \e[0m" << std::endl;
 }
 
-inline void		Webserv::__debug_before_poll__(void) const	// TODO: DEBUG
+inline void		Webserv::___debug_before_poll___(void) const	// TODO: DEBUG
 {
 	std::cout	<< "\n[Listen: " << _nbrPorts << "; Client: " \
 				<< _fdInUse - _nbrPorts << "; PollMax:" << _nbrPollMax\
 				<< "]"<< std::endl;
 }
 
-inline void		Webserv::__debug_after_poll__(void) const	// TODO: DEBUG
+inline void		Webserv::___debug_after_poll___(void) const	// TODO: DEBUG
 {
 	std::cout	<< "[Poll: \e[0m" << _nbrPoll <<  ": Listen " \
 				<< __getNbrPollNetwork() << ", Client " \
@@ -77,9 +77,9 @@ void				Webserv::initWebserv(std::string const& config)
 	_fdInUse = 0;
 	_nbrPollMax = 0;
 	_servers = ConfigHandler(config);
-	__debug_header__("PARSING");
+	___debug_header___("PARSING");
 	printServers(_servers);
-	__debug_header__("WEBSERV");
+	___debug_header___("WEBSERV");
 	_setNetworkSockets();
 }
 
@@ -87,13 +87,13 @@ void				Webserv::runWebserv(void)
 {
 	while (true)
 	{
-		__debug_before_poll__();
-		__debug_poll__();
+		___debug_before_poll___();
+		___debug_poll___();
 		_nbrPoll = poll(_pollfd, _nbrPollMax + 1, 0);
-		__debug_after_poll__();
-		__debug_section__("Listen Sockets");
+		___debug_after_poll___();
+		___debug_section___("Listen Sockets");
 		_checkListenSockets();
-		__debug_section__("Client Sockets");
+		___debug_section___("Client Sockets");
 		_checkClientSockets();
 		sleep(1); // TODO: DEBUG
 	}
@@ -109,7 +109,10 @@ void				Webserv::_setOpenMax(void) const
 			if (errno == 0)
 				open_max = OPEN_MAX_GUESS;
 			else
-				std::cerr << "sysconf error for _SC_OPEN_MAX" << std::endl;		//TODO: better error handling
+			{
+				std::cerr << "sysconf error for _SC_OPEN_MAX" << std::endl;
+				exit(1);
+			}
 		}
 	}
 }
