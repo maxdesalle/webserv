@@ -6,7 +6,7 @@
 /*   By: tderwedu <tderwedu@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/01/26 14:58:24 by ldelmas           #+#    #+#             */
-/*   Updated: 2022/03/03 13:47:35 by tderwedu         ###   ########.fr       */
+/*   Updated: 2022/03/03 17:49:46 by mdesalle         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -243,7 +243,7 @@ std::string	Response::ReturnError(Request &HTTPRequest, Location &HTTPLocation, 
 std::string	Response::HandleGETRequest(Request &HTTPRequest, Location &HTTPLocation, unsigned int *StatusCode)
 {
 	std::string			FileContent;
-	std::string			Path = HTTPLocation.GetRoot() + HTTPRequest.getTarget();
+	std::string			Path = HTTPLocation.GetRoot() + HTTPRequest.getTarget() + HTTPLocation.GetIndex()[0];
 	std::ifstream		File(Path.c_str());
 	std::stringstream	Buffer;
 
