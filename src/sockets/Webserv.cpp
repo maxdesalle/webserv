@@ -6,11 +6,13 @@
 /*   By: tderwedu <tderwedu@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/23 10:58:04 by tderwedu          #+#    #+#             */
-/*   Updated: 2022/03/03 14:05:50 by tderwedu         ###   ########.fr       */
+/*   Updated: 2022/03/03 17:09:26 by tderwedu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "Webserv.hpp"
+
+#include<signal.h> // TODO:Remove
 
 inline static void	___debug_header___(char const *header)	// TODO: DEBUG
 {
@@ -85,6 +87,7 @@ void				Webserv::initWebserv(std::string const& config)
 
 void				Webserv::runWebserv(void)
 {
+	// alarm(1); // TODO: remove
 	while (true)
 	{
 		___debug_before_poll___();
@@ -155,11 +158,17 @@ void				Webserv::_addNetworkSocket(int port, int nbr_queue)
 	sockaddr.sin_family = AF_INET;
 	sockaddr.sin_addr.s_addr = htonl(INADDR_ANY);
 	sockaddr.sin_port = htons(port);
+	errno = 0;
 	bind(fd_sock, (t_sockaddr *) &sockaddr, sizeof(sockaddr));
-
+	// if (bind(fd_sock, (t_sockaddr *) &sockaddr, sizeof(sockaddr)))
+	// {
+	// 	if (errno == EACCES)
+	// 		std::cerr << "\e[31m Error bind\e[0m: need superuser privileges for port \e[31m" << port << "\e[0m" << std::endl; 
+	// 	exit(EXIT_FAILURE);
+	// }
 	nbr_queue = (nbr_queue > SOMAXCONN ? SOMAXCONN : nbr_queue);
-	listen(fd_sock, nbr_queue);
-
+	if (listen(fd_sock, nbr_queue))
+		exit(EXIT_FAILURE);
 	_pollfd[_nbrPollMax].fd = fd_sock;
 	_pollfd[_nbrPollMax].events = POLL_FLAGS;
 	_pollfd[_nbrPollMax].revents = 0;

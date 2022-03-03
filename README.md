@@ -6,7 +6,7 @@ A lightweight HTTP server implemented in C++.
 ## To-DO-List
 
  - **Webserv**
- 	- [ ] Set up a default config file path if none is provided
+ 	- [x] Set up a default config file path if none is provided
 	- [ ] Send response for `Expect: 100-continue`
 	- [ ] Check allowed trailer header-fields
 	- [ ] Check HTTP error code that MUST close the connection
@@ -17,6 +17,7 @@ A lightweight HTTP server implemented in C++.
  - [ ] Create a default error page
  - [ ] Create a POC static website
  - [ ] Create a POC CGI content
+ - [ ] Update default config file to match POC website
 
 ---
 

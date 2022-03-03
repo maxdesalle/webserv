@@ -6,7 +6,7 @@
 /*   By: tderwedu <tderwedu@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/23 10:55:52 by tderwedu          #+#    #+#             */
-/*   Updated: 2022/03/03 14:04:22 by tderwedu         ###   ########.fr       */
+/*   Updated: 2022/03/03 17:02:39 by tderwedu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,30 +15,6 @@
 inline static void		___debug_msg___(char const *msg) // TODO: DEBUG
 {
 	std::cout << "\t\e[31m" << msg <<" \e[0m" << std::endl;
-}
-
-inline void				ClientSocket::___debug_request___(int code) const // TODO: DEBUG
-{
-	std::cout	<< "\e[32m"	<< " \t------------------- \n" \
-							<< " \t-     Request     - \n" \
-							<< " \t------------------- \e[0m" << std::endl;
-	if (code)
-		std::cout	<< "\e[35m  ===> CODE: \e[31m /!\\ " << code << " /!\\ \e[0m\n";
-	else
-		std::cout	<< "\e[35m  ===> CODE: \e[32m " << code << "\e[0m\n";
-	std::cout	<< "\e[35m  ===> Request:\e[0m\n";
-	std::cout	<< _request << std::endl;
-	std::cout	<< "\e[35m  ===> Server:\e[0m\n";
-	if (_server)
-		std::cout	<< *_server << std::endl;
-	else 
-		std::cout	<< "\e[31m NULL \e[0m" << std::endl;
-	std::cout	<< "\e[35m  ===> Location:\e[0m\n";
-	if (_location)
-		std::cout	<< *_location << std::endl;
-	else
-		std::cout	<< "\e[31m NULL \e[0m" << std::endl;
-	std::cout	<< "\e[32m"	<< " \t------------------- \e[0m" << std::endl;
 }
 
 inline static void				___debug_response___(std::string const& resp) // TODO: DEBUG
@@ -126,6 +102,22 @@ int				ClientSocket::handleSocket(void)
 	if (_pollfd.revents & POLLIN && _reqState <= RECEIVING)
 	{
 		ret = _getRequest();
+		/*
+		** TODO: handle 'Expect: 100-continue'
+		** need a flag in request set up when dealing with `Expect` and a isExpect() fct
+		** Faster and avoid multiple send of 'HTTP/1.1 100 Continue\r\n\r\n'
+		*/
+		// std::string	cxn = _request.getField("Expect");
+		// if (!cxn.empty() && ci_equal(cxn, "100-continue") && _pollfd.revents & POLLOUT)
+		// {
+		// 	std::cout << "\e[31m ========> SEND 100-continue\n\e[0m" << std::endl; //TODO:remove
+		// 	ssize_t n = send(_pollfd.fd, "HTTP/1.1 100 continue\r\n\r\n", 25, 0);
+		// 	if (n < 0)
+		// 	{
+		// 		___debug_msg___("SEND ERROR !");
+		// 		sockClose();
+		// 	}
+		// }
 	}
 	// Handle Request
 	if (_pollfd.revents & POLLOUT && _reqState == SENDING)
@@ -157,7 +149,7 @@ int				ClientSocket::_getRequest(void)
 
 	n = recv(_pollfd.fd, _buff, RECV_BUFF_SIZE, 0);
 	_buff[n] = '\0';
-	// std::cout << "\e[31m-------------------\n\e[0m" << _buff << "\e[31m-------------------\e[0m" << std::endl; //TODO:remove
+	std::cout << "\e[31m-------------------\n\e[0m" << _buff << "\e[31m-------------------\e[0m" << std::endl; //TODO:remove
 	_timer.start();
 	std::string		buff = std::string(_buff);
 	// Error => Should already be handled by 'handleSocket()'
@@ -221,7 +213,7 @@ void			ClientSocket::_sendResponse(int code)
 		sockClose();
 	}
 	std::string	cxn = _request.getField("Connection");
-	if (cxn != "keep-alive") // TODO: checks with error code should terminate the connection
+	if (!ci_equal(cxn, "keep-alive")) // TODO: checks with error code should terminate the connection
 	{
 		___debug_msg___("***Gracefull Close***");
 		sockShutdown();
@@ -314,6 +306,29 @@ void			ClientSocket::_resetSocket(void)
 	_location = NULL;
 }
 
+inline void				ClientSocket::___debug_request___(int code) const // TODO: DEBUG
+{
+	std::cout	<< "\e[32m"	<< " \t------------------- \n" \
+							<< " \t-     Request     - \n" \
+							<< " \t------------------- \e[0m" << std::endl;
+	if (code)
+		std::cout	<< "\e[35m  ===> CODE: \e[31m /!\\ " << code << " /!\\ \e[0m\n";
+	else
+		std::cout	<< "\e[35m  ===> CODE: \e[32m " << code << "\e[0m\n";
+	std::cout	<< "\e[35m  ===> Request:\e[0m\n";
+	std::cout	<< _request << std::endl;
+	std::cout	<< "\e[35m  ===> Server:\e[0m\n";
+	if (_server)
+		std::cout	<< *_server << std::endl;
+	else 
+		std::cout	<< "\e[31m NULL \e[0m" << std::endl;
+	std::cout	<< "\e[35m  ===> Location:\e[0m\n";
+	if (_location)
+		std::cout	<< *_location << std::endl;
+	else
+		std::cout	<< "\e[31m NULL \e[0m" << std::endl;
+	std::cout	<< "\e[32m"	<< " \t------------------- \e[0m" << std::endl;
+}
 
 /*
 ** ClientSocket
