@@ -6,7 +6,7 @@
 /*   By: tderwedu <tderwedu@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/23 10:55:52 by tderwedu          #+#    #+#             */
-/*   Updated: 2022/03/03 12:18:59 by tderwedu         ###   ########.fr       */
+/*   Updated: 2022/03/03 13:52:06 by tderwedu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,6 +38,15 @@ inline void				ClientSocket::___debug_request___(int code) const // TODO: DEBUG
 		std::cout	<< *_location << std::endl;
 	else
 		std::cout	<< "\e[31m NULL \e[0m" << std::endl;
+	std::cout	<< "\e[32m"	<< " \t------------------- \e[0m" << std::endl;
+}
+
+inline static void				___debug_response___(std::string const& resp) // TODO: DEBUG
+{
+	std::cout	<< "\e[32m"	<< " \n\t------------------- \n" \
+							<< " \t-     Response    - \n" \
+							<< " \t------------------- \e[0m" << std::endl;
+	std::cout << resp << std::endl;
 	std::cout	<< "\e[32m"	<< " \t------------------- \e[0m" << std::endl;
 }
 
@@ -149,7 +158,7 @@ int				ClientSocket::_getRequest(void)
 
 	n = recv(_pollfd.fd, _buff, RECV_BUFF_SIZE, 0);
 	_buff[n] = '\0';
-	std::cout << "\e[31m---\n\e[0m" << _buff << "\e[31m---\e[0m" << std::endl; //TODO:remove
+	// std::cout << "\e[31m-------------------\n\e[0m" << _buff << "\e[31m-------------------\e[0m" << std::endl; //TODO:remove
 	_timer.start();
 	std::string		buff = std::string(_buff);
 	// Error => Should already be handled by 'handleSocket()'
@@ -162,10 +171,7 @@ int				ClientSocket::_getRequest(void)
 	if (n == 0)
 	{
 		___debug_msg___("***Gracefull Close***");
-		if (_sockState == OPEN)
-			sockShutdown();
-		else
-			sockClose();
+		sockShutdown();
 		return (_sockState == CLOSED);
 	}
 	// Can't write anything => no need to process inputs
@@ -212,16 +218,19 @@ void			ClientSocket::_sendResponse(int code)
 		___debug_msg___("RESPONSE EMPTY !");
 		sockClose();
 	}
+	___debug_response___(*buff);
 	n = send(_pollfd.fd, buff->c_str(), buff->size(), 0);
 	if (n < 0)
 	{
 		___debug_msg___("SEND ERROR !");
 		sockClose();
 	}
-	
-	// std::string	_cnt; // TODO
-	// _request.getField("Connection");
-	
+	std::string	cxn = _request.getField("Connection");
+	if (cxn != "keep-alive")
+	{
+		___debug_msg___("***Gracefull Close***");
+		sockShutdown();
+	}
 	_resetSocket();
 }
 

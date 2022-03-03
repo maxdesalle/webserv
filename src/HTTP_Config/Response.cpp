@@ -6,7 +6,7 @@
 /*   By: tderwedu <tderwedu@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/01/26 14:58:24 by ldelmas           #+#    #+#             */
-/*   Updated: 2022/03/02 22:22:31 by tderwedu         ###   ########.fr       */
+/*   Updated: 2022/03/03 13:47:35 by tderwedu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -164,12 +164,12 @@ std::string const		&Response::GetBadRequestResponse(Request &HTTPRequest, Locati
 
 	oss << std::dec << StatusCode;
 	Body = ReturnError(HTTPRequest, HTTPLocation, &StatusCode);
-	_HeaderResponse = "HTTP/1.1 " + oss.str() + " " + FindStatusMessage(&StatusCode);
-	_HeaderResponse += "Date: " + GetCurrentFormattedTime() + "\n";
-	_HeaderResponse += "Server: " + GetServerVersion() + "\n";
-	_HeaderResponse += "Content-Lenght: " + this->_headerFields["Content-Length"] + "\n";
-	_HeaderResponse += "Content-Type: " + this->_headerFields["Content-Type"] + "\n";
-	_HeaderResponse += "Connection: " + this->_headerFields["Connection"] + "\n\n";
+	_HeaderResponse = "HTTP/1.1 " + oss.str() + " " + FindStatusMessage(&StatusCode)+ "\r\n";
+	_HeaderResponse += "Date: " + GetCurrentFormattedTime() + "\r\n";
+	_HeaderResponse += "Server: " + GetServerVersion() + "\r\n";
+	_HeaderResponse += "Content-Lenght: " + this->_headerFields["Content-Length"] + "\r\n";
+	_HeaderResponse += "Content-Type: " + this->_headerFields["Content-Type"] + "\r\n";
+	_HeaderResponse += "Connection: " + this->_headerFields["Connection"] + "\r\n\r\n";
 	_HeaderResponse += Body;
 
 	return (_HeaderResponse);
@@ -194,14 +194,14 @@ std::string const		&Response::GetHeaderResponse(Request &HTTPRequest, Location &
 	}
 
 	oss << std::dec << StatusCode;
-	_HeaderResponse =  "HTTP/1.1 " + oss.str() + " " + FindStatusMessage(&StatusCode);
-	_HeaderResponse += "Date: " + GetCurrentFormattedTime() + "\n";
-	_HeaderResponse += "Server: " + GetServerVersion() + "\n";
+	_HeaderResponse =  "HTTP/1.1 " + oss.str() + " " + FindStatusMessage(&StatusCode) + "\r\n";
+	_HeaderResponse += "Date: " + GetCurrentFormattedTime() + "\r\n";
+	_HeaderResponse += "Server: " + GetServerVersion() + "\r\n";
 	/* if (HTTPRequest.getMethod() == "GET") */
 	/* 	_HeaderResponse += "Last-Modified: " + GetLastModifiedTimeForFile(Path) + "\n"; */
-	_HeaderResponse += "Content-Lenght: " + this->_headerFields["Content-Length"] + "\n";
-	_HeaderResponse += "Content-Type: " + this->_headerFields["Content-Type"] + "\n";
-	_HeaderResponse += "Connection: " + this->_headerFields["Connection"] + "\n\n";
+	_HeaderResponse += "Content-Lenght: " + this->_headerFields["Content-Length"] + "\r\n";
+	_HeaderResponse += "Content-Type: " + this->_headerFields["Content-Type"] + "\r\n";
+	_HeaderResponse += "Connection: " + this->_headerFields["Connection"] + "\r\n\r\n";
 	_HeaderResponse += Body;
 	
 	return (_HeaderResponse);
