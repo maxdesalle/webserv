@@ -6,7 +6,7 @@
 /*   By: tderwedu <tderwedu@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/01/26 14:58:24 by ldelmas           #+#    #+#             */
-/*   Updated: 2022/03/03 17:49:46 by mdesalle         ###   ########.fr       */
+/*   Updated: 2022/03/03 19:10:00 by mdesalle         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -163,13 +163,13 @@ std::string const		&Response::GetBadRequestResponse(Request &HTTPRequest, Locati
 	std::ostringstream	oss;
 
 	oss << std::dec << StatusCode;
-	Body = ReturnError(HTTPRequest, HTTPLocation, &StatusCode);
+	if (StatusCode != 301)
+		Body = ReturnError(HTTPRequest, HTTPLocation, &StatusCode);
 	_HeaderResponse = "HTTP/1.1 " + oss.str() + " " + FindStatusMessage(&StatusCode)+ "\r\n";
+	if (StatusCode == 301)
+		_HeaderResponse += "Location: " + HTTPRequest.getTarget() + "/" + "\r\n";
 	_HeaderResponse += "Date: " + GetCurrentFormattedTime() + "\r\n";
 	_HeaderResponse += "Server: " + GetServerVersion() + "\r\n";
-	_HeaderResponse += "Content-Lenght: " + this->_headerFields["Content-Length"] + "\r\n";
-	_HeaderResponse += "Content-Type: " + this->_headerFields["Content-Type"] + "\r\n";
-	_HeaderResponse += "Connection: " + this->_headerFields["Connection"] + "\r\n\r\n";
 	_HeaderResponse += Body;
 
 	return (_HeaderResponse);
@@ -203,7 +203,7 @@ std::string const		&Response::GetHeaderResponse(Request &HTTPRequest, Location &
 	_HeaderResponse += "Content-Type: " + this->_headerFields["Content-Type"] + "\r\n";
 	_HeaderResponse += "Connection: " + this->_headerFields["Connection"] + "\r\n\r\n";
 	_HeaderResponse += Body;
-	
+
 	return (_HeaderResponse);
 }
 
@@ -267,7 +267,7 @@ std::string	Response::HandlePOSTRequest(Request &HTTPRequest, Location &HTTPLoca
 	}
 
 	if (HTTPLocation.isCgi() == true)
-		return (HandleCGIPOSTRequest(HTTPRequest, HTTPLocation, StatusCode));
+		return (HandleCGIPOSTRequest(HTTPRequest, StatusCode));
 	else
 		return (HandleNormalPostRequest(HTTPRequest, HTTPLocation, StatusCode));
 }
@@ -286,9 +286,8 @@ std::string	Response::HandleNormalPostRequest(Request &HTTPRequest, Location &HT
 	return ("");
 }
 
-std::string	Response::HandleCGIPOSTRequest(Request &HTTPRequest, Location &HTTPLocation, unsigned int *StatusCode)
+std::string	Response::HandleCGIPOSTRequest(Request &HTTPRequest, unsigned int *StatusCode)
 {
-	(void)HTTPLocation;
 	CommonGatewayInterface	CGI(HTTPRequest);
 
 	*StatusCode = CGI.ExecuteCGIScript();
