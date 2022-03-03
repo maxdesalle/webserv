@@ -5,37 +5,18 @@ A lightweight HTTP server implemented in C++.
 
 ## To-DO-List
 
- - [ ] Webserv
-	- [x] Config file parsing
-	- [x] Connection management
-	- [ ] Request processing (Common Core)
-	- [ ] Basic request handling (static content)
-	- [ ] CGI request handling
-	- [ ] Basic response sending
-	- [ ] CGI response sending
+ - **Webserv**
+ 	- [ ] Set up a default config file path if none is provided
+	- [ ] Send response for `Expect: 100-continue`
+	- [ ] Check allowed trailer header-fields
+	- [ ] Check HTTP error code that MUST close the connection
+	- [ ] `getPath()` return a `std::string const&`
+	- [ ] Check `_fdInUse` to avoid `EMFILE`
+	- [ ] Check `POLLHUP` and `POLLERR` for `ListenSocket`
+	- [ ] Clean `utils.?pp`
  - [ ] Create a default error page
  - [ ] Create a POC static website
  - [ ] Create a POC CGI content
-
-## Change Requests
-
-### Config File
- - [ ] Set up a default config file path if none is provided
- - [ ] Add a HOST to a listening port
-### Connection Management
-<!-- To avoid bugs or dull checks: 
-     - deque should never be empty
-     - last item should always be ready to hold the next incomming request
--->
- - [x] In the CLientSocket's constructor create an empty `Request` ans set its state as `NONE`
- - [x] When moving a `Request` from `DOWNLOADED` to `PROCESSING` create an empty `Request` and set its state as `NONE`
- - [ ] Handle `408 Request Timeout`
- - [ ] Corr. `ClientSocket::_findServer(void)`
-### Request Common Core
-### Request Static Site
-### Request CGI
-### Response Static Site
-### Response CGI
 
 ---
 

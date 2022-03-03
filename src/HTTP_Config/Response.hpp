@@ -6,7 +6,7 @@
 /*   By: tderwedu <tderwedu@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/01/26 11:48:07 by ldelmas           #+#    #+#             */
-/*   Updated: 2022/03/02 22:22:46 by tderwedu         ###   ########.fr       */
+/*   Updated: 2022/03/03 14:02:44 by tderwedu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -60,7 +60,7 @@ class Response : public Header
 		std::string			HandleCGIPOSTRequest(Request &HTTPRequest, Location &HTTPLocation, unsigned int *StatusCode);
 		std::string			HandleDELETERequest(Request &HTTPRequest, Location &HTTPLocation, unsigned int *StatusCode);
 
-		void				reset(void);			// TODO: (tderwedu) just cleat all attributes 
+		void				reset(void);
 };
 
 #endif

@@ -6,7 +6,7 @@
 /*   By: tderwedu <tderwedu@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/23 10:55:52 by tderwedu          #+#    #+#             */
-/*   Updated: 2022/03/03 13:52:06 by tderwedu         ###   ########.fr       */
+/*   Updated: 2022/03/03 14:04:22 by tderwedu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -62,7 +62,7 @@ ClientSocket::ClientSocket(int port, in_addr_t addr, t_poll& pollfd, Webserv& we
 	_timer.start();
 }
 
-ClientSocket::ClientSocket(ClientSocket const& rhs) // TODO: check usefull ?
+ClientSocket::ClientSocket(ClientSocket const& rhs)
 	: ListenSocket(rhs._pollfd), _webserv(rhs._webserv), _request(), _response(),
 	_server(NULL), _location(NULL), _reqState(WAITING)
 {
@@ -125,7 +125,6 @@ int				ClientSocket::handleSocket(void)
 	// New Request
 	if (_pollfd.revents & POLLIN && _reqState <= RECEIVING)
 	{
-		// std::cout << "OK OK OK " << std::endl;  // TODO: remove
 		ret = _getRequest();
 	}
 	// Handle Request
@@ -178,7 +177,6 @@ int				ClientSocket::_getRequest(void)
 	if (_sockState == HALF_CLOSED)
 		return 0;
 	ret = _request.parseRequest(buff);
-	// std::cout << "\e[31mret: " << ret << "\e[0m" << std::endl; //TODO:remove
 	_reqState = ((_request.isDone() || ret) ? SENDING : RECEIVING);
 	return ret;
 }
@@ -196,9 +194,6 @@ int				ClientSocket::_getRequest(void)
 */
 void			ClientSocket::_sendResponse(int code)
 {
-	/*
-	** TODO: Add the possibility to call Response with an error code number!!
-	*/
 	int			ret;
 	ssize_t		n;
 	std::string const* buff;
@@ -226,7 +221,7 @@ void			ClientSocket::_sendResponse(int code)
 		sockClose();
 	}
 	std::string	cxn = _request.getField("Connection");
-	if (cxn != "keep-alive")
+	if (cxn != "keep-alive") // TODO: checks with error code should terminate the connection
 	{
 		___debug_msg___("***Gracefull Close***");
 		sockShutdown();
@@ -255,7 +250,6 @@ int				ClientSocket::_findServer(void)
 		return (matchingServers->empty() ? 500 : 400);
 	}
 	_server = matchingServers->at(0);
-	std::cout << std::endl << std::endl << _server->GetServerNames()[0] << std::endl << std::endl; // TODO: remove
 	for (size_t i = 0; i < matchingServers->size(); ++i)
 	{
 		for (size_t j = 0; j < (matchingServers->at(i))->GetServerNames().size(); ++j)

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Request.cpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ldelmas <ldelmas@student.42.fr>            +#+  +:+       +#+        */
+/*   By: tderwedu <tderwedu@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/01/26 14:59:17 by ldelmas           #+#    #+#             */
-/*   Updated: 2022/03/03 11:43:28 by ldelmas          ###   ########.fr       */
+/*   Updated: 2022/03/03 13:58:34 by tderwedu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -296,7 +296,7 @@ int				Request::_getNextField(std::string const &str, std::string &line)
 	if (line.empty())
 		return 0;
 	this->_cursor = pos+2;
-	return 1; //TODO:check if OK ADDED by tderwedu 
+	return 1;
 }
 
 /*

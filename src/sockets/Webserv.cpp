@@ -6,7 +6,7 @@
 /*   By: tderwedu <tderwedu@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/23 10:58:04 by tderwedu          #+#    #+#             */
-/*   Updated: 2022/03/03 10:37:57 by tderwedu         ###   ########.fr       */
+/*   Updated: 2022/03/03 14:05:50 by tderwedu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -145,7 +145,7 @@ void				Webserv::_addNetworkSocket(int port, int nbr_queue)
 
 	opt = 1;
 	if ((fd_sock = socket(AF_INET, SOCK_STREAM, 0)) < 1)
-		exit(EXIT_FAILURE);														//TODO: better error handling
+		exit(EXIT_FAILURE);
 	// Set NON-BLOCKING and SO_REUSEADDR
 	// Avoid EADDRINUSE -> BIND and LISTEN should not return any error
 	fcntl(fd_sock, F_SETFL, O_NONBLOCK);

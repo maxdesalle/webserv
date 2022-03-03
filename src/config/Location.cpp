@@ -6,7 +6,7 @@
 /*   By: tderwedu <tderwedu@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/01/28 14:30:39 by mdesalle          #+#    #+#             */
-/*   Updated: 2022/03/02 19:14:01 by mdesalle         ###   ########.fr       */
+/*   Updated: 2022/03/03 13:58:28 by tderwedu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -120,7 +120,7 @@ size_t		Location::FindPath(std::string LocationContent)
 	}
 	NewPath = LocationContent.substr(0, i - 1);
 	NewPath.erase(std::remove(NewPath.begin(), NewPath.end(), ' '), NewPath.end());
-	if (NewPath.empty()) // TODO: move in function call
+	if (NewPath.empty())
 	{
 		std::cerr << "Error found when parsing file" << std::endl;
 		exit(1);
