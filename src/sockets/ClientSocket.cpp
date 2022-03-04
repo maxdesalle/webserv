@@ -6,24 +6,32 @@
 /*   By: tderwedu <tderwedu@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/23 10:55:52 by tderwedu          #+#    #+#             */
-/*   Updated: 2022/03/03 19:18:23 by mdesalle         ###   ########.fr       */
+/*   Updated: 2022/03/04 12:09:38 by tderwedu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "ClientSocket.hpp"
 
-inline static void		___debug_msg___(char const *msg) // TODO: DEBUG
+inline static void		___debug_msg___(char const *msg)
 {
+#ifdef DEBUG
 	std::cout << "\t\e[31m" << msg <<" \e[0m" << std::endl;
+#else
+	(void)msg;
+#endif
 }
 
-inline static void				___debug_response___(std::string const& resp) // TODO: DEBUG
+inline static void				___debug_response___(std::string const& resp)
 {
+#ifdef DEBUG
 	std::cout	<< "\e[32m"	<< " \n\t------------------- \n" \
 							<< " \t-     Response    - \n" \
 							<< " \t------------------- \e[0m" << std::endl;
 	std::cout << resp << std::endl;
 	std::cout	<< "\e[32m"	<< " \t------------------- \e[0m" << std::endl;
+#else
+	(void)resp;
+#endif
 }
 
 /*
@@ -81,12 +89,16 @@ ClientSocket&	ClientSocket::operator=(ClientSocket const& rhs)  // TODO: check u
 int				ClientSocket::handleSocket(void)
 {
 	int		ret;
-	std::cout << *this << std::endl; // TODO: DEBUG
+
+#ifdef DEBUG
+	std::cout << *this << std::endl;
+#endif
 	// Client disconnected or Any error
 	if (_pollfd.revents & (POLLHUP | POLLERR))
 	{
-		sockClose();
 		___debug_msg___((_sockState == HALF_CLOSED) ? "Closed" : "POLLHUP | POLLERR !");
+		shutdown(_pollfd.fd, SHUT_RD);
+		// sockClose();
 		return 1;
 	}
 	// FD not open
@@ -128,7 +140,7 @@ int				ClientSocket::handleSocket(void)
 	if (_timer.getElapsedTime() > TIMEOUT)
 	{
 		___debug_msg___("TIMEOUT !");
-		sockShutdown();
+		sockShutdown(SHUT_WR);
 	}
 	return (_sockState == CLOSED);
 }
@@ -149,7 +161,9 @@ int				ClientSocket::_getRequest(void)
 
 	n = recv(_pollfd.fd, _buff, RECV_BUFF_SIZE, 0);
 	_buff[n] = '\0';
+#ifdef DEBUG
 	std::cout << "\e[31m-------------------\n\e[0m" << _buff << "\e[31m-------------------\e[0m" << std::endl; //TODO:remove
+#endif
 	_timer.start();
 	std::string		buff = std::string(_buff);
 	// Error => Should already be handled by 'handleSocket()'
@@ -162,7 +176,7 @@ int				ClientSocket::_getRequest(void)
 	if (n == 0)
 	{
 		___debug_msg___("***Gracefull Close***");
-		sockShutdown();
+		sockShutdown(SHUT_RD);
 		return (_sockState == CLOSED);
 	}
 	// Can't write anything => no need to process inputs
@@ -216,9 +230,10 @@ void			ClientSocket::_sendResponse(int code)
 	if (!ci_equal(cxn, "keep-alive")) // TODO: checks with error code should terminate the connection
 	{
 		___debug_msg___("***Gracefull Close***");
-		sockShutdown();
+		sockShutdown(SHUT_WR);
 	}
-	_resetSocket();
+	else
+		_resetSocket();
 }
 
 /*
@@ -306,8 +321,9 @@ void			ClientSocket::_resetSocket(void)
 	_location = NULL;
 }
 
-inline void				ClientSocket::___debug_request___(int code) const // TODO: DEBUG
+inline void				ClientSocket::___debug_request___(int code) const
 {
+#ifdef DEBUG
 	std::cout	<< "\e[32m"	<< " \t------------------- \n" \
 							<< " \t-     Request     - \n" \
 							<< " \t------------------- \e[0m" << std::endl;
@@ -328,6 +344,9 @@ inline void				ClientSocket::___debug_request___(int code) const // TODO: DEBUG
 	else
 		std::cout	<< "\e[31m NULL \e[0m" << std::endl;
 	std::cout	<< "\e[32m"	<< " \t------------------- \e[0m" << std::endl;
+#else
+	(void)code;
+#endif
 }
 
 /*

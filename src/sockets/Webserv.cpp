@@ -6,7 +6,7 @@
 /*   By: tderwedu <tderwedu@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/23 10:58:04 by tderwedu          #+#    #+#             */
-/*   Updated: 2022/03/03 17:09:26 by tderwedu         ###   ########.fr       */
+/*   Updated: 2022/03/04 12:10:56 by tderwedu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,37 +14,63 @@
 
 #include<signal.h> // TODO:Remove
 
-inline static void	___debug_header___(char const *header)	// TODO: DEBUG
+inline static void		___error_msg___(char const *fct, char const *msg)
 {
+	std::cerr << "\e[31m error " << fct << "\e[0m: " << msg << std::endl; 
+}
+
+inline static void		___error_msg___(char const *fct, char const *msg, int port)
+{
+	std::cerr	<< "\e[31m error " << fct << "\e[0m: " << msg << "\e[31m" \
+				<< port << "\e[0m" << std::endl; 
+}
+
+
+inline static void	___debug_header___(char const *header)
+{
+#ifdef DEBUG
 	std::cout	<< "\e[32m \t############################# \n" \
 				<< " \t#           " << header << "          # \n" \
 				<< " \t############################# \e[0m" << std::endl;
+#else
+	(void)header;
+#endif
 }
 
 inline static void	___debug_section___(char const *section)
 {
-	std::cout << "\e[33m###################   "<< section << "\e[0m" << std::endl;
+#ifdef DEBUG
+		std::cout << "\e[33m###################   "<< section << "\e[0m" << std::endl;
+#else
+	(void)section;
+#endif
 }
 
-inline static void	___debug_poll___(void)	// TODO: DEBUG
+inline static void	___debug_poll___(void)
 {
+#ifdef DEBUG
 		std::cout << "\e[34m ####################################\n" \
 					<< " #   Poll, Waiting For An Revents   #\n" \
 					<< " #################################### \e[0m" << std::endl;
+#endif
 }
 
-inline void		Webserv::___debug_before_poll___(void) const	// TODO: DEBUG
+inline void		Webserv::___debug_before_poll___(void) const
 {
+#ifdef DEBUG
 	std::cout	<< "\n[Listen: " << _nbrPorts << "; Client: " \
 				<< _fdInUse - _nbrPorts << "; PollMax:" << _nbrPollMax\
 				<< "]"<< std::endl;
+#endif
 }
 
-inline void		Webserv::___debug_after_poll___(void) const	// TODO: DEBUG
+inline void		Webserv::___debug_after_poll___(void) const
 {
+#ifdef DEBUG
 	std::cout	<< "[Poll: \e[0m" << _nbrPoll <<  ": Listen " \
 				<< __getNbrPollNetwork() << ", Client " \
 				<< __getNbrPollClient() << "]" << std::endl;
+#endif
 }
 
 /*
@@ -80,7 +106,9 @@ void				Webserv::initWebserv(std::string const& config)
 	_nbrPollMax = 0;
 	_servers = ConfigHandler(config);
 	___debug_header___("PARSING");
+#ifdef DEBUG
 	printServers(_servers);
+#endif
 	___debug_header___("WEBSERV");
 	_setNetworkSockets();
 }
@@ -98,7 +126,9 @@ void				Webserv::runWebserv(void)
 		_checkListenSockets();
 		___debug_section___("Client Sockets");
 		_checkClientSockets();
-		sleep(1); // TODO: DEBUG
+// #ifdef DEBUG
+		sleep(1);
+// #endif
 	}
 }
 
@@ -113,8 +143,8 @@ void				Webserv::_setOpenMax(void) const
 				open_max = OPEN_MAX_GUESS;
 			else
 			{
-				std::cerr << "sysconf error for _SC_OPEN_MAX" << std::endl;
-				exit(1);
+				___error_msg___("sysconf", "error for _SC_OPEN_MAX");
+				exit(EXIT_FAILURE);
 			}
 		}
 	}
@@ -135,7 +165,9 @@ void				Webserv::_setNetworkSockets(void)
 		}
 	}
 	_nbrPorts = ports.size();
-	std::cout << " Listening Sockets: \e[31m" << _nbrPorts << "\e[0m" << std::endl; // TODO: DEBUG
+#ifdef DEBUG
+	std::cout << " Listening Sockets: \e[31m" << _nbrPorts << "\e[0m" << std::endl;
+#endif
 	for (std::set<int>::const_iterator port = ports.begin(); port != ports.end(); ++port)
 		_addNetworkSocket(*port, SOMAXCONN);
 }
@@ -148,7 +180,10 @@ void				Webserv::_addNetworkSocket(int port, int nbr_queue)
 
 	opt = 1;
 	if ((fd_sock = socket(AF_INET, SOCK_STREAM, 0)) < 1)
+	{
+		___error_msg___("socket", "some system call failure occured!");
 		exit(EXIT_FAILURE);
+	}
 	// Set NON-BLOCKING and SO_REUSEADDR
 	// Avoid EADDRINUSE -> BIND and LISTEN should not return any error
 	fcntl(fd_sock, F_SETFL, O_NONBLOCK);
@@ -159,23 +194,29 @@ void				Webserv::_addNetworkSocket(int port, int nbr_queue)
 	sockaddr.sin_addr.s_addr = htonl(INADDR_ANY);
 	sockaddr.sin_port = htons(port);
 	errno = 0;
-	bind(fd_sock, (t_sockaddr *) &sockaddr, sizeof(sockaddr));
-	// if (bind(fd_sock, (t_sockaddr *) &sockaddr, sizeof(sockaddr)))
-	// {
-	// 	if (errno == EACCES)
-	// 		std::cerr << "\e[31m Error bind\e[0m: need superuser privileges for port \e[31m" << port << "\e[0m" << std::endl; 
-	// 	exit(EXIT_FAILURE);
-	// }
+	if (bind(fd_sock, (t_sockaddr *) &sockaddr, sizeof(sockaddr)))
+	{
+		if (errno == EACCES)
+			___error_msg___("bin", "need superuser privileges for port ", port);
+		else
+			___error_msg___("bin", "some system call failure occured!");
+		exit(EXIT_FAILURE);
+	}
 	nbr_queue = (nbr_queue > SOMAXCONN ? SOMAXCONN : nbr_queue);
 	if (listen(fd_sock, nbr_queue))
+	{
+		___error_msg___("listen", "some system call failure occured!");
 		exit(EXIT_FAILURE);
+	}
 	_pollfd[_nbrPollMax].fd = fd_sock;
 	_pollfd[_nbrPollMax].events = POLL_FLAGS;
 	_pollfd[_nbrPollMax].revents = 0;
 	_listenSocks.push_back(ListenSocket(port, htonl(INADDR_ANY), _pollfd[_nbrPollMax]));
 	++_nbrPollMax;
 	++_fdInUse;
-	std::cout << _listenSocks.back() << std::endl; // TODO: DEBUG
+#ifdef DEBUG
+	std::cout << _listenSocks.back() << std::endl;
+#endif
 }
 
 void				Webserv::_checkListenSockets(void)
@@ -197,17 +238,21 @@ void				Webserv::_checkListenSockets(void)
 			continue ;
 		if (revents & POLLIN)
 		{
+#ifdef DEBUG
 			std::cout << "\e[35m ===> New connection from PORT: \e[0m" << it->getPort() << std::endl;
+#endif
 			socklen = sizeof(sockaddr);
 			if ((fd_client = accept((it->getPollFd()).fd, (t_sockaddr *) &sockaddr, &socklen)) < 0)
 			{
-				std::cout << "\e[31m ERROR: accept" << std::endl;
-				exit(EXIT_FAILURE);												//TODO: better error handling;
+				___error_msg___("accept", " could not accept a mew connection from port", (it->getPollFd()).fd);
+				exit(EXIT_FAILURE);
 			}
 			fcntl(fd_client, F_SETFL, O_NONBLOCK);
 			addr = sockaddr.sin_addr.s_addr;
 			_clientSocks.push_back(ClientSocket(it->getPort(), addr, _pushPollfd(fd_client), *this));
-			std::cout << _clientSocks.back() << std::endl; // TODO: DEBUG
+#ifdef DEBUG
+			std::cout << _clientSocks.back() << std::endl;
+#endif
 			if (_fdInUse == open_max)
 				break ;
 		}

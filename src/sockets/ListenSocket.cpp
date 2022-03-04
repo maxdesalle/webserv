@@ -6,7 +6,7 @@
 /*   By: tderwedu <tderwedu@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/24 16:13:15 by tderwedu          #+#    #+#             */
-/*   Updated: 2022/03/02 21:44:31 by tderwedu         ###   ########.fr       */
+/*   Updated: 2022/03/04 11:28:02 by tderwedu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -57,17 +57,29 @@ t_poll&						ListenSocket::getPollFd(void)
 	return _pollfd;
 }
 
-void						ListenSocket::sockShutdown(void)
+/*
+** void  sockShutdown(void);
+**
+** Close one half of the stream connection or call sockClose if the connection
+** is already half clsoed.
+** how = SHUT_RD or SHUT_WR
+*/
+void						ListenSocket::sockShutdown(int how)
 {
 	if (_sockState == OPEN)
 	{
-		shutdown(_pollfd.fd, SHUT_WR);
 		_sockState = HALF_CLOSED;
+		shutdown(_pollfd.fd, how);
 	}
 	else
 		sockClose();
 }
 
+/*
+** void  sockShutdown(void);
+**
+** Close both half of the stream connection and free the ressources
+*/
 void						ListenSocket::sockClose(void)
 {
 	shutdown(_pollfd.fd, SHUT_RDWR);

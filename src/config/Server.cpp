@@ -6,7 +6,7 @@
 /*   By: tderwedu <tderwedu@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/01/28 14:07:11 by mdesalle          #+#    #+#             */
-/*   Updated: 2022/03/02 19:13:33 by mdesalle         ###   ########.fr       */
+/*   Updated: 2022/03/04 12:03:19 by tderwedu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -79,7 +79,7 @@ std::map<std::string, std::vector<size_t> > const	&Server::GetDefaultServer(void
 void						Server::WriteErrorMessage(std::string message)	const
 {
 	std::cerr << message << std::endl;
-	exit(1);
+	exit(EXIT_FAILURE);
 }
 
 /*

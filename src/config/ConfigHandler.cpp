@@ -6,7 +6,7 @@
 /*   By: tderwedu <tderwedu@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/01/18 18:04:43 by maxdesall         #+#    #+#             */
-/*   Updated: 2022/03/02 22:22:33 by tderwedu         ###   ########.fr       */
+/*   Updated: 2022/03/04 12:03:19 by tderwedu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -54,7 +54,7 @@ vecServer				ConfigHandler(std::string ConfigFileName)
 	if (!File.is_open())
 	{
 		std::cout << "File could not be opened";
-		exit(1);
+		exit(EXIT_FAILURE);
 	}
 
 	while (std::getline(File, Line))

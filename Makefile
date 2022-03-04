@@ -6,11 +6,12 @@
 #    By: tderwedu <tderwedu@student.s19.be>         +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2022/01/18 10:08:26 by maxdesall         #+#    #+#              #
-#    Updated: 2022/03/02 18:26:47 by tderwedu         ###   ########.fr        #
+#    Updated: 2022/03/04 11:57:43 by tderwedu         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
-NAME			:=	webserv
+NAME			:= webserv
+DEBUG			:= 1
 
 # =============================== COMPILATION ================================ #
 
@@ -55,10 +56,18 @@ OBJ			:= $(subst ${SRC_DIR},${BIN_DIR}, ${SRC:.cpp=.o})
 
 $(BIN_DIR)%.o:	$(SRC_DIR)%.cpp
 				@mkdir -p $(dir $@)
+ifeq ($(DEBUG), 1)
+				$(CC) $(CFLAGS) -D DEBUG -c $< -o $@
+else
 				$(CC) $(CFLAGS) -c $< -o $@
+endif
 
 $(NAME):		$(OBJ)
+ifeq ($(DEBUG), 1)
+				@$(CC) $(CFLAGS) -D DEBUG $(OBJ) -o $(NAME)
+else
 				@$(CC) $(CFLAGS) $(OBJ) -o $(NAME)
+endif
 
 all:			$(NAME)
 

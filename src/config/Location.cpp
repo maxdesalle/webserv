@@ -6,7 +6,7 @@
 /*   By: tderwedu <tderwedu@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/01/28 14:30:39 by mdesalle          #+#    #+#             */
-/*   Updated: 2022/03/03 13:58:28 by tderwedu         ###   ########.fr       */
+/*   Updated: 2022/03/04 12:03:19 by tderwedu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -123,7 +123,7 @@ size_t		Location::FindPath(std::string LocationContent)
 	if (NewPath.empty())
 	{
 		std::cerr << "Error found when parsing file" << std::endl;
-		exit(1);
+		exit(EXIT_FAILURE);
 	}
 	_Path = NewPath;
 	return (i + 1);
