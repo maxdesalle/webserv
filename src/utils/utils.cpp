@@ -6,7 +6,7 @@
 /*   By: tderwedu <tderwedu@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/14 15:31:19 by tderwedu          #+#    #+#             */
-/*   Updated: 2022/02/25 10:23:33 by tderwedu         ###   ########.fr       */
+/*   Updated: 2022/03/04 12:43:32 by tderwedu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,13 +22,6 @@ bool	ci_equal(const std::string &s1, const std::string &s2)
 			return false;
 	}
 	return true;
-}
-
-std::string		getLastModified(const std::string &path)
-{
-	//TODO: to do
-	(void)path;
-	return std::string();
 }
 
 /*

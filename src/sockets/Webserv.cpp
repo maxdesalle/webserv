@@ -6,13 +6,11 @@
 /*   By: tderwedu <tderwedu@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/23 10:58:04 by tderwedu          #+#    #+#             */
-/*   Updated: 2022/03/04 12:10:56 by tderwedu         ###   ########.fr       */
+/*   Updated: 2022/03/04 12:43:16 by tderwedu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "Webserv.hpp"
-
-#include<signal.h> // TODO:Remove
 
 inline static void		___error_msg___(char const *fct, char const *msg)
 {
@@ -115,7 +113,6 @@ void				Webserv::initWebserv(std::string const& config)
 
 void				Webserv::runWebserv(void)
 {
-	// alarm(1); // TODO: remove
 	while (true)
 	{
 		___debug_before_poll___();
@@ -126,9 +123,9 @@ void				Webserv::runWebserv(void)
 		_checkListenSockets();
 		___debug_section___("Client Sockets");
 		_checkClientSockets();
-// #ifdef DEBUG
+#ifdef DEBUG
 		sleep(1);
-// #endif
+#endif
 	}
 }
 

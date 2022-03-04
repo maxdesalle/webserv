@@ -6,12 +6,12 @@
 #    By: tderwedu <tderwedu@student.s19.be>         +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2022/01/18 10:08:26 by maxdesall         #+#    #+#              #
-#    Updated: 2022/03/04 11:57:43 by tderwedu         ###   ########.fr        #
+#    Updated: 2022/03/04 12:28:44 by tderwedu         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
 NAME			:= webserv
-DEBUG			:= 1
+DEBUG			:= 0
 
 # =============================== COMPILATION ================================ #
 
@@ -46,7 +46,7 @@ UTILS		:= $(addprefix src/utils/, $(UTILS))
 CONFIG_DIR	:= $(addprefix src/config/, $(CONFIG))
 SOCKETS		:= $(addprefix src/sockets/, $(SOCKETS))
 HTTP		:= $(addprefix src/HTTP_Config/, $(HTTP))
-CGI		:= $(addprefix src/cgi/, $(CGI))
+CGI			:= $(addprefix src/cgi/, $(CGI))
 
 SRC			:= $(MAIN_DIR) $(UTILS) $(CONFIG_DIR) $(HTTP) $(SOCKETS) $(CGI)
 # SRC			:= $(MAIN_DIR) $(CONFIG_DIR)

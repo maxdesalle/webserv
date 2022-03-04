@@ -6,7 +6,7 @@
 /*   By: tderwedu <tderwedu@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/23 10:55:52 by tderwedu          #+#    #+#             */
-/*   Updated: 2022/03/04 12:09:38 by tderwedu         ###   ########.fr       */
+/*   Updated: 2022/03/04 12:44:16 by tderwedu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -55,7 +55,7 @@ ClientSocket::ClientSocket(ClientSocket const& rhs)
 
 ClientSocket::~ClientSocket() {}
 
-ClientSocket&	ClientSocket::operator=(ClientSocket const& rhs)  // TODO: check usefull ?
+ClientSocket&	ClientSocket::operator=(ClientSocket const& rhs)
 {
 	if (this != &rhs)
 	{
@@ -96,9 +96,8 @@ int				ClientSocket::handleSocket(void)
 	// Client disconnected or Any error
 	if (_pollfd.revents & (POLLHUP | POLLERR))
 	{
-		___debug_msg___((_sockState == HALF_CLOSED) ? "Closed" : "POLLHUP | POLLERR !");
-		shutdown(_pollfd.fd, SHUT_RD);
-		// sockClose();
+		___debug_msg___((_sockState != OPEN) ? "Closed" : "POLLHUP | POLLERR !");
+		sockClose();
 		return 1;
 	}
 	// FD not open
@@ -122,7 +121,7 @@ int				ClientSocket::handleSocket(void)
 		// std::string	cxn = _request.getField("Expect");
 		// if (!cxn.empty() && ci_equal(cxn, "100-continue") && _pollfd.revents & POLLOUT)
 		// {
-		// 	std::cout << "\e[31m ========> SEND 100-continue\n\e[0m" << std::endl; //TODO:remove
+		// 	std::cout << "\e[31m ========> SEND 100-continue\n\e[0m" << std::endl;
 		// 	ssize_t n = send(_pollfd.fd, "HTTP/1.1 100 continue\r\n\r\n", 25, 0);
 		// 	if (n < 0)
 		// 	{
@@ -232,8 +231,7 @@ void			ClientSocket::_sendResponse(int code)
 		___debug_msg___("***Gracefull Close***");
 		sockShutdown(SHUT_WR);
 	}
-	else
-		_resetSocket();
+	_resetSocket();
 }
 
 /*
