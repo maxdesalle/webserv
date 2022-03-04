@@ -6,7 +6,7 @@
 /*   By: tderwedu <tderwedu@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/23 10:58:04 by tderwedu          #+#    #+#             */
-/*   Updated: 2022/03/04 12:43:16 by tderwedu         ###   ########.fr       */
+/*   Updated: 2022/03/04 14:11:16 by tderwedu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -228,12 +228,15 @@ void				Webserv::_checkListenSockets(void)
 	for (itlistSock it = _listenSocks.begin(); it != _listenSocks.end(); ++it)
 	{
 		++i;
-		// TODO: check _fdInUse < open_max
-		// TODO: check other values of revents
 		revents = (it->getPollFd()).revents;
 		if (revents == POLLOUT)
 			continue ;
-		if (revents & POLLIN)
+		if (revents & (POLLHUP | POLLERR ))
+		{
+			___error_msg___("", "an unexpected error occured for a listening socket for port ", it->getPort());
+			exit(EXIT_FAILURE);
+		}
+		else if (revents & POLLIN)
 		{
 #ifdef DEBUG
 			std::cout << "\e[35m ===> New connection from PORT: \e[0m" << it->getPort() << std::endl;
@@ -241,7 +244,7 @@ void				Webserv::_checkListenSockets(void)
 			socklen = sizeof(sockaddr);
 			if ((fd_client = accept((it->getPollFd()).fd, (t_sockaddr *) &sockaddr, &socklen)) < 0)
 			{
-				___error_msg___("accept", " could not accept a mew connection from port", (it->getPollFd()).fd);
+				___error_msg___("accept", "could not accept a mew connection from port", (it->getPollFd()).fd);
 				exit(EXIT_FAILURE);
 			}
 			fcntl(fd_client, F_SETFL, O_NONBLOCK);
@@ -263,7 +266,7 @@ void				Webserv::_checkClientSockets(void)
 	client = _clientSocks.begin();
 	while (client != _clientSocks.end())
 	{
-		if (client->handleSocket())
+		if (client->handleSocket(_fdInUse == open_max))
 		{
 			_popPollfd(client->getPollFd());
 			client = _clientSocks.erase(client);

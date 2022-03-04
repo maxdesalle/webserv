@@ -6,7 +6,7 @@
 /*   By: tderwedu <tderwedu@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/23 10:55:52 by tderwedu          #+#    #+#             */
-/*   Updated: 2022/03/04 12:44:16 by tderwedu         ###   ########.fr       */
+/*   Updated: 2022/03/04 14:44:03 by tderwedu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -86,7 +86,7 @@ ClientSocket&	ClientSocket::operator=(ClientSocket const& rhs)
 ** return: 0 : connection alive
 **         1 : connection closed
 */
-int				ClientSocket::handleSocket(void)
+int				ClientSocket::handleSocket(bool close)
 {
 	int		ret;
 
@@ -108,6 +108,20 @@ int				ClientSocket::handleSocket(void)
 			return 0;
 		sockClose();
 		return 1;
+	}
+	if (_timer.getElapsedTime() > TIMEOUT)
+	{
+		___debug_msg___("TIMEOUT !");
+		if (_reqState == RECEIVING)
+		{
+			ret = 408;
+			_reqState = SENDING;
+		}
+		else
+		{
+			sockClose();
+			return 1;
+		}
 	}
 	// New Request
 	if (_pollfd.revents & POLLIN && _reqState <= RECEIVING)
@@ -133,14 +147,9 @@ int				ClientSocket::handleSocket(void)
 	// Handle Request
 	if (_pollfd.revents & POLLOUT && _reqState == SENDING)
 	{
-		_sendResponse(ret);
+		_sendResponse(ret, close);
 	}
 	// Check for timeout
-	if (_timer.getElapsedTime() > TIMEOUT)
-	{
-		___debug_msg___("TIMEOUT !");
-		sockShutdown(SHUT_WR);
-	}
 	return (_sockState == CLOSED);
 }
 
@@ -186,6 +195,13 @@ int				ClientSocket::_getRequest(void)
 	return ret;
 }
 
+inline static bool	isErrorCodeClose(int code)
+{
+	if (!code)
+		return false;
+	return (code == 400 || code == 408 || code == 413 || code == 502);
+}
+
 /*
 ** void  _sendResponse(int code);
 **
@@ -197,7 +213,7 @@ int				ClientSocket::_getRequest(void)
 ** 4. Decides to close the connection or to keep it alive based on the request
 **    or error code.
 */
-void			ClientSocket::_sendResponse(int code)
+void			ClientSocket::_sendResponse(int code, bool close)
 {
 	int			ret;
 	ssize_t		n;
@@ -207,9 +223,13 @@ void			ClientSocket::_sendResponse(int code)
 	code = (code ? code : ret);
 	if (_server)
 		code = _findLocation();
+	// Keep the first HTTP error code
 	code = (code ? code : ret);
 	___debug_request___(code);
-	if (code)
+	// Check if the connection should be closed after sending the response
+	std::string	cxn = _request.getField("Connection");
+	close = (!close ? close : (!ci_equal(cxn, "keep-alive") || isErrorCodeClose(code)));
+	if (code) // TODO: add close to paramters
 		buff = &_response.GetBadRequestResponse(_request, const_cast<Location&>(*_location), code); //TODO: THIS IS UGLY!!!!
 	else
 		buff = &_response.GetHeaderResponse(_request, const_cast<Location&>(*_location)); //TODO: THIS IS UGLY!!!!
@@ -225,8 +245,7 @@ void			ClientSocket::_sendResponse(int code)
 		___debug_msg___("SEND ERROR !");
 		sockClose();
 	}
-	std::string	cxn = _request.getField("Connection");
-	if (!ci_equal(cxn, "keep-alive")) // TODO: checks with error code should terminate the connection
+	if (close) // TODO: checks with error code should terminate the connection
 	{
 		___debug_msg___("***Gracefull Close***");
 		sockShutdown(SHUT_WR);

@@ -6,7 +6,7 @@
 /*   By: tderwedu <tderwedu@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/01 15:22:19 by tderwedu          #+#    #+#             */
-/*   Updated: 2022/03/03 09:32:52 by tderwedu         ###   ########.fr       */
+/*   Updated: 2022/03/04 14:11:55 by tderwedu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,11 +42,11 @@ private:
 	ClientSocket(void);
 	
 public:
-	int							handleSocket(void);
+	int							handleSocket(bool close);
 
 private:
 	int							_getRequest(void);
-	void						_sendResponse(int code);
+	void						_sendResponse(int code, bool close);
 	int							_findServer(void);
 	int							_findLocation(void);
 	void						_resetSocket(void);

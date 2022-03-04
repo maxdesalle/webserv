@@ -7,14 +7,14 @@ A lightweight HTTP server implemented in C++.
 
  - **Webserv**
  	- [x] Set up a default config file path if none is provided
+	- [x] Check HTTP error code that MUST close the connection
+	- [x] Check `POLLHUP` and `POLLERR` for `ListenSocket`
+	- [x] Check `_fdInUse` to avoid `EMFILE`
+	- [x] add DEBUG variable in Makefile
 	- [ ] Send response for `Expect: 100-continue`
 	- [ ] Check allowed trailer header-fields
-	- [ ] Check HTTP error code that MUST close the connection
 	- [ ] `getPath()` return a `std::string const&`
-	- [ ] Check `_fdInUse` to avoid `EMFILE`
-	- [ ] Check `POLLHUP` and `POLLERR` for `ListenSocket`
 	- [ ] Clean `utils.?pp`
-	- [x] add DEBUG varaible in Makefile
  - [ ] Create a default error page
  - [ ] Create a POC static website
  - [ ] Create a POC CGI content
