@@ -11,9 +11,9 @@ A lightweight HTTP server implemented in C++.
 	- [x] Check `POLLHUP` and `POLLERR` for `ListenSocket`
 	- [x] Check `_fdInUse` to avoid `EMFILE`
 	- [x] add DEBUG variable in Makefile
-	- [ ] Send response for `Expect: 100-continue`
-	- [ ] Check allowed trailer header-fields
-	- [ ] `getPath()` return a `std::string const&`
+	- [x] Send response for `Expect: 100-continue`
+	- [x] Check allowed trailer header-fields
+	- [x] `getPath()` return a `std::string const&`
 	- [ ] Clean `utils.?pp`
  - [ ] Create a default error page
  - [ ] Create a POC static website

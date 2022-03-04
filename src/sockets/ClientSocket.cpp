@@ -6,7 +6,7 @@
 /*   By: tderwedu <tderwedu@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/23 10:55:52 by tderwedu          #+#    #+#             */
-/*   Updated: 2022/03/04 14:44:03 by tderwedu         ###   ########.fr       */
+/*   Updated: 2022/03/04 17:21:38 by tderwedu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -91,7 +91,7 @@ int				ClientSocket::handleSocket(bool close)
 	int		ret;
 
 #ifdef DEBUG
-	std::cout << *this << std::endl;
+	// std::cout << *this << std::endl;
 #endif
 	// Client disconnected or Any error
 	if (_pollfd.revents & (POLLHUP | POLLERR))
@@ -127,22 +127,6 @@ int				ClientSocket::handleSocket(bool close)
 	if (_pollfd.revents & POLLIN && _reqState <= RECEIVING)
 	{
 		ret = _getRequest();
-		/*
-		** TODO: handle 'Expect: 100-continue'
-		** need a flag in request set up when dealing with `Expect` and a isExpect() fct
-		** Faster and avoid multiple send of 'HTTP/1.1 100 Continue\r\n\r\n'
-		*/
-		// std::string	cxn = _request.getField("Expect");
-		// if (!cxn.empty() && ci_equal(cxn, "100-continue") && _pollfd.revents & POLLOUT)
-		// {
-		// 	std::cout << "\e[31m ========> SEND 100-continue\n\e[0m" << std::endl;
-		// 	ssize_t n = send(_pollfd.fd, "HTTP/1.1 100 continue\r\n\r\n", 25, 0);
-		// 	if (n < 0)
-		// 	{
-		// 		___debug_msg___("SEND ERROR !");
-		// 		sockClose();
-		// 	}
-		// }
 	}
 	// Handle Request
 	if (_pollfd.revents & POLLOUT && _reqState == SENDING)
@@ -191,6 +175,11 @@ int				ClientSocket::_getRequest(void)
 	if (_sockState == HALF_CLOSED)
 		return 0;
 	ret = _request.parseRequest(buff);
+	if (ret == 100) // TODO: improve
+	{
+		_sendContinue();
+		return 0;
+	}
 	_reqState = ((_request.isDone() || ret) ? SENDING : RECEIVING);
 	return ret;
 }
@@ -228,12 +217,14 @@ void			ClientSocket::_sendResponse(int code, bool close)
 	___debug_request___(code);
 	// Check if the connection should be closed after sending the response
 	std::string	cxn = _request.getField("Connection");
-	close = (!close ? close : (!ci_equal(cxn, "keep-alive") || isErrorCodeClose(code)));
-	if (code) // TODO: add close to paramters
+	close = close || !ci_equal(cxn, "keep-alive") || isErrorCodeClose(code);
+	// TODO: add close to paramters !!!
+	if (code)
 		buff = &_response.GetBadRequestResponse(_request, const_cast<Location&>(*_location), code); //TODO: THIS IS UGLY!!!!
 	else
 		buff = &_response.GetHeaderResponse(_request, const_cast<Location&>(*_location)); //TODO: THIS IS UGLY!!!!
-	if (buff->empty()) // TODO: DEBUG ==> How to handle 'Response' error ?
+	// TODO: DEBUG ==> How to handle 'Response' error ? !!!
+	if (buff->empty())
 	{
 		___debug_msg___("RESPONSE EMPTY !");
 		sockClose();
@@ -245,7 +236,7 @@ void			ClientSocket::_sendResponse(int code, bool close)
 		___debug_msg___("SEND ERROR !");
 		sockClose();
 	}
-	if (close) // TODO: checks with error code should terminate the connection
+	if (close)
 	{
 		___debug_msg___("***Gracefull Close***");
 		sockShutdown(SHUT_WR);
@@ -271,7 +262,7 @@ int				ClientSocket::_findServer(void)
 	if (matchingServers->empty() || host.empty())
 	{
 		delete matchingServers;
-		return (matchingServers->empty() ? 500 : 400);
+		return (host.empty() ? 400 : 500);
 	}
 	_server = matchingServers->at(0);
 	for (size_t i = 0; i < matchingServers->size(); ++i)
@@ -297,9 +288,6 @@ int				ClientSocket::_findServer(void)
 */
 int				ClientSocket::_findLocation(void)
 {
-	/*
-	** TODO: GetPath update get a reference!
-	*/
 	int					len = 0;
 	int					max = 0;
 	Location const*		candidate = NULL;
@@ -336,6 +324,22 @@ void			ClientSocket::_resetSocket(void)
 	_reqState = WAITING;
 	_server = NULL;
 	_location = NULL;
+}
+
+inline void		ClientSocket::_sendContinue(void)
+{
+	if (_pollfd.revents & POLLOUT)
+	{
+#ifdef DEBUG
+		std::cout << "\e[32m HTTP/1.1 100 continue \e[0m" << std::endl;
+#endif
+		ssize_t n = send(_pollfd.fd, "HTTP/1.1 100 continue\r\n\r\n", 25, 0);
+		if (n < 0)
+		{
+			___debug_msg___("SEND ERROR !");
+			sockClose();
+		}
+	}
 }
 
 inline void				ClientSocket::___debug_request___(int code) const

@@ -6,7 +6,7 @@
 /*   By: tderwedu <tderwedu@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/01 15:22:19 by tderwedu          #+#    #+#             */
-/*   Updated: 2022/03/04 14:11:55 by tderwedu         ###   ########.fr       */
+/*   Updated: 2022/03/04 17:03:40 by tderwedu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -51,6 +51,7 @@ private:
 	int							_findLocation(void);
 	void						_resetSocket(void);
 
+	inline void					_sendContinue(void);
 	inline void					___debug_request___(int code) const;
 
 public:

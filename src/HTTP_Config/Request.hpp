@@ -6,7 +6,7 @@
 /*   By: tderwedu <tderwedu@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/01/26 11:47:16 by ldelmas           #+#    #+#             */
-/*   Updated: 2022/03/03 11:47:14 by tderwedu         ###   ########.fr       */
+/*   Updated: 2022/03/04 16:30:31 by tderwedu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,7 +41,7 @@ class Request : public Header
 	private:
 		enum body {NONE, LEN, CHUNKED};
 	
-		static std::string const _fieldNames[33];
+		static std::string const _fieldNames[32];
 		static std::string const _cgiSerVarNames[ENV_NUM];
 		std::string		_method, _target, _version, _body, _remain;
 		std::map<std::string const, std::string> _cgiSerVars;
@@ -49,6 +49,7 @@ class Request : public Header
 		size_t			_body_size; // tderwedu
 		state			_state;
 		body			_type;
+		bool			_expect;
 		chunk			_chunk; // tderwedu
 
 		int				_getNextLine(std::string const &str, std::string &line);

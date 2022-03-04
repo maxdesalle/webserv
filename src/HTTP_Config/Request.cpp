@@ -6,7 +6,7 @@
 /*   By: tderwedu <tderwedu@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/01/26 14:59:17 by ldelmas           #+#    #+#             */
-/*   Updated: 2022/03/03 13:58:34 by tderwedu         ###   ########.fr       */
+/*   Updated: 2022/03/04 17:10:03 by tderwedu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,7 +14,7 @@
 
 /* Important static attributes*/
 
-std::string const Request::_fieldNames[33] = {"Cache-Control", "Expect", "Host", 
+std::string const Request::_fieldNames[32] = {"Cache-Control", "Expect", "Host", 
 										"Max-Forwards", "Pragma", "Range",
 										"TE", "If-Match", "If-None-Match",
 										"If-Modified-Since", "If-Unmodified-Since",
@@ -23,7 +23,7 @@ std::string const Request::_fieldNames[33] = {"Cache-Control", "Expect", "Host",
 										"Authorization", "Proxy-Authorization",
 										"From", "Referer", "User-Agent",
 										"Transfer-Encoding", "Content-Length", 
-										"TE", "Trailer", "Connection", "Via",
+										"Trailer", "Connection", "Via",
 										"Received", "Warning", "Keep-Alive",
 										"Upgrade", "Content-Type", ""};
 
@@ -40,13 +40,13 @@ std::string const Request::_cgiSerVarNames[ENV_NUM] = {"SERVER_SOFTWARE", "SERVE
 
 /*CONSTRUCTORS AND DESTRUCTORS*/
 
-Request::Request(void) : Header(Request::_fieldNames), _remain(""), _cursor(0), _state(STARTLINE), _type(NONE)
+Request::Request(void) : Header(Request::_fieldNames), _remain(""), _cursor(0), _state(STARTLINE), _type(NONE), _expect(false)
 {
 	for (int i  = 0; i < ENV_NUM; i++)
 		this->_cgiSerVars.insert(std::pair<std::string const, std::string>(_cgiSerVarNames[i], ""));
 }
 
-Request::Request(std::string const &request) : Header(Request::_fieldNames), _remain(""), _cursor(0), _state(STARTLINE), _type(NONE)
+Request::Request(std::string const &request) : Header(Request::_fieldNames), _remain(""), _cursor(0), _state(STARTLINE), _type(NONE), _expect(false)
 {
 	for (int i  = 0; i < ENV_NUM; i++)
 		this->_cgiSerVars.insert(std::pair<std::string const, std::string>(_cgiSerVarNames[i], ""));
@@ -253,6 +253,7 @@ void			Request::reset(void)
 	this->_body = "";
 	this->_remain = "";
 	this->_cursor = 0;
+	this->_expect = false;
 }
 
 /*
@@ -365,6 +366,8 @@ int				Request::_parseHeaderField(std::string const &line)
 				this->_headerFields[Request::_fieldNames[j]] += ',' + s;
 			else
 				this->_headerFields[Request::_fieldNames[j]] = s;
+			if (j == 1 && !s.empty() && ci_equal(s, "100-continue"))
+				_expect = true;	
 			return 0;
 		}
 	}
@@ -405,17 +408,14 @@ int				Request::parseRequest(std::string const &request)
 			if (this->_parseHeaderField(line))
 				return 400;
 		}
-		// if (line.substr(0, 2) != "\r\n")
-		// {
-		// 	std::string name;
-		// 	if (!getFieldName(line, name) && name.length() > FIELDNAME_MAX)
-		// 			return 400;
-		// 	this->_remain = line;
-		// 	return 1;
-		// }
 		this->_cursor += 2;
 		if ((ret = this->_findBodyType()))
 			return ret;
+	}
+	if (_expect)
+	{
+		_expect = false;
+		return 100;
 	}
 	if (this->_type != NONE)
 		return this->_getBody(full);
@@ -461,9 +461,9 @@ int			Request::_getBody(std::string const &buff)
 
 	if (this->_type == LEN) // Content-Length
 	{
-		this->_getNextLine(buff, line);
-		if (line.empty()) // TODO: handling "Expect: 100-continue"
-			return 0;
+		// this->_getNextLine(buff, line);
+		// if (line.empty())
+		// 	return 0;
 		if (buff.size() < this->_body_size)
 		{
 			this->_remain = buff;
@@ -510,8 +510,7 @@ int			Request::_getBody(std::string const &buff)
 	}
 	// Chunked : Trailer
 	while ((ret = this->_getNextField(buff, line)))
-		if (this->_parseHeaderField(line))	//TODO: allowed trailer field!!
-			return 400;
+		; // Chunked Trailer Part is ignored
 	if (ret)
 	{
 		this->_remain = line;
