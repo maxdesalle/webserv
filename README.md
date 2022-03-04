@@ -12,8 +12,9 @@ A lightweight HTTP server implemented in C++.
 	- [ ] Check HTTP error code that MUST close the connection
 	- [ ] `getPath()` return a `std::string const&`
 	- [ ] Check `_fdInUse` to avoid `EMFILE`
-	- [x] Check `POLLHUP` and `POLLERR` for `ListenSocket`
+	- [ ] Check `POLLHUP` and `POLLERR` for `ListenSocket`
 	- [ ] Clean `utils.?pp`
+	- [x] add DEBUG varaible in Makefile
  - [ ] Create a default error page
  - [ ] Create a POC static website
  - [ ] Create a POC CGI content
