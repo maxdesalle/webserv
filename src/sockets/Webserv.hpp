@@ -6,7 +6,7 @@
 /*   By: tderwedu <tderwedu@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/01/31 10:19:04 by tderwedu          #+#    #+#             */
-/*   Updated: 2022/03/04 14:08:24 by tderwedu         ###   ########.fr       */
+/*   Updated: 2022/03/07 19:05:42 by tderwedu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -65,7 +65,7 @@ private:
 	t_poll&				_pushPollfd(int fd_client);
 	void				_popPollfd(t_poll& pollfd);
 
-	size_t				__getNbrPollNetwork(void) const;
+	size_t				__getNbrPollListen(void) const;
 	size_t				__getNbrPollClient(void) const;
 	inline void			___debug_before_poll___(void) const;
 	inline void			___debug_after_poll___(void) const;

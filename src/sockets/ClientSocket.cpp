@@ -6,7 +6,7 @@
 /*   By: tderwedu <tderwedu@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/23 10:55:52 by tderwedu          #+#    #+#             */
-/*   Updated: 2022/03/04 17:21:38 by tderwedu         ###   ########.fr       */
+/*   Updated: 2022/03/07 18:46:17 by tderwedu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -154,7 +154,7 @@ int				ClientSocket::_getRequest(void)
 	n = recv(_pollfd.fd, _buff, RECV_BUFF_SIZE, 0);
 	_buff[n] = '\0';
 #ifdef DEBUG
-	std::cout << "\e[31m-------------------\n\e[0m" << _buff << "\e[31m-------------------\e[0m" << std::endl; //TODO:remove
+	/* std::cout << "\e[31m-------------------\n\e[0m" << _buff << "\e[31m-------------------\e[0m" << std::endl; */
 #endif
 	_timer.start();
 	std::string		buff = std::string(_buff);
@@ -214,7 +214,7 @@ void			ClientSocket::_sendResponse(int code, bool close)
 		code = _findLocation();
 	// Keep the first HTTP error code
 	code = (code ? code : ret);
-	___debug_request___(code);
+	/* ___debug_request___(code); */
 	// Check if the connection should be closed after sending the response
 	std::string	cxn = _request.getField("Connection");
 	close = close || !ci_equal(cxn, "keep-alive") || isErrorCodeClose(code);

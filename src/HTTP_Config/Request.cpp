@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Request.cpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: tderwedu <tderwedu@student.s19.be>         +#+  +:+       +#+        */
+/*   By: ldelmas <ldelmas@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/01/26 14:59:17 by ldelmas           #+#    #+#             */
-/*   Updated: 2022/03/04 17:10:03 by tderwedu         ###   ########.fr       */
+/*   Updated: 2022/03/07 21:57:28 by ldelmas          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -113,7 +113,7 @@ bool	Request::isDone(void) const
 	return this->_state == DONE;
 }
 
-std::map<std::string const, std::string> const &Request::getCGIServerVars(void)
+std::map<std::string const, std::string> &Request::getCGIServerVars(void)
 {
 	return this->_cgiSerVars;
 }
