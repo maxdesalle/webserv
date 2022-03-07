@@ -6,7 +6,7 @@
 /*   By: tderwedu <tderwedu@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/01/26 14:58:24 by ldelmas           #+#    #+#             */
-/*   Updated: 2022/03/03 19:10:00 by mdesalle         ###   ########.fr       */
+/*   Updated: 2022/03/07 12:11:06 by mdesalle         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -182,7 +182,7 @@ std::string const		&Response::GetHeaderResponse(Request &HTTPRequest, Location &
 	std::ostringstream	oss;
 
 	if (HTTPRequest.getMethod() == "GET")
-		Body = HandleGETRequest(HTTPRequest, HTTPLocation, &StatusCode);
+		Body = HandleGETRequest(HTTPRequest, HTTPLocation, &StatusCode, 0);
 	else if (HTTPRequest.getMethod() == "POST")
 		Body = HandlePOSTRequest(HTTPRequest, HTTPLocation, &StatusCode);
 	else if (HTTPRequest.getMethod() == "DELETE")
@@ -199,10 +199,16 @@ std::string const		&Response::GetHeaderResponse(Request &HTTPRequest, Location &
 	_HeaderResponse += "Server: " + GetServerVersion() + "\r\n";
 	/* if (HTTPRequest.getMethod() == "GET") */
 	/* 	_HeaderResponse += "Last-Modified: " + GetLastModifiedTimeForFile(Path) + "\n"; */
-	_HeaderResponse += "Content-Lenght: " + this->_headerFields["Content-Length"] + "\r\n";
-	_HeaderResponse += "Content-Type: " + this->_headerFields["Content-Type"] + "\r\n";
-	_HeaderResponse += "Connection: " + this->_headerFields["Connection"] + "\r\n\r\n";
+	oss.str("");
+	oss.clear();
+	oss << std::dec << Body.size();
+	/* std::cout << std::endl << std::endl << Body.size() << std::endl << std::endl; */
+	/* std::cout << std::endl << std::endl << Body << std::endl << std::endl; */
+	_HeaderResponse += "Content-Length: " + oss.str() + "\r\n\r\n";
+	/* _HeaderResponse += "Content-Type: " + this->_headerFields["Content-Type"] + "\r\n"; */
+	/* _HeaderResponse += "Connection: " + this->_headerFields["Connection"] + "\r\n\r\n"; */
 	_HeaderResponse += Body;
+	std::cout << _HeaderResponse;
 
 	return (_HeaderResponse);
 }
@@ -240,17 +246,22 @@ std::string	Response::ReturnError(Request &HTTPRequest, Location &HTTPLocation, 
 	return (FileContent);
 }
 
-std::string	Response::HandleGETRequest(Request &HTTPRequest, Location &HTTPLocation, unsigned int *StatusCode)
+std::string	Response::HandleGETRequest(Request &HTTPRequest, Location &HTTPLocation, unsigned int *StatusCode, unsigned int i)
 {
 	std::string			FileContent;
-	std::string			Path = HTTPLocation.GetRoot() + HTTPRequest.getTarget() + HTTPLocation.GetIndex()[0];
+	std::string			Path = HTTPLocation.GetRoot() + HTTPRequest.getTarget() + HTTPLocation.GetIndex()[i];
 	std::ifstream		File(Path.c_str());
 	std::stringstream	Buffer;
 
 	if (!File)
 	{
-		*StatusCode = 404;
-		return (ReturnError(HTTPRequest, HTTPLocation, StatusCode));
+		if (HTTPLocation.GetIndex().size() > (i + 1))
+			return (HandleGETRequest(HTTPRequest, HTTPLocation, StatusCode, i + 1));
+		else
+		{
+			*StatusCode = 404;
+			return (ReturnError(HTTPRequest, HTTPLocation, StatusCode));
+		}
 	}
 	Buffer << File.rdbuf();
 	FileContent = Buffer.str();
@@ -307,6 +318,8 @@ bool		Response::FindValueInVector(std::vector<std::string> Haystack, std::string
 std::string	Response::HandleDELETERequest(Request &HTTPRequest, Location &HTTPLocation, unsigned int *StatusCode)
 {
 	std::string	Path = HTTPLocation.GetRoot() + HTTPRequest.getTarget();
+
+	std::cout << std::endl << std::endl << Path << std::endl << std::endl;
 	
 	if (FindValueInVector(HTTPLocation.GetLimitExcept(), "DELETE") == false)
 	{

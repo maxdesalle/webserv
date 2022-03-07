@@ -6,7 +6,7 @@
 /*   By: tderwedu <tderwedu@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/01/26 11:48:07 by ldelmas           #+#    #+#             */
-/*   Updated: 2022/03/03 18:24:01 by mdesalle         ###   ########.fr       */
+/*   Updated: 2022/03/04 10:56:25 by mdesalle         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -55,7 +55,7 @@ class Response : public Header
 		std::string const	&GetBadRequestResponse(Request &HTTPRequest, Location &HTTPLocation, unsigned int StatusCode);
 		std::string			GetErrorPagePath(Location &HTTPLocation, unsigned int *StatusCode);
 		std::string			ReturnError(Request &HTTPRequest, Location &HTTPLocation, unsigned int *StatusCode);
-		std::string			HandleGETRequest(Request &HTTPRequest, Location &HTTPLocation, unsigned int *StatusCode);
+		std::string			HandleGETRequest(Request &HTTPRequest, Location &HTTPLocation, unsigned int *StatusCode, unsigned int i);
 		std::string			HandlePOSTRequest(Request &HTTPRequest, Location &HTTPLocation, unsigned int *StatusCode);
 		std::string			HandleCGIPOSTRequest(Request &HTTPRequest, unsigned int *StatusCode);
 		std::string			HandleDELETERequest(Request &HTTPRequest, Location &HTTPLocation, unsigned int *StatusCode);
