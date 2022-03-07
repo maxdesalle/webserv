@@ -6,7 +6,7 @@
 /*   By: tderwedu <tderwedu@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/01/26 14:58:24 by ldelmas           #+#    #+#             */
-/*   Updated: 2022/03/07 13:34:43 by mdesalle         ###   ########.fr       */
+/*   Updated: 2022/03/07 14:10:45 by mdesalle         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -171,6 +171,7 @@ std::string const		&Response::GetBadRequestResponse(Request &HTTPRequest, Locati
 	_HeaderResponse += "Date: " + GetCurrentFormattedTime() + "\r\n";
 	_HeaderResponse += "Server: " + GetServerVersion() + "\r\n";
 	_HeaderResponse += Body;
+
 	oss.str("");
 	oss.clear();
 	oss << std::dec << Body.size();
@@ -180,11 +181,30 @@ std::string const		&Response::GetBadRequestResponse(Request &HTTPRequest, Locati
 	return (_HeaderResponse);
 }
 
+std::string const		&Response::GenerateResponse(std::string &Body, unsigned int *StatusCode)
+{
+	std::ostringstream	oss;
+
+	oss << std::dec << *StatusCode;
+
+	_HeaderResponse =  "HTTP/1.1 " + oss.str() + " " + FindStatusMessage(StatusCode) + "\r\n";
+	_HeaderResponse += "Date: " + GetCurrentFormattedTime() + "\r\n";
+	_HeaderResponse += "Server: " + GetServerVersion() + "\r\n";
+
+	oss.str("");
+	oss.clear();
+	oss << std::dec << Body.size();
+
+	_HeaderResponse += "Content-Length: " + oss.str() + "\r\n\r\n";
+	_HeaderResponse += Body;
+
+	return (_HeaderResponse);
+}
+
 std::string const		&Response::GetHeaderResponse(Request &HTTPRequest, Location &HTTPLocation)
 {
 	std::string			Body;
 	unsigned int		StatusCode = 0;
-	std::ostringstream	oss;
 
 	if (HTTPRequest.getMethod() == "GET")
 		Body = HandleGETRequest(HTTPRequest, HTTPLocation, &StatusCode, 0);
@@ -198,18 +218,7 @@ std::string const		&Response::GetHeaderResponse(Request &HTTPRequest, Location &
 		Body = ReturnError(HTTPRequest, HTTPLocation, &StatusCode);
 	}
 
-	oss << std::dec << StatusCode;
-	_HeaderResponse =  "HTTP/1.1 " + oss.str() + " " + FindStatusMessage(&StatusCode) + "\r\n";
-	_HeaderResponse += "Date: " + GetCurrentFormattedTime() + "\r\n";
-	_HeaderResponse += "Server: " + GetServerVersion() + "\r\n";
-	/* if (HTTPRequest.getMethod() == "GET") */
-	/* 	_HeaderResponse += "Last-Modified: " + GetLastModifiedTimeForFile(Path) + "\n"; */
-	oss.str("");
-	oss.clear();
-	oss << std::dec << Body.size();
-	_HeaderResponse += "Content-Length: " + oss.str() + "\r\n\r\n";
-	_HeaderResponse += Body;
-
+	GenerateResponse(Body, &StatusCode);
 	std::cout << _HeaderResponse << std::endl;
 
 	return (_HeaderResponse);
@@ -348,18 +357,6 @@ std::string	Response::GetCurrentFormattedTime(void)
 
 	return (FormattedString);
 }
-
-/* std::string	Response::GetLastModifiedTimeForFile(std::string Path) */
-/* { */
-/* 	struct		stat attr; */
-/* 	struct		tm *tm = gmtime(stat(Path.c_str(), &attr)); */
-/* 	std::string	FormattedString; */
-
-/* 	FormattedString.resize(29); */
-/* 	strftime(&FormattedString[0], FormattedString.size(), "%a, %d %b %Y %X GMT", tm); */
-
-/* 	return (FormattedString); */
-/* } */
 
 void				Response::reset(void)
 {
