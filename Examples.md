@@ -1,7 +1,7 @@
 # Observations
 1. `index` only  
 - Send the index file
-- If the tarrespond to a folder name, respond with `301 Moved Permanently` with `Location` header
+- If the target is a folder, respond with `301 Moved Permanently` with `Location` header
 - default error 404 page
 2. `return 301 URL`
 - **Applied no matter what**
