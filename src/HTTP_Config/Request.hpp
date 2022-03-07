@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Request.hpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: tderwedu <tderwedu@student.s19.be>         +#+  +:+       +#+        */
+/*   By: ldelmas <ldelmas@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/01/26 11:47:16 by ldelmas           #+#    #+#             */
-/*   Updated: 2022/03/04 16:30:31 by tderwedu         ###   ########.fr       */
+/*   Updated: 2022/03/07 21:57:27 by ldelmas          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -73,7 +73,7 @@ class Request : public Header
 		std::string const	&getBody(void) const;
 		state				getState(void) const;
 		bool				isDone(void) const;
-		std::map<std::string const, std::string> const &getCGIServerVars(void);
+		std::map<std::string const, std::string> &getCGIServerVars(void);
 		void				setMethod(std::string &method);
 		void				setTarget(std::string &target);
 		void				setVersion(std::string &version);
