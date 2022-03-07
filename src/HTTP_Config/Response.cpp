@@ -6,7 +6,7 @@
 /*   By: tderwedu <tderwedu@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/01/26 14:58:24 by ldelmas           #+#    #+#             */
-/*   Updated: 2022/03/07 14:10:45 by mdesalle         ###   ########.fr       */
+/*   Updated: 2022/03/07 15:44:18 by mdesalle         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -230,7 +230,10 @@ std::string	Response::GetErrorPagePath(Location &HTTPLocation, unsigned int *Sta
 
 	try
 	{
-		return (HTTPLocation.GetRoot() + HTTPLocation.GetPath() + HTTPLocation.GetErrorPage().at(*StatusCode));
+		if (*StatusCode < 1000)
+			return (HTTPLocation.GetRoot() + HTTPLocation.GetPath() + HTTPLocation.GetErrorPage().at(*StatusCode));
+		else
+			return (HTTPLocation.GetRoot() + HTTPLocation.GetErrorPage().at(*StatusCode / 10));
 	}
 	catch (...)
 	{
@@ -245,11 +248,16 @@ std::string	Response::ReturnError(Request &HTTPRequest, Location &HTTPLocation, 
 	std::ifstream		File(Path.c_str());
 	std::stringstream	Buffer;
 
+	std::cout << Path << std::endl;
+
 	if (!File)
 	{
 		if (*StatusCode == 500)
 			return ("500 Internal Server Error");
-		*StatusCode = 500;
+		else if (*StatusCode >= 1000)
+			*StatusCode = 500;
+		else
+			*StatusCode *= 10;
 		return (ReturnError(HTTPRequest, HTTPLocation, StatusCode));
 	}
 	Buffer << File.rdbuf();
