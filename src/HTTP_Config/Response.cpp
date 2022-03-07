@@ -6,7 +6,7 @@
 /*   By: tderwedu <tderwedu@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/01/26 14:58:24 by ldelmas           #+#    #+#             */
-/*   Updated: 2022/03/07 12:11:06 by mdesalle         ###   ########.fr       */
+/*   Updated: 2022/03/07 13:34:43 by mdesalle         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -171,7 +171,12 @@ std::string const		&Response::GetBadRequestResponse(Request &HTTPRequest, Locati
 	_HeaderResponse += "Date: " + GetCurrentFormattedTime() + "\r\n";
 	_HeaderResponse += "Server: " + GetServerVersion() + "\r\n";
 	_HeaderResponse += Body;
+	oss.str("");
+	oss.clear();
+	oss << std::dec << Body.size();
+	_HeaderResponse += "Content-Length: " + oss.str() + "\r\n\r\n";
 
+	std::cout << _HeaderResponse << std::endl;
 	return (_HeaderResponse);
 }
 
@@ -202,13 +207,10 @@ std::string const		&Response::GetHeaderResponse(Request &HTTPRequest, Location &
 	oss.str("");
 	oss.clear();
 	oss << std::dec << Body.size();
-	/* std::cout << std::endl << std::endl << Body.size() << std::endl << std::endl; */
-	/* std::cout << std::endl << std::endl << Body << std::endl << std::endl; */
 	_HeaderResponse += "Content-Length: " + oss.str() + "\r\n\r\n";
-	/* _HeaderResponse += "Content-Type: " + this->_headerFields["Content-Type"] + "\r\n"; */
-	/* _HeaderResponse += "Connection: " + this->_headerFields["Connection"] + "\r\n\r\n"; */
 	_HeaderResponse += Body;
-	std::cout << _HeaderResponse;
+
+	std::cout << _HeaderResponse << std::endl;
 
 	return (_HeaderResponse);
 }
