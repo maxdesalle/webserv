@@ -6,7 +6,7 @@
 /*   By: tderwedu <tderwedu@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/01/26 11:48:07 by ldelmas           #+#    #+#             */
-/*   Updated: 2022/03/07 13:54:56 by mdesalle         ###   ########.fr       */
+/*   Updated: 2022/03/07 21:53:10 by mdesalle         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -49,14 +49,18 @@ class Response : public Header
 		std::string			GetServerVersion(void);
 		std::string			GetCurrentFormattedTime(void);
 		std::string			FindStatusMessage(unsigned int *StatusCode);
+		std::string	const	&Handle301Redirect(Request &HTTPRequest);
 		std::string			GetLastModifiedTimeForFile(std::string Path);
 		std::string const	&GenerateResponse(std::string &Body, unsigned int *StatusCode);
 		std::string			HandleNormalPostRequest(Request &HTTPRequest, Location &HTTPLocation, unsigned int *StatusCode);
 		std::string const	&GetHeaderResponse(Request &HTTPRequest, Location &HTTPLocation);
 		std::string const	&GetBadRequestResponse(Request &HTTPRequest, Location &HTTPLocation, unsigned int StatusCode);
 		std::string			GetErrorPagePath(Location &HTTPLocation, unsigned int *StatusCode);
-		std::string			ReturnError(Request &HTTPRequest, Location &HTTPLocation, unsigned int *StatusCode);
+		std::string 		ReturnError(Request &HTTPRequest, Location &HTTPLocation, unsigned int *StatusCode);
 		std::string			HandleGETRequest(Request &HTTPRequest, Location &HTTPLocation, unsigned int *StatusCode, unsigned int i);
+		std::string			HandleGETRequestFile(Request &HTTPRequest, Location &HTTPLocation, unsigned int *StatusCode);
+		std::string			CheckIfFileOrFolder(Request &HTTPRequest, Location &HTTPLocation, unsigned int *StatusCode);
+		std::string const	&CheckIfFileOrFolderConst(Request &HTTPRequest, Location &HTTPLocation);
 		std::string			HandlePOSTRequest(Request &HTTPRequest, Location &HTTPLocation, unsigned int *StatusCode);
 		std::string			HandleCGIPOSTRequest(Request &HTTPRequest, unsigned int *StatusCode);
 		std::string			HandleDELETERequest(Request &HTTPRequest, Location &HTTPLocation, unsigned int *StatusCode);
