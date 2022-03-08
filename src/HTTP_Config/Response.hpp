@@ -6,7 +6,7 @@
 /*   By: tderwedu <tderwedu@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/01/26 11:48:07 by ldelmas           #+#    #+#             */
-/*   Updated: 2022/03/07 21:53:10 by mdesalle         ###   ########.fr       */
+/*   Updated: 2022/03/08 16:54:22 by mdesalle         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,6 +47,7 @@ class Response : public Header
 
 		bool				FindValueInVector(std::vector<std::string> Haystack, std::string Needle);
 		std::string			GetServerVersion(void);
+		std::string			GetPath(Request &HTTPRequest, Location &HTTPLocation, unsigned int i);
 		std::string			GetCurrentFormattedTime(void);
 		std::string			FindStatusMessage(unsigned int *StatusCode);
 		std::string	const	&Handle301Redirect(Request &HTTPRequest);

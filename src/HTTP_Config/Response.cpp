@@ -6,7 +6,7 @@
 /*   By: tderwedu <tderwedu@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/01/26 14:58:24 by ldelmas           #+#    #+#             */
-/*   Updated: 2022/03/07 22:01:23 by mdesalle         ###   ########.fr       */
+/*   Updated: 2022/03/08 16:56:19 by mdesalle         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -321,6 +321,12 @@ std::string	Response::HandleGETRequestFile(Request &HTTPRequest, Location &HTTPL
 	std::ifstream		File(Path.c_str());
 	std::stringstream	Buffer;
 
+	if (FindValueInVector(HTTPLocation.GetLimitExcept(), "GET") == false)
+	{
+		*StatusCode = 403;
+		return (ReturnError(HTTPRequest, HTTPLocation, StatusCode));
+	}
+
 	if (!File)
 		return (HandleGETRequest(HTTPRequest, HTTPLocation, StatusCode, 0));
 
@@ -331,12 +337,26 @@ std::string	Response::HandleGETRequestFile(Request &HTTPRequest, Location &HTTPL
 	return (FileContent);
 }
 
+std::string	Response::GetPath(Request &HTTPRequest, Location &HTTPLocation, unsigned int i)
+{
+	if (!HTTPLocation.GetRoot().empty() && !HTTPRequest.getTarget().empty() && HTTPLocation.GetIndex().size() > 0)
+		return (HTTPLocation.GetRoot() + HTTPRequest.getTarget() + HTTPLocation.GetIndex()[i]);
+	else
+		return ("");
+}
+
 std::string	Response::HandleGETRequest(Request &HTTPRequest, Location &HTTPLocation, unsigned int *StatusCode, unsigned int i)
 {
 	std::string			FileContent;
-	std::string			Path = HTTPLocation.GetRoot() + HTTPRequest.getTarget() + HTTPLocation.GetIndex()[i];
+	std::string			Path = GetPath(HTTPRequest, HTTPLocation, i);
 	std::ifstream		File(Path.c_str());
 	std::stringstream	Buffer;
+
+	if (FindValueInVector(HTTPLocation.GetLimitExcept(), "GET") == false)
+	{
+		*StatusCode = 403;
+		return (ReturnError(HTTPRequest, HTTPLocation, StatusCode));
+	}
 
 	if (!File)
 	{
@@ -404,8 +424,6 @@ std::string	Response::HandleDELETERequest(Request &HTTPRequest, Location &HTTPLo
 {
 	std::string	Path = HTTPLocation.GetRoot() + HTTPRequest.getTarget();
 
-	std::cout << std::endl << std::endl << Path << std::endl << std::endl;
-
 	if (FindValueInVector(HTTPLocation.GetLimitExcept(), "DELETE") == false)
 	{
 		*StatusCode = 403;
@@ -417,6 +435,9 @@ std::string	Response::HandleDELETERequest(Request &HTTPRequest, Location &HTTPLo
 		*StatusCode = 404;
 		return (ReturnError(HTTPRequest, HTTPLocation, StatusCode));
 	}
+
+	*StatusCode = 200;
+
 	return ("File deleted.");
 }
 
