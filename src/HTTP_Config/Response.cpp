@@ -5,8 +5,8 @@
 /*                                                    +:+ +:+         +:+     */
 /*   By: tderwedu <tderwedu@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2022/01/26 14:58:24 by ldelmas           #+#    #+#             */
-/*   Updated: 2022/03/07 15:44:18 by mdesalle         ###   ########.fr       */
+/*   Created: 2023/01/26 14:58:24 by ldelmas           #+#    #+#             */
+/*   Updated: 2022/03/07 22:01:23 by mdesalle         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -157,17 +157,16 @@ std::string	Response::FindStatusMessage(unsigned int *StatusCode)
 	return ("Internal Server Error");
 }
 
-std::string const		&Response::GetBadRequestResponse(Request &HTTPRequest, Location &HTTPLocation, unsigned int StatusCode)
+std::string	const	&Response::GetBadRequestResponse(Request &HTTPRequest, Location &HTTPLocation, unsigned int StatusCode)
 {
 	std::string			Body;
 	std::ostringstream	oss;
 
 	oss << std::dec << StatusCode;
-	if (StatusCode != 301)
-		Body = ReturnError(HTTPRequest, HTTPLocation, &StatusCode);
-	_HeaderResponse = "HTTP/1.1 " + oss.str() + " " + FindStatusMessage(&StatusCode)+ "\r\n";
 	if (StatusCode == 301)
-		_HeaderResponse += "Location: " + HTTPRequest.getTarget() + "/" + "\r\n";
+		return (CheckIfFileOrFolderConst(HTTPRequest, HTTPLocation));
+	Body = ReturnError(HTTPRequest, HTTPLocation, &StatusCode);
+	_HeaderResponse = "HTTP/1.1 " + oss.str() + " " + FindStatusMessage(&StatusCode)+ "\r\n";
 	_HeaderResponse += "Date: " + GetCurrentFormattedTime() + "\r\n";
 	_HeaderResponse += "Server: " + GetServerVersion() + "\r\n";
 	_HeaderResponse += Body;
@@ -207,7 +206,7 @@ std::string const		&Response::GetHeaderResponse(Request &HTTPRequest, Location &
 	unsigned int		StatusCode = 0;
 
 	if (HTTPRequest.getMethod() == "GET")
-		Body = HandleGETRequest(HTTPRequest, HTTPLocation, &StatusCode, 0);
+		Body = CheckIfFileOrFolder(HTTPRequest, HTTPLocation, &StatusCode);
 	else if (HTTPRequest.getMethod() == "POST")
 		Body = HandlePOSTRequest(HTTPRequest, HTTPLocation, &StatusCode);
 	else if (HTTPRequest.getMethod() == "DELETE")
@@ -241,14 +240,12 @@ std::string	Response::GetErrorPagePath(Location &HTTPLocation, unsigned int *Sta
 	}
 }
 
-std::string	Response::ReturnError(Request &HTTPRequest, Location &HTTPLocation, unsigned int *StatusCode)
+std::string Response::ReturnError(Request &HTTPRequest, Location &HTTPLocation, unsigned int *StatusCode)
 {
 	std::string			FileContent;
 	std::string			Path = GetErrorPagePath(HTTPLocation, StatusCode);
 	std::ifstream		File(Path.c_str());
 	std::stringstream	Buffer;
-
-	std::cout << Path << std::endl;
 
 	if (!File)
 	{
@@ -262,6 +259,75 @@ std::string	Response::ReturnError(Request &HTTPRequest, Location &HTTPLocation, 
 	}
 	Buffer << File.rdbuf();
 	FileContent = Buffer.str();
+	return (FileContent);
+}
+
+std::string const	&Response::Handle301Redirect(Request &HTTPRequest)
+{
+	_HeaderResponse = "HTTP/1.1 301 Moved Permanently\r\n";
+	_HeaderResponse += "Location: " + HTTPRequest.getTarget() + "/" + "\r\n";
+	_HeaderResponse += "Date: " + GetCurrentFormattedTime() + "\r\n";
+	_HeaderResponse += "Server: " + GetServerVersion() + "\r\n";
+
+	_HeaderResponse += "Content-Length: 0\r\n\r\n";
+
+	return (_HeaderResponse);
+}
+
+std::string Response::CheckIfFileOrFolder(Request &HTTPRequest, Location &HTTPLocation, unsigned int *StatusCode)
+{
+	struct				stat s;
+	std::string			Path = HTTPLocation.GetRoot() + HTTPRequest.getTarget();
+
+	std::cout << Path << std::endl;
+
+	if (stat(Path.c_str(),&s) == 0)
+	{
+		if (s.st_mode & S_IFREG)
+			return (HandleGETRequestFile(HTTPRequest, HTTPLocation, StatusCode));
+		else if (s.st_mode & S_IFDIR)
+		{
+			if (HTTPRequest.getTarget()[HTTPRequest.getTarget().size() - 1] != '/')
+				return (Handle301Redirect(HTTPRequest));
+			return (HandleGETRequest(HTTPRequest, HTTPLocation, StatusCode, 0));
+		}
+	}
+	return (HandleGETRequest(HTTPRequest, HTTPLocation, StatusCode, 0));
+}
+
+std::string const &Response::CheckIfFileOrFolderConst(Request &HTTPRequest, Location &HTTPLocation)
+{
+	struct				stat s;
+	std::string			Path = HTTPLocation.GetRoot() + HTTPRequest.getTarget();
+
+	if (stat(Path.c_str(),&s) == 0)
+	{
+		if (s.st_mode & S_IFREG)
+			return (GetHeaderResponse(HTTPRequest, HTTPLocation));
+		else if (s.st_mode & S_IFDIR)
+		{
+			if (HTTPRequest.getTarget()[HTTPRequest.getTarget().size()] != '/')
+				return (Handle301Redirect(HTTPRequest));
+			return (GetHeaderResponse(HTTPRequest, HTTPLocation));
+		}
+	}
+	return (GetHeaderResponse(HTTPRequest, HTTPLocation));
+}
+
+std::string	Response::HandleGETRequestFile(Request &HTTPRequest, Location &HTTPLocation, unsigned int *StatusCode)
+{
+	std::string			FileContent;
+	std::string			Path = HTTPLocation.GetRoot() + HTTPRequest.getTarget();
+	std::ifstream		File(Path.c_str());
+	std::stringstream	Buffer;
+
+	if (!File)
+		return (HandleGETRequest(HTTPRequest, HTTPLocation, StatusCode, 0));
+
+	Buffer << File.rdbuf();
+	FileContent = Buffer.str();
+	*StatusCode = 200;
+
 	return (FileContent);
 }
 
@@ -339,7 +405,7 @@ std::string	Response::HandleDELETERequest(Request &HTTPRequest, Location &HTTPLo
 	std::string	Path = HTTPLocation.GetRoot() + HTTPRequest.getTarget();
 
 	std::cout << std::endl << std::endl << Path << std::endl << std::endl;
-	
+
 	if (FindValueInVector(HTTPLocation.GetLimitExcept(), "DELETE") == false)
 	{
 		*StatusCode = 403;
