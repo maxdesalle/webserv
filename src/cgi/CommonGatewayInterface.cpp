@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   CommonGatewayInterface.cpp                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: tderwedu <tderwedu@student.s19.be>         +#+  +:+       +#+        */
+/*   By: ldelmas <ldelmas@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/09 14:38:27 by mdesalle          #+#    #+#             */
-/*   Updated: 2022/03/08 09:37:02 by tderwedu         ###   ########.fr       */
+/*   Updated: 2022/03/08 13:42:55 by ldelmas          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,7 +16,10 @@
 
 CommonGatewayInterface::CommonGatewayInterface(Request &CGIRequest) : _envMap(CGIRequest.getCGIServerVars()) {}
 
-CommonGatewayInterface::CommonGatewayInterface(const CommonGatewayInterface &ref) : _envMap(ref._envMap) {}
+CommonGatewayInterface::CommonGatewayInterface(const CommonGatewayInterface &ref) : _envMap(ref._envMap)
+{
+	this->_body = ref._body;
+}
 
 CommonGatewayInterface::~CommonGatewayInterface(void) {}
 
@@ -30,10 +33,25 @@ CommonGatewayInterface::~CommonGatewayInterface(void) {}
 CommonGatewayInterface	&CommonGatewayInterface::operator=(CommonGatewayInterface const &ref)
 {
 	this->_envMap = ref._envMap;
+	this->_body = ref._body;
 	return (*this);
 }
 
+/*
+	GETTERS AND SETTERS
+*/
+
+std::string const	&CommonGatewayInterface::getBody(void) const
+{
+	return this->_body;
+}
+
 //================================ FUNCTIONS =================================//
+
+void				CommonGatewayInterface::resetBody(void)
+{
+	this->_body = "";
+}
 
 std::string			CommonGatewayInterface::FindValueInMap(const std::map<const std::string, std::string> CGIVariables, std::string Key)	const
 {
@@ -41,42 +59,40 @@ std::string			CommonGatewayInterface::FindValueInMap(const std::map<const std::s
 	catch (const std::out_of_range&) {return (NULL);}
 }
 
-
 unsigned int		CommonGatewayInterface::ExecuteCGIScript(void)
 {
-	size_t		scriptLength = this->_envMap["SCRIPT_NAME"].length()-12;
-	std::string	tmp = this->_envMap["SCRIPT_NAME"].substr(12, scriptLength);
-	const char	*cscript = tmp.c_str();
-	char		script[scriptLength];
-	strcpy(script, cscript);
-	char		*argv[2] = {script, NULL};
+	char		**argv = this->_makeArgv();
+	int			fds[2];
+	size_t		Pid = fork();
 
-	FILE		*In = tmpfile();
-	FILE		*Out = tmpfile();
-
-	int			FDin = fileno(In);
-	int			FDout = fileno(Out);
-
-	size_t		Pid = 0;
-
-	Pid = fork();
-
-	if (Pid < 0)
-		return 500; // Internal Server Error
+	if (Pid < 0 || pipe(fds) < 0)
+		return 500;
 	else if (Pid == 0)
 	{
-		dup2(FDin, STDIN_FILENO);
-		dup2(FDout, STDOUT_FILENO);
-		close(FDin);
-		close(FDout);
-		if (execve(argv[0], argv, this->_makeEnv()) == -1) //will have to delete env
-			return 500;
-		close(STDIN_FILENO);
+		if (dup2(fds[1], STDOUT_FILENO))
+			exit(EXIT_FAILURE);
+		close(fds[1]);
+		close(fds[0]);
+		char *const *env = this->_makeEnv();
+		execve(argv[0], argv, env);
 		close(STDOUT_FILENO);
+		for (size_t i = 0; env[i]; i++)
+			delete[] env[i];
+		delete[] env;
+		delete[] argv[0];
+		delete[] argv;
+		exit(EXIT_FAILURE);
 	}
-	else if (Pid > 0)
-		waitpid(-1, NULL, 0); //should probably change the -1 by a zero because it shouldn't wait for any process to end
-	return (200); // OK
+
+	int status;
+	waitpid(0, &status, 0);
+	if (status/256 == 1)
+		return 500;
+	this->_makeBody(fds);
+	close(fds[1]);
+	delete[] argv[0];
+	delete[] argv;
+	return (200);
 }
 
 /*
@@ -96,4 +112,30 @@ char *const			*CommonGatewayInterface::_makeEnv(void)
 	}
 	env[this->_envMap.size()] = NULL;
 	return env;
+}
+
+char				**CommonGatewayInterface::_makeArgv(void)
+{
+	size_t		scriptLength = this->_envMap["SCRIPT_NAME"].length()-12;
+	std::string	str = this->_envMap["SCRIPT_NAME"].substr(12, scriptLength);
+	const char	*cscript = str.c_str();
+	char		**argv = new char *[2];
+	argv[0] = new char[scriptLength];
+	argv[0] = strcpy(argv[0], cscript);
+	argv[1] = NULL;
+	return argv;
+}
+
+std::string			&CommonGatewayInterface::_makeBody(int *fds)
+{	
+	int ret = 1;
+	while (ret)
+	{
+		char	buffer[BUFFER_SIZE] = {0};
+		ret = read(fds[0], buffer, BUFFER_SIZE-1);
+		this->_body += buffer;
+	}
+	close(fds[0]);
+	close(fds[1]);
+	return this->_body;
 }
