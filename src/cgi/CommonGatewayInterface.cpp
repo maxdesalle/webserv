@@ -6,7 +6,7 @@
 /*   By: ldelmas <ldelmas@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/09 14:38:27 by mdesalle          #+#    #+#             */
-/*   Updated: 2022/03/08 13:42:55 by ldelmas          ###   ########.fr       */
+/*   Updated: 2022/03/08 13:53:40 by ldelmas          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -89,7 +89,6 @@ unsigned int		CommonGatewayInterface::ExecuteCGIScript(void)
 	if (status/256 == 1)
 		return 500;
 	this->_makeBody(fds);
-	close(fds[1]);
 	delete[] argv[0];
 	delete[] argv;
 	return (200);
