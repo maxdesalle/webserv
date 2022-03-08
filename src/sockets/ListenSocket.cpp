@@ -6,7 +6,7 @@
 /*   By: tderwedu <tderwedu@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/24 16:13:15 by tderwedu          #+#    #+#             */
-/*   Updated: 2022/03/07 19:26:42 by tderwedu         ###   ########.fr       */
+/*   Updated: 2022/03/08 00:58:05 by tderwedu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,7 +17,7 @@
 ** ================================ Constructors ===============================
 */
 
-ListenSocket::ListenSocket(t_poll& pollfd): _pollfd(pollfd) {}
+// ListenSocket::ListenSocket(t_poll& pollfd): _pollfd(pollfd) {}
 ListenSocket::ListenSocket(int port, in_addr_t addr, t_poll& pollfd)
 : _pollfd(pollfd), _port(port), _addr(addr), _sockState(OPEN)
 {}
@@ -36,7 +36,6 @@ ListenSocket&	ListenSocket::operator=(ListenSocket const& rhs)
 		_addr = rhs._addr;
 		_pollfd = rhs._pollfd;
 		_sockState = rhs._sockState;
-		std::cout << "After Operator=\n"<< *this << std::endl; // TODO:remove
 	}
 	return *this;
 }
@@ -88,7 +87,6 @@ void						ListenSocket::sockClose(void)
 {
 	shutdown(_pollfd.fd, SHUT_RDWR);
 	close(_pollfd.fd);
-	_pollfd.fd = -1;
 	_sockState = CLOSED;
 }
 

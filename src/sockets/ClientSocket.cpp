@@ -6,7 +6,7 @@
 /*   By: tderwedu <tderwedu@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/23 10:55:52 by tderwedu          #+#    #+#             */
-/*   Updated: 2022/03/07 18:46:17 by tderwedu         ###   ########.fr       */
+/*   Updated: 2022/03/08 01:02:27 by tderwedu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,7 +47,7 @@ ClientSocket::ClientSocket(int port, in_addr_t addr, t_poll& pollfd, Webserv& we
 }
 
 ClientSocket::ClientSocket(ClientSocket const& rhs)
-	: ListenSocket(rhs._pollfd), _webserv(rhs._webserv), _request(), _response(),
+	: ListenSocket(rhs), _webserv(rhs._webserv), _request(), _response(),
 	_server(NULL), _location(NULL), _reqState(WAITING)
 {
 	*this = rhs;
@@ -214,7 +214,7 @@ void			ClientSocket::_sendResponse(int code, bool close)
 		code = _findLocation();
 	// Keep the first HTTP error code
 	code = (code ? code : ret);
-	/* ___debug_request___(code); */
+	___debug_request___(code);
 	// Check if the connection should be closed after sending the response
 	std::string	cxn = _request.getField("Connection");
 	close = close || !ci_equal(cxn, "keep-alive") || isErrorCodeClose(code);
@@ -224,6 +224,9 @@ void			ClientSocket::_sendResponse(int code, bool close)
 	else
 		buff = &_response.GetHeaderResponse(_request, const_cast<Location&>(*_location)); //TODO: THIS IS UGLY!!!!
 	// TODO: DEBUG ==> How to handle 'Response' error ? !!!
+/* =================== */
+// std::string buff = "HTTP/1.1 200 OK\r\nDate: Mon, 07 Mar 2022 20:57:59 GM\r\nServer: WEBSERV/1.0\r\nContent-Length: 92\r\n\r\n<!DOCTYPE html>\n<html>\n<head>\n        <title>Nothing To See!</title>\n</head>\n<body>\n</body>\n</html>\n\r\n";
+/* =================== */
 	if (buff->empty())
 	{
 		___debug_msg___("RESPONSE EMPTY !");

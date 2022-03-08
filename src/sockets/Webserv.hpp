@@ -6,7 +6,7 @@
 /*   By: tderwedu <tderwedu@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/01/31 10:19:04 by tderwedu          #+#    #+#             */
-/*   Updated: 2022/03/07 19:05:42 by tderwedu         ###   ########.fr       */
+/*   Updated: 2022/03/08 01:03:14 by tderwedu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,6 +15,8 @@
 
 # include <iostream>
 # include <vector>
+# include <deque>
+# include <list>
 # include <map>
 # include <set>
 
@@ -33,7 +35,7 @@
 
 typedef std::vector<ListenSocket>		vecListSock;
 typedef vecListSock::iterator			itlistSock;
-typedef std::deque<ClientSocket>		lstClieSock;
+typedef std::list<ClientSocket>			lstClieSock;
 typedef lstClieSock::iterator			itClieSock;
 
 class Webserv

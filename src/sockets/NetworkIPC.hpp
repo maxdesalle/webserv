@@ -6,7 +6,7 @@
 /*   By: tderwedu <tderwedu@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/01/31 16:05:34 by tderwedu          #+#    #+#             */
-/*   Updated: 2022/02/24 13:02:01 by tderwedu         ###   ########.fr       */
+/*   Updated: 2022/03/08 00:50:20 by tderwedu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,7 +26,6 @@
 # include <typeinfo>
 # include <poll.h>
 # include <vector>
-# include <deque>
 
 typedef struct sockaddr_in	t_sockaddr_in;	// Used by `bind` function
 typedef struct sockaddr		t_sockaddr;		// Used by `bind` function

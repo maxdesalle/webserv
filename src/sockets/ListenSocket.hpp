@@ -6,7 +6,7 @@
 /*   By: tderwedu <tderwedu@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/24 16:13:26 by tderwedu          #+#    #+#             */
-/*   Updated: 2022/03/04 10:28:49 by tderwedu         ###   ########.fr       */
+/*   Updated: 2022/03/08 01:02:55 by tderwedu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,7 +29,6 @@ protected:
 	sockState		_sockState;
 
 public:
-	ListenSocket(t_poll& pollfd);
 	ListenSocket(ListenSocket const& rhs);
 	ListenSocket(int port, in_addr_t addr, t_poll& pollfd);
 	virtual ~ListenSocket(void);
