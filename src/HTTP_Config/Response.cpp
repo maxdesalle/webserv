@@ -6,7 +6,7 @@
 /*   By: tderwedu <tderwedu@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/01/26 14:58:24 by ldelmas           #+#    #+#             */
-/*   Updated: 2022/03/08 16:56:19 by mdesalle         ###   ########.fr       */
+/*   Updated: 2022/03/08 17:32:24 by mdesalle         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -218,8 +218,8 @@ std::string const		&Response::GetHeaderResponse(Request &HTTPRequest, Location &
 	}
 
 	GenerateResponse(Body, &StatusCode);
-	std::cout << _HeaderResponse << std::endl;
 
+	std::cout << _HeaderResponse << std::endl;
 	return (_HeaderResponse);
 }
 
@@ -232,7 +232,10 @@ std::string	Response::GetErrorPagePath(Location &HTTPLocation, unsigned int *Sta
 		if (*StatusCode < 1000)
 			return (HTTPLocation.GetRoot() + HTTPLocation.GetPath() + HTTPLocation.GetErrorPage().at(*StatusCode));
 		else
-			return (HTTPLocation.GetRoot() + HTTPLocation.GetErrorPage().at(*StatusCode / 10));
+		{
+			*StatusCode /= 10;
+			return (HTTPLocation.GetRoot() + HTTPLocation.GetErrorPage().at(*StatusCode));
+		}
 	}
 	catch (...)
 	{
@@ -279,8 +282,6 @@ std::string Response::CheckIfFileOrFolder(Request &HTTPRequest, Location &HTTPLo
 	struct				stat s;
 	std::string			Path = HTTPLocation.GetRoot() + HTTPRequest.getTarget();
 
-	std::cout << Path << std::endl;
-
 	if (stat(Path.c_str(),&s) == 0)
 	{
 		if (s.st_mode & S_IFREG)
@@ -306,7 +307,7 @@ std::string const &Response::CheckIfFileOrFolderConst(Request &HTTPRequest, Loca
 			return (GetHeaderResponse(HTTPRequest, HTTPLocation));
 		else if (s.st_mode & S_IFDIR)
 		{
-			if (HTTPRequest.getTarget()[HTTPRequest.getTarget().size()] != '/')
+			if (HTTPRequest.getTarget()[HTTPRequest.getTarget().size()] != '/' && HTTPRequest.getMethod() == "GET")
 				return (Handle301Redirect(HTTPRequest));
 			return (GetHeaderResponse(HTTPRequest, HTTPLocation));
 		}
@@ -423,6 +424,7 @@ bool		Response::FindValueInVector(std::vector<std::string> Haystack, std::string
 std::string	Response::HandleDELETERequest(Request &HTTPRequest, Location &HTTPLocation, unsigned int *StatusCode)
 {
 	std::string	Path = HTTPLocation.GetRoot() + HTTPRequest.getTarget();
+
 
 	if (FindValueInVector(HTTPLocation.GetLimitExcept(), "DELETE") == false)
 	{
