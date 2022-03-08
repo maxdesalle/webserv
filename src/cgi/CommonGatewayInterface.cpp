@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   CommonGatewayInterface.cpp                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ldelmas <ldelmas@student.42.fr>            +#+  +:+       +#+        */
+/*   By: tderwedu <tderwedu@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/09 14:38:27 by mdesalle          #+#    #+#             */
-/*   Updated: 2022/03/07 22:03:53 by ldelmas          ###   ########.fr       */
+/*   Updated: 2022/03/08 09:37:02 by tderwedu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,7 +45,8 @@ std::string			CommonGatewayInterface::FindValueInMap(const std::map<const std::s
 unsigned int		CommonGatewayInterface::ExecuteCGIScript(void)
 {
 	size_t		scriptLength = this->_envMap["SCRIPT_NAME"].length()-12;
-	const char	*cscript = this->_envMap["SCRIPT_NAME"].substr(12, scriptLength).c_str();
+	std::string	tmp = this->_envMap["SCRIPT_NAME"].substr(12, scriptLength);
+	const char	*cscript = tmp.c_str();
 	char		script[scriptLength];
 	strcpy(script, cscript);
 	char		*argv[2] = {script, NULL};
@@ -93,6 +94,6 @@ char *const			*CommonGatewayInterface::_makeEnv(void)
 		env[i] = new char[var.length()];
 		strcpy(env[i], cstr);
 	}
-	env[this->_envMap.size()] = nullptr;
+	env[this->_envMap.size()] = NULL;
 	return env;
 }
