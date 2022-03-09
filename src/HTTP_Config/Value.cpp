@@ -6,7 +6,7 @@
 /*   By: ldelmas <ldelmas@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/23 16:26:58 by ldelmas           #+#    #+#             */
-/*   Updated: 2022/03/01 16:17:38 by ldelmas          ###   ########.fr       */
+/*   Updated: 2022/03/09 11:48:17 by ldelmas          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -238,7 +238,7 @@ bool	Value::_checkTransferEncoding(std::string &value)
 
 /*
 	Will return 'true' anytime since if the type or subtype is wrong the value will
-	just be changed to an understandable form. Most of the time a wrong content-type
+	just be changed to an understandable form. Most of the time an unrecognized content-type
 	will be transformed to "application/octet-stream" except if the type has already
 	been acknowledged as "text/". If so the subtype will always be changed to "plain"
 	if not recognized. 
@@ -251,7 +251,9 @@ bool	Value::_checkContentType(std::string &value)
 	for (size_t i = 0; i < value.length(); i++)
 		value[i] = std::tolower(value[i]);
 	std::string const &type = Value::_getType(value);
-	if (type == value)
+	if (type != "" && type != "text" && type != "application")
+		return false;
+	else if (type == value)
 		return true;
 	else if (type == "" || value[type.length()] != '/')
 	{

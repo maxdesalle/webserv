@@ -6,7 +6,7 @@
 /*   By: ldelmas <ldelmas@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/01/26 14:59:17 by ldelmas           #+#    #+#             */
-/*   Updated: 2022/03/07 21:57:28 by ldelmas          ###   ########.fr       */
+/*   Updated: 2022/03/09 11:50:53 by ldelmas          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -360,7 +360,12 @@ int				Request::_parseHeaderField(std::string const &line)
 		if (!str.compare(name))
 		{
 			std::string s = trimSpaces(line.substr(str.length()));
-			if (Header::_parseFieldValue(s) != s || !Value::checkFieldValue(name, s))
+			if (Header::_parseFieldValue(s) != s)
+				return 400;
+			bool checkVal = Value::checkFieldValue(name, s);
+			if (!checkVal && name == "Content-Type")
+				return 415;
+			else if (!checkVal)
 				return 400;
 			else if (this->_headerFields[Request::_fieldNames[j]][0])
 				this->_headerFields[Request::_fieldNames[j]] += ',' + s;
