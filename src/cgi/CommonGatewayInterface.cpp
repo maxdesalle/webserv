@@ -6,7 +6,7 @@
 /*   By: ldelmas <ldelmas@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/09 14:38:27 by mdesalle          #+#    #+#             */
-/*   Updated: 2022/03/08 13:53:40 by ldelmas          ###   ########.fr       */
+/*   Updated: 2022/03/09 11:55:43 by ldelmas          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -115,9 +115,8 @@ char *const			*CommonGatewayInterface::_makeEnv(void)
 
 char				**CommonGatewayInterface::_makeArgv(void)
 {
-	size_t		scriptLength = this->_envMap["SCRIPT_NAME"].length()-12;
-	std::string	str = this->_envMap["SCRIPT_NAME"].substr(12, scriptLength);
-	const char	*cscript = str.c_str();
+	size_t		scriptLength = this->_envMap["SCRIPT_NAME"].length();
+	const char	*cscript = this->_envMap["SCRIPT_NAME"].c_str();
 	char		**argv = new char *[2];
 	argv[0] = new char[scriptLength];
 	argv[0] = strcpy(argv[0], cscript);
