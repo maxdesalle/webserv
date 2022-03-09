@@ -3,12 +3,13 @@
 /*                                                        :::      ::::::::   */
 /*   Response.cpp                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: tderwedu <tderwedu@student.s19.be>         +#+  +:+       +#+        */
+/*   By: mdesalle <mdesalle@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2023/01/26 14:58:24 by ldelmas           #+#    #+#             */
-/*   Updated: 2022/03/09 17:01:02 by mdesalle         ###   ########.fr       */
+/*   Created: 2022/03/09 17:07:23 by mdesalle          #+#    #+#             */
+/*   Updated: 2022/03/09 17:07:30 by mdesalle         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
+
 
 #include "Response.hpp"
 
@@ -358,8 +359,9 @@ std::string const &Response::CheckIfFileOrFolderConst(Request &HTTPRequest, Loca
 
 std::string	Response::HandleGETCGIRequest(Request &HTTPRequest, Location &HTTPLocation, unsigned int *StatusCode)
 {
-	if (!HTTPLocation.GetPass().empty())
+	if (HTTPLocation.GetPass().empty())
 	{
+	std::cout << "DUH" << std::endl;
 		*StatusCode = 500;
 		return (ReturnError(HTTPRequest, HTTPLocation, StatusCode));
 	}
@@ -376,7 +378,7 @@ std::string	Response::HandleGETRequestFile(Request &HTTPRequest, Location &HTTPL
 	std::ifstream		File(Path.c_str());
 	std::stringstream	Buffer;
 
-	if (this->_headerFields["Content-Type"] == "application/x-www-form-urlencoded")
+	if (HTTPRequest.getField("Content-Type").substr(0, 11) == "application")
 		return (HandleGETCGIRequest(HTTPRequest, HTTPLocation, StatusCode));
 
 	if (FindValueInVector(HTTPLocation.GetLimitExcept(), "GET") == false)
