@@ -6,7 +6,7 @@
 /*   By: tderwedu <tderwedu@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/01/26 14:58:24 by ldelmas           #+#    #+#             */
-/*   Updated: 2022/03/09 12:20:32 by mdesalle         ###   ########.fr       */
+/*   Updated: 2022/03/09 14:38:56 by mdesalle         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -239,6 +239,7 @@ std::string	Response::GetErrorPagePath(Location &HTTPLocation, unsigned int *Sta
 	}
 	catch (...)
 	{
+		*StatusCode = 500;
 		return ("");
 	}
 }
@@ -368,6 +369,7 @@ std::string	Response::HandleGETRequest(Request &HTTPRequest, Location &HTTPLocat
 	std::string			Path = GetPath(HTTPRequest, HTTPLocation, i);
 	std::ifstream		File(Path.c_str());
 	std::stringstream	Buffer;
+
 
 	if (FindValueInVector(HTTPLocation.GetLimitExcept(), "GET") == false)
 	{
