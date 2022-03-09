@@ -6,7 +6,7 @@
 /*   By: tderwedu <tderwedu@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/01/26 14:58:24 by ldelmas           #+#    #+#             */
-/*   Updated: 2022/03/09 14:38:56 by mdesalle         ###   ########.fr       */
+/*   Updated: 2022/03/09 15:51:10 by mdesalle         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -205,6 +205,7 @@ std::string const		&Response::GetHeaderResponse(Request &HTTPRequest, Location &
 	std::string			Body;
 	unsigned int		StatusCode = 0;
 
+
 	if (HTTPRequest.getMethod() == "GET")
 		Body = CheckIfFileOrFolder(HTTPRequest, HTTPLocation, &StatusCode);
 	else if (HTTPRequest.getMethod() == "POST")
@@ -234,7 +235,9 @@ std::string	Response::GetErrorPagePath(Location &HTTPLocation, unsigned int *Sta
 		else
 		{
 			*StatusCode /= 10;
-			return (HTTPLocation.GetRoot() + HTTPLocation.GetErrorPage().at(*StatusCode));
+			Path = HTTPLocation.GetRoot() + HTTPLocation.GetErrorPage().at(*StatusCode);
+			*StatusCode *= 10;
+			return (Path);
 		}
 	}
 	catch (...)
@@ -250,6 +253,8 @@ std::string Response::ReturnError(Request &HTTPRequest, Location &HTTPLocation, 
 	std::string			Path = GetErrorPagePath(HTTPLocation, StatusCode);
 	std::ifstream		File(Path.c_str());
 	std::stringstream	Buffer;
+
+	std::cout << Path << std::endl;
 
 	if (!File)
 	{
@@ -426,6 +431,7 @@ std::string	Response::HandleCGIPOSTRequest(Request &HTTPRequest, unsigned int *S
 	CommonGatewayInterface	CGI(HTTPRequest);
 
 	*StatusCode = CGI.ExecuteCGIScript();
+	std::cout << *StatusCode << std::endl;
 	return ("");
 }
 
