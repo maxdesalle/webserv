@@ -6,7 +6,7 @@
 /*   By: tderwedu <tderwedu@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/01/26 14:58:24 by ldelmas           #+#    #+#             */
-/*   Updated: 2022/03/08 17:32:24 by mdesalle         ###   ########.fr       */
+/*   Updated: 2022/03/09 12:20:32 by mdesalle         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -315,12 +315,28 @@ std::string const &Response::CheckIfFileOrFolderConst(Request &HTTPRequest, Loca
 	return (GetHeaderResponse(HTTPRequest, HTTPLocation));
 }
 
+std::string	Response::HandleGETCGIRequest(Request &HTTPRequest, Location &HTTPLocation, unsigned int *StatusCode)
+{
+	if (!HTTPLocation.GetPass().empty())
+	{
+		*StatusCode = 500;
+		return (ReturnError(HTTPRequest, HTTPLocation, StatusCode));
+	}
+
+	CommonGatewayInterface	CGI(HTTPRequest);
+	*StatusCode = CGI.ExecuteCGIScript();
+	return ("");
+}
+
 std::string	Response::HandleGETRequestFile(Request &HTTPRequest, Location &HTTPLocation, unsigned int *StatusCode)
 {
 	std::string			FileContent;
 	std::string			Path = HTTPLocation.GetRoot() + HTTPRequest.getTarget();
 	std::ifstream		File(Path.c_str());
 	std::stringstream	Buffer;
+
+	if (this->_headerFields["Content-Type"] == "application/x-www-form-urlencoded")
+		return (HandleGETCGIRequest(HTTPRequest, HTTPLocation, StatusCode));
 
 	if (FindValueInVector(HTTPLocation.GetLimitExcept(), "GET") == false)
 	{
