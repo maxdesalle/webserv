@@ -6,7 +6,7 @@
 /*   By: tderwedu <tderwedu@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/01/26 14:58:24 by ldelmas           #+#    #+#             */
-/*   Updated: 2022/03/09 15:51:10 by mdesalle         ###   ########.fr       */
+/*   Updated: 2022/03/09 17:01:02 by mdesalle         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -200,11 +200,48 @@ std::string const		&Response::GenerateResponse(std::string &Body, unsigned int *
 	return (_HeaderResponse);
 }
 
+bool					Response::RedirectionExists(Location &HTTPLocation)
+{
+	try
+	{
+		if (!HTTPLocation.GetReturn().at(301).empty())
+			return (true);
+	}
+	catch (...)
+	{
+		return (false);
+	}
+	return (false);
+}
+
+std::string	const	&Response::HandleRedirection(Request &HTTPRequest, Location &HTTPLocation)
+{
+	size_t	Split;
+	std::string		RootURL = HTTPLocation.GetReturn().at(301);
+
+	if ((Split = RootURL.find('$')) != std::string::npos)
+	{
+		RootURL = RootURL.substr(0, Split);
+		RootURL += HTTPRequest.getTarget();
+	}
+
+	_HeaderResponse = "HTTP/1.1 301 Moved Permanently\r\n";
+	_HeaderResponse += "Date: " + GetCurrentFormattedTime() + "\r\n";
+	_HeaderResponse += "Server: " + GetServerVersion() + "\r\n";
+	_HeaderResponse += "Location: " + RootURL + "\r\n";
+	_HeaderResponse += "Content-Length: 0\r\n\r\n";
+
+	std::cout << _HeaderResponse << std::endl;
+	return (_HeaderResponse);
+}
+
 std::string const		&Response::GetHeaderResponse(Request &HTTPRequest, Location &HTTPLocation)
 {
 	std::string			Body;
 	unsigned int		StatusCode = 0;
 
+	if (RedirectionExists(HTTPLocation))
+		return (HandleRedirection(HTTPRequest, HTTPLocation));
 
 	if (HTTPRequest.getMethod() == "GET")
 		Body = CheckIfFileOrFolder(HTTPRequest, HTTPLocation, &StatusCode);
@@ -253,8 +290,6 @@ std::string Response::ReturnError(Request &HTTPRequest, Location &HTTPLocation, 
 	std::string			Path = GetErrorPagePath(HTTPLocation, StatusCode);
 	std::ifstream		File(Path.c_str());
 	std::stringstream	Buffer;
-
-	std::cout << Path << std::endl;
 
 	if (!File)
 	{

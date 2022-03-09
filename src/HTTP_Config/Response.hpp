@@ -6,7 +6,7 @@
 /*   By: tderwedu <tderwedu@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/01/26 11:48:07 by ldelmas           #+#    #+#             */
-/*   Updated: 2022/03/09 12:19:13 by mdesalle         ###   ########.fr       */
+/*   Updated: 2022/03/09 16:58:10 by mdesalle         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -49,6 +49,8 @@ class Response : public Header
 		std::string			GetServerVersion(void);
 		std::string			GetPath(Request &HTTPRequest, Location &HTTPLocation, unsigned int i);
 		std::string			HandleGETCGIRequest(Request &HTTPRequest, Location &HTTPLocation, unsigned int *StatusCode);
+		std::string	const	&HandleRedirection(Request &HTTPRequest, Location &HTTPLocation);
+		bool				RedirectionExists(Location &HTTPLocation);
 		std::string			GetCurrentFormattedTime(void);
 		std::string			FindStatusMessage(unsigned int *StatusCode);
 		std::string	const	&Handle301Redirect(Request &HTTPRequest);
