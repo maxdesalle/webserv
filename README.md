@@ -25,6 +25,7 @@ A lightweight HTTP server implemented in C++.
 ## Change Request
 - [ ] Setup the same port multiple times should not work (at least with the same server names).
 - [ ] Check method is valid or not.
+- [ ] One READ or WRITE per client per select!
 
 ## Ressources
 
