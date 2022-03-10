@@ -1,0 +1,69 @@
+body {
+	margin-left: 10%;
+	margin-right: 10%;
+	color: rgb(255, 255, 255);
+	background: rgb(19, 19, 19);
+}
+
+h1 {
+	display: flex;
+	align-items: center;
+	flex-direction: column;
+	font-family: 'futura', 'Noto Sans', 'Arial', 'Helvetica', 'Sans serif';
+	letter-spacing: 0.06em;
+}
+
+#container {
+	display: flex;					/* establish flex container */
+	flex-direction: row;			/* make main axis horizontal (default setting) */
+	justify-content: space-around;
+	/* height: 350px; */
+}
+
+img {
+	background: rgb(210, 210, 210);
+}
+
+.card {
+	flex: 1 1 0px;
+	box-shadow: 0 8px 12px 0 rgba(245, 240, 240, 0.2);
+	max-width: 350px;
+	/* min-width: 100px; */
+	/* margin: auto; */
+	text-align: center;
+	color: rgb(0, 0, 0);
+	background: rgb(236, 236, 236);
+	margin: 1.8em;
+}
+
+a {
+	text-decoration: none;
+	font-size: 22px;
+	color: rgb(238, 178, 12);
+}
+
+a:hover {
+	opacity: 0.9;
+}
+
+.email {
+	border: none;
+	outline: 0;
+	display: inline-block;
+	color: white;
+	background-color: rgb(12, 12, 12);
+	text-align: center;
+	cursor: pointer;
+	width: 100%;
+	padding-top: 8px;
+	padding-bottom: 8px;
+	font-size: 16px;
+}
+
+footer {
+	align-items: center;
+	justify-content: center;
+	display: flex;
+	flex-direction: column;
+	color: rgb(236, 236, 236);
+}
