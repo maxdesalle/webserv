@@ -6,7 +6,7 @@
 /*   By: tderwedu <tderwedu@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/23 10:58:04 by tderwedu          #+#    #+#             */
-/*   Updated: 2022/03/08 01:03:55 by tderwedu         ###   ########.fr       */
+/*   Updated: 2022/03/10 15:08:02 by tderwedu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,7 +37,7 @@ inline static void	___debug_header___(char const *header)
 
 inline static void	___debug_section___(char const *section)
 {
-#ifdef DEBUG
+#ifdef DEBUG2
 		std::cout << "\e[33m###################   "<< section << "\e[0m" << std::endl;
 #else
 	(void)section;
@@ -46,7 +46,7 @@ inline static void	___debug_section___(char const *section)
 
 inline static void	___debug_poll___(void)
 {
-#ifdef DEBUG
+#ifdef DEBUG2
 		std::cout << "\e[34m ####################################\n" \
 					<< " #   Poll, Waiting For An Revents   #\n" \
 					<< " #################################### \e[0m" << std::endl;
@@ -55,7 +55,7 @@ inline static void	___debug_poll___(void)
 
 inline void		Webserv::___debug_before_poll___(void) const
 {
-#ifdef DEBUG
+#ifdef DEBUG2
 		std::cout	<< "\n[Listen: " << _nbrPorts << "; Client: " \
 					<< _fdInUse - _nbrPorts << "; _fdInUse:" << _fdInUse\
 					<< "; PollMax:" << _nbrPollMax << "]"<< std::endl;
@@ -64,7 +64,7 @@ inline void		Webserv::___debug_before_poll___(void) const
 
 inline void		Webserv::___debug_after_poll___(void) const
 {
-#ifdef DEBUG
+#ifdef DEBUG2
 	size_t	nbr_l = __getNbrPollClient();
 	size_t	nbr_c = __getNbrPollListen();
 
