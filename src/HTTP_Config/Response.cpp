@@ -6,7 +6,7 @@
 /*   By: mdesalle <mdesalle@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/09 17:07:23 by mdesalle          #+#    #+#             */
-/*   Updated: 2022/03/09 17:07:30 by mdesalle         ###   ########.fr       */
+/*   Updated: 2022/03/10 11:49:07 by mdesalle         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -361,7 +361,6 @@ std::string	Response::HandleGETCGIRequest(Request &HTTPRequest, Location &HTTPLo
 {
 	if (HTTPLocation.GetPass().empty())
 	{
-	std::cout << "DUH" << std::endl;
 		*StatusCode = 500;
 		return (ReturnError(HTTPRequest, HTTPLocation, StatusCode));
 	}
@@ -443,7 +442,7 @@ std::string	Response::HandlePOSTRequest(Request &HTTPRequest, Location &HTTPLoca
 		return (ReturnError(HTTPRequest, HTTPLocation, StatusCode));
 	}
 
-	if (HTTPLocation.isCgi() == true)
+	if (HTTPRequest.getField("Content-Type").substr(0, 11) == "application")
 		return (HandleCGIPOSTRequest(HTTPRequest, StatusCode));
 	else
 		return (HandleNormalPostRequest(HTTPRequest, HTTPLocation, StatusCode));
@@ -459,6 +458,7 @@ std::string	Response::HandleNormalPostRequest(Request &HTTPRequest, Location &HT
 		*StatusCode = 500;
 		return (ReturnError(HTTPRequest, HTTPLocation, StatusCode));
 	}
+	*StatusCode = 200;
 	File << HTTPRequest.getBody();
 	return ("");
 }
@@ -468,7 +468,6 @@ std::string	Response::HandleCGIPOSTRequest(Request &HTTPRequest, unsigned int *S
 	CommonGatewayInterface	CGI(HTTPRequest);
 
 	*StatusCode = CGI.ExecuteCGIScript();
-	std::cout << *StatusCode << std::endl;
 	return ("");
 }
 
