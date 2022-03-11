@@ -6,7 +6,7 @@
 /*   By: ldelmas <ldelmas@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/09 14:38:27 by mdesalle          #+#    #+#             */
-/*   Updated: 2022/03/09 16:21:14 by ldelmas          ###   ########.fr       */
+/*   Updated: 2022/03/11 11:41:41 by ldelmas          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -63,16 +63,16 @@ unsigned int		CommonGatewayInterface::ExecuteCGIScript(void)
 {
 	char		**argv = this->_makeArgv();
 	int			fds[2];
-	size_t		Pid = fork();
+	size_t		Pid;
 
-	if (Pid < 0 || pipe(fds) < 0)
-		return 500;
-	else if (Pid == 0)
+	if (pipe(fds) < 0 || (Pid = fork()) < 0)
+	 	return 500;
+	else if (!Pid)
 	{
-		if (dup2(fds[1], STDOUT_FILENO))
+		if (dup2(fds[1], STDOUT_FILENO) < 0)
 			exit(EXIT_FAILURE);
-		close(fds[1]);
 		close(fds[0]);
+		close(fds[1]);
 		char *const *env = this->_makeEnv();
 		execve(argv[0], argv, env);
 		close(STDOUT_FILENO);
@@ -87,7 +87,7 @@ unsigned int		CommonGatewayInterface::ExecuteCGIScript(void)
 	int status;
 	waitpid(0, &status, 0);
 	if (status/256 == 1)
-		return 500;
+		return 404;
 	this->_makeBody(fds);
 	delete[] argv[0];
 	delete[] argv;
@@ -126,7 +126,9 @@ char				**CommonGatewayInterface::_makeArgv(void)
 
 std::string			&CommonGatewayInterface::_makeBody(int *fds)
 {	
+	close(fds[1]);
 	int ret = 1;
+	lseek(fds[0], 0, SEEK_SET);
 	while (ret)
 	{
 		char	buffer[BUFFER_SIZE] = {0};
@@ -134,6 +136,6 @@ std::string			&CommonGatewayInterface::_makeBody(int *fds)
 		this->_body += buffer;
 	}
 	close(fds[0]);
-	close(fds[1]);
+	wait(0);
 	return this->_body;
 }
