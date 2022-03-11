@@ -6,7 +6,7 @@
 /*   By: mdesalle <mdesalle@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/11 13:57:28 by mdesalle          #+#    #+#             */
-/*   Updated: 2022/03/11 13:57:34 by mdesalle         ###   ########.fr       */
+/*   Updated: 2022/03/11 14:10:53 by mdesalle         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -385,7 +385,7 @@ std::string	Response::HandleGETCGIRequest(Request &HTTPRequest, Location &HTTPLo
 
 	CommonGatewayInterface	CGI(HTTPRequest);
 	*StatusCode = CGI.ExecuteCGIScript();
-	return ("");
+	return (CGI.getBody());
 }
 
 std::string	Response::HandleGETRequestFile(Request &HTTPRequest, Location &HTTPLocation, unsigned int *StatusCode)
