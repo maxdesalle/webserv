@@ -18,7 +18,8 @@ A lightweight HTTP server implemented in C++.
  - [ ] Create a default error page
  - [ ] Create a POC static website
  - [ ] Create a POC CGI content
- - [ ] Update default config file to match POC website
+ - [x] Update default config file to match POC website
+ - [x] Refactoring: move headers file to `include`
 
 ---
 

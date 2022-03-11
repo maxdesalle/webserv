@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-	<title>Webserv Team</title>
+	<title>Webserv</title>
 	<link rel="stylesheet" href="style.css">
 	<link rel="icon" type="image/x-icon" href="favicon.ico">
 </head>
@@ -9,16 +9,6 @@
 	<div>
 		<h1>Welcome! </h1>
 	</div>
-	
-	<!-- Navigation Menu -->
-	<!-- <div>
-	<ul class="navbar">
-		<li><a href="index.html">Home page</a></li>
-		<li><a href="error/">Error pages</a></li>
-		<li><a href="uploads/">Uploads</a></li>
-		<li><a href="delete/">Deletable files</a></li>
-		<li><a href="autoindex/">Auto Index</a></li>
-	</ul> -->
 
 	<!-- Main content -->
 	</div>
@@ -26,28 +16,38 @@
 		<h3>Other Web Pages</h3>
 	<ul>
 		<li>
-			<a href="error_page">error_page/</a> <br>
-			Where default error page can be found.
+			<a href="error_page/">error/</a> <br>
+			Where default error pages can be found. <br>
 		</li>
 		<li>
-			<a href="Uploads">Uploads/</a> <br>
-			Where the POST method is allowed.
+			<a href="uploads/">uploads/</a> <br>
+			Where the POST method is allowed. <br>
+			Auto-index is enabled.
 		</li>
 		<li>
 			<a href="delete/">delete/</a> <br>
-			Where the DELETE method is allowed.
+			Where the DELETE method is allowed. <br>
+			Auto-index is enabled.
 		</li>
 		<li>
 			<a href="autoindex/">autoindex/</a> <br>
-			Where the auto-index is enabled.
+			Where the auto-index is enabled BUT there is an index file! <br>
+			The "index.html" is to be used with siege.
+		</li>
+		<li>
+			<a href="autoindex/curl.html">cURL's</a> cheatsheet<br>
+		</li>
+		<li>
+			<form action="" method="post">
+				<button>To generate an error 405</button>
+			</form>
 		</li>
 	</ul>
-
+</div>
 	<!-- Footer -->
 	<footer>
 		Webserv<br>
 		<small>by ldelmas, mdesalle and tderwedu</small>
 	</footer>
 </body>
-
 </html>

@@ -1,0 +1,82 @@
+body {
+	margin-left: 10%;
+	margin-right: 10%;
+	background: rgb(245, 245, 245);
+	font-family: "Source Sans Pro", sans-serif;
+	font-weight: 400;
+	line-height: 1.7;
+	letter-spacing: 0.05em;
+	color: rgb(61, 61, 61);;
+}
+
+h1 {
+	display: flex;
+	align-items: center;
+	flex-direction: column;
+	font-size:128px;
+	font-family: 'open sans';
+	font-style: normal;
+	color: rgb(118, 236, 236);
+	margin-bottom: 0em;
+	/* letter-spacing: 0.06em; */
+}
+
+h2 {
+	font-size:36px;
+	font-family: 'open sans', 'futura', 'Arial', 'Helvetica', 'Sans serif';
+	color: rgb(84, 84, 84);
+	text-transform: uppercase;
+	margin-bottom: 0em;
+}
+
+h3 {
+	font-family: 'open sans', 'futura', 'Arial', 'Helvetica', 'Sans serif';
+	font-size:24px;
+	color: rgb(61, 61, 61);
+	font-weight: 1;
+	text-transform: uppercase;
+	margin-top: 0em;
+	margin-bottom: 0em;
+}
+
+ul {
+	margin-top: 0em;
+	margin-bottom: 1em;
+}
+
+footer {
+	border-top: thin dotted;
+	margin-top: 2cm;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	flex-direction: column;
+	color: rgb(35, 199, 199);
+	font-family: 'open sans', 'futura', 'Arial', 'Helvetica', 'Sans serif';
+}
+
+.dark {
+	width: 100%;
+	color: rgb(0, 0, 0);
+	background: rgb(51, 51, 51);
+	padding-left: -11em;
+	margin-left: 10%;
+	margin-right: 10%;
+}
+
+code {
+	line-height: 3;
+	border-radius: 0.5em;
+	padding: .9em 3em .9em 3em;
+	color: rgb(19, 19, 19);
+	background-color: rgb(118, 248, 248);
+	white-space: nowrap;
+}
+
+#inline {
+	line-height: 0;
+	border-radius: 0.3em;
+	padding: 0.2em 0.4em 0.15em 0.4em;
+	color: rgb(255, 255, 250);
+	background-color: rgb(110, 110, 110);
+}

@@ -2,7 +2,7 @@ body {
 	padding-left: 11em;
 	margin-left: 10%;
 	margin-right: 10%;
-	background: rgb(255, 255, 255);
+	background: rgb(245, 245, 245);
 	font-family: "Source Sans Pro", sans-serif;
 	font-weight: 400;
 	line-height: 1.7;
@@ -30,6 +30,22 @@ h3 {
 	/* letter-spacing: 0.06em; */
 }
 
+#title {
+
+	font-size:200px;
+	font-family: 'open sans';
+	font-style: normal;
+	color: rgb(35, 199, 199);
+}
+
+#comment {
+
+	font-size:36px;
+	font-family: 'open sans';
+	font-style: normal;
+	color: rgb(119, 119, 119);
+}
+
 a {
 	text-decoration: none;
 	color: rgb(24, 90, 90);
@@ -52,29 +68,26 @@ footer {
 	font-family: 'open sans', 'futura', 'Arial', 'Helvetica', 'Sans serif';
 }
 
-ul.navbar {
-	list-style-type: none;
-	padding: 2em;
-	margin: 2em;
-	position: absolute;
-	top: 3cm;
-	left: 1em;
-	width: 9em
+.dark {
+	width: 100%;
+	color: rgb(0, 0, 0);
+	background: rgb(51, 51, 51);
+	padding-left: -11em;
+	margin-left: 10%;
+	margin-right: 10%;
 }
-ul.navbar li {
-	background: rgb(0, 186, 188);
-	margin-top: 7rem;
-	margin-bottom: 2rem;
-	letter-spacing: .2rem;
-	margin: 0.5em 0;
-	padding: 0.5em;
+/*
+.dark.u2 {
+	color: rgb(255, 255, 255);
 }
-ul.navbar a {
-	font-family: 'open sans', 'futura', 'Arial', 'Helvetica', 'Sans serif';
-	font-size:16px;
-	font-weight: 600;
-	color: rgb(27, 27, 27);
+.dark.u3 {
+	color: rgb(255, 255, 255);
 }
-ul.navbar a:hover {
-	color: rgb(30, 145, 145);
+.dark.u4 {
+	color: rgb(255, 255, 255);
+}
+ */
+code{
+	color: rgb(19, 19, 19);
+	background-color: rgb(236, 236, 236);
 }
