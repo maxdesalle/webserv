@@ -24,7 +24,16 @@ A lightweight HTTP server implemented in C++.
 
 ## Change Request
 - [ ] Setup the same port multiple times should not work (at least with the same server names).
-- [ ] Check method is valid or not.
+- [x] Check method is valid or not.
+- [ ] One READ or WRITE per client per select!
+- [x] Error: Host header with port number is not working
+- [ ] Error: `POST` with an invalid target => `500 Internal Server Error`
+- [ ] Error: when `POST` is not allowed => `500 Internal Server Error`
+- [ ] Error: `DELETE` with an invalid target => `500 Internal Server Error`
+- [ ] Error: when `DELETE` is not allowed => `500 Internal Server Error`
+- [ ] Error: `GET` with an invalid target in `LOCATION` where `POST` is allowed => `500 Internal Server Error`
+- [ ] Error: `error_page` does not work with error `405`
+- [ ] Error: `error_page` does not work with error `500`
 
 ## Ressources
 

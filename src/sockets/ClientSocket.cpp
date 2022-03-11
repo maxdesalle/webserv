@@ -6,7 +6,7 @@
 /*   By: ldelmas <ldelmas@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/23 10:55:52 by tderwedu          #+#    #+#             */
-/*   Updated: 2022/03/10 12:13:43 by ldelmas          ###   ########.fr       */
+/*   Updated: 2022/03/11 11:44:02 by ldelmas          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -225,9 +225,6 @@ void			ClientSocket::_sendResponse(int code, bool close)
 	else
 		buff = &_response.GetHeaderResponse(_request, const_cast<Location&>(*_location)); //TODO: THIS IS UGLY!!!!
 	// TODO: DEBUG ==> How to handle 'Response' error ? !!!
-/* =================== */
-// std::string buff = "HTTP/1.1 200 OK\r\nDate: Mon, 07 Mar 2022 20:57:59 GM\r\nServer: WEBSERV/1.0\r\nContent-Length: 92\r\n\r\n<!DOCTYPE html>\n<html>\n<head>\n        <title>Nothing To See!</title>\n</head>\n<body>\n</body>\n</html>\n\r\n";
-/* =================== */
 	if (buff->empty())
 	{
 		___debug_msg___("RESPONSE EMPTY !");
@@ -258,6 +255,9 @@ int				ClientSocket::_findServer(void)
 	struct in_addr				addr;
 	char						ip[INET_ADDRSTRLEN];
 	std::vector<Server const*>	*matchingServers;
+	size_t						pos;
+	int							port;
+	char						*ptr;
 
 	std::string const&			host = _request.getField("Host");
 	addr.s_addr = _addr;
@@ -273,11 +273,26 @@ int				ClientSocket::_findServer(void)
 	{
 		for (size_t j = 0; j < (matchingServers->at(i))->GetServerNames().size(); ++j)
 		{
-			if (host == (matchingServers->at(i))->GetServerNames()[j])
+			pos = host.find((matchingServers->at(i))->GetServerNames()[j]);
+			if (pos != std::string::npos)
 			{
-				_server = matchingServers->at(i);
-				delete matchingServers;
-				return 0;
+				pos = host.find(':');
+				if (pos == std::string::npos)
+				{
+					_server = matchingServers->at(i);
+					delete matchingServers;
+					return 0;
+				}
+				else
+				{
+					port = strtol(host.c_str() + ++pos, &ptr, 10);
+					if (port == _port)
+					{
+						_server = matchingServers->at(i);
+						delete matchingServers;
+						return 0;
+					}
+				}
 			}
 		}
 	}

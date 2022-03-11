@@ -6,7 +6,7 @@
 /*   By: ldelmas <ldelmas@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/09 17:07:23 by mdesalle          #+#    #+#             */
-/*   Updated: 2022/03/10 12:25:34 by ldelmas          ###   ########.fr       */
+/*   Updated: 2022/03/11 11:43:51 by ldelmas          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -163,21 +163,27 @@ std::string	const	&Response::GetBadRequestResponse(Request &HTTPRequest, Locatio
 	std::string			Body;
 	std::ostringstream	oss;
 
-	oss << std::dec << StatusCode;
 	if (StatusCode == 301)
 		return (CheckIfFileOrFolderConst(HTTPRequest, HTTPLocation));
-	Body = ReturnError(HTTPRequest, HTTPLocation, &StatusCode);
+	if (HTTPRequest.getMethod() != "GET" && HTTPRequest.getMethod() != "POST" && HTTPRequest.getMethod() != "DELETE")
+	{
+		StatusCode = 405;
+		Body = "Method Not Allowed";
+	}
+	else
+		Body = ReturnError(HTTPRequest, HTTPLocation, &StatusCode);
+	oss << std::dec << StatusCode;
 	_HeaderResponse = "HTTP/1.1 " + oss.str() + " " + FindStatusMessage(&StatusCode)+ "\r\n";
 	_HeaderResponse += "Date: " + GetCurrentFormattedTime() + "\r\n";
 	_HeaderResponse += "Server: " + GetServerVersion() + "\r\n";
-	_HeaderResponse += Body;
 
 	oss.str("");
 	oss.clear();
 	oss << std::dec << Body.size();
 	_HeaderResponse += "Content-Length: " + oss.str() + "\r\n\r\n";
+	_HeaderResponse += Body;
 
-	std::cout << _HeaderResponse << std::endl;
+	// std::cout << _HeaderResponse << std::endl;
 	return (_HeaderResponse);
 }
 
@@ -232,7 +238,7 @@ std::string	const	&Response::HandleRedirection(Request &HTTPRequest, Location &H
 	_HeaderResponse += "Location: " + RootURL + "\r\n";
 	_HeaderResponse += "Content-Length: 0\r\n\r\n";
 
-	std::cout << _HeaderResponse << std::endl;
+	// std::cout << _HeaderResponse << std::endl;
 	return (_HeaderResponse);
 }
 
@@ -240,6 +246,12 @@ std::string const		&Response::GetHeaderResponse(Request &HTTPRequest, Location &
 {
 	std::string			Body;
 	unsigned int		StatusCode = 0;
+
+	if (HTTPRequest.getMethod() != "GET" && HTTPRequest.getMethod() != "POST" && HTTPRequest.getMethod() != "DELETE")
+	{
+		StatusCode = 405;
+		Body = ReturnError(HTTPRequest, HTTPLocation, &StatusCode);
+	}
 
 	if (RedirectionExists(HTTPLocation))
 		return (HandleRedirection(HTTPRequest, HTTPLocation));
@@ -250,15 +262,10 @@ std::string const		&Response::GetHeaderResponse(Request &HTTPRequest, Location &
 		Body = HandlePOSTRequest(HTTPRequest, HTTPLocation, &StatusCode);
 	else if (HTTPRequest.getMethod() == "DELETE")
 		Body = HandleDELETERequest(HTTPRequest, HTTPLocation, &StatusCode);
-	else
-	{
-		StatusCode = 405; // Error 405: Method Not Allowed
-		Body = ReturnError(HTTPRequest, HTTPLocation, &StatusCode);
-	}
 
 	GenerateResponse(Body, &StatusCode);
 
-	std::cout << _HeaderResponse << std::endl;
+	// std::cout << _HeaderResponse << std::endl;
 	return (_HeaderResponse);
 }
 

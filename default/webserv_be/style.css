@@ -1,0 +1,80 @@
+body {
+	padding-left: 11em;
+	margin-left: 10%;
+	margin-right: 10%;
+	background: rgb(255, 255, 255);
+	font-family: "Source Sans Pro", sans-serif;
+	font-weight: 400;
+	line-height: 1.7;
+	letter-spacing: 0.05em;
+	color: rgb(119, 119, 119);;
+}
+
+h1 {
+	display: flex;
+	align-items: center;
+	flex-direction: column;
+	font-family: 'open sans', 'futura', 'Arial', 'Helvetica', 'Sans serif';
+	font-size:64px;
+	font-weight: 100;
+	color: rgb(35, 199, 199);
+	margin-bottom: 1cm;
+	/* letter-spacing: 0.06em; */
+}
+
+h3 {
+	font-family: 'open sans', 'futura', 'Arial', 'Helvetica', 'Sans serif';
+	font-size:18px;
+	color: rgb(51, 51, 51);
+	font-weight: 1;
+	/* letter-spacing: 0.06em; */
+}
+
+a {
+	text-decoration: none;
+	color: rgb(24, 90, 90);
+	font-weight: 100;
+}
+
+a:hover {
+	opacity: 0.95;
+	color: rgb(35, 199, 199);
+}
+
+footer {
+	border-top: thin dotted;
+	margin-top: 2cm;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	flex-direction: column;
+	color: rgb(35, 199, 199);
+	font-family: 'open sans', 'futura', 'Arial', 'Helvetica', 'Sans serif';
+}
+
+ul.navbar {
+	list-style-type: none;
+	padding: 2em;
+	margin: 2em;
+	position: absolute;
+	top: 3cm;
+	left: 1em;
+	width: 9em
+}
+ul.navbar li {
+	background: rgb(0, 186, 188);
+	margin-top: 7rem;
+	margin-bottom: 2rem;
+	letter-spacing: .2rem;
+	margin: 0.5em 0;
+	padding: 0.5em;
+}
+ul.navbar a {
+	font-family: 'open sans', 'futura', 'Arial', 'Helvetica', 'Sans serif';
+	font-size:16px;
+	font-weight: 600;
+	color: rgb(27, 27, 27);
+}
+ul.navbar a:hover {
+	color: rgb(30, 145, 145);
+}
