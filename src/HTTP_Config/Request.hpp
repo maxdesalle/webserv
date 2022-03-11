@@ -6,7 +6,7 @@
 /*   By: ldelmas <ldelmas@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/01/26 11:47:16 by ldelmas           #+#    #+#             */
-/*   Updated: 2022/03/07 21:57:27 by ldelmas          ###   ########.fr       */
+/*   Updated: 2022/03/10 12:15:47 by ldelmas          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -78,7 +78,7 @@ class Request : public Header
 		void				setTarget(std::string &target);
 		void				setVersion(std::string &version);
 		void				setBody(std::string &body);
-		void				setCGIServerVars(Location &CGILocation, in_addr_t addr);
+		void				setCGIServerVars(Location const &CGILocation, in_addr_t addr);
 
 		int					parseRequest(std::string const &request);
 		void				printRequest(void);

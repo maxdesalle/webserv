@@ -6,12 +6,14 @@
 /*   By: ldelmas <ldelmas@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/09 13:44:34 by ldelmas           #+#    #+#             */
-/*   Updated: 2022/03/09 14:17:55 by ldelmas          ###   ########.fr       */
+/*   Updated: 2022/03/11 11:37:53 by ldelmas          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <string>
 #include <unistd.h>
+
+// #include <iostream>
 
 int main(int ac, char **av, char **env)
 {
@@ -19,6 +21,7 @@ int main(int ac, char **av, char **env)
 	exec[1] = nullptr;
 	for (int i = 0; env[i]; i++)
 	{
+		// std::cout << env[i] << std::endl;
 		if (std::string(env[i]).substr(0, 16) == "PATH_TRANSLATED=")
 		{
 			std::string sexec = std::string(env[i]).substr(16);

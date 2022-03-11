@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   ClientSocket.cpp                                   :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: tderwedu <tderwedu@student.s19.be>         +#+  +:+       +#+        */
+/*   By: ldelmas <ldelmas@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/23 10:55:52 by tderwedu          #+#    #+#             */
-/*   Updated: 2022/03/10 15:31:46 by tderwedu         ###   ########.fr       */
+/*   Updated: 2022/03/11 11:44:02 by ldelmas          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -219,6 +219,7 @@ void			ClientSocket::_sendResponse(int code, bool close)
 	std::string	cxn = _request.getField("Connection");
 	close = close || !ci_equal(cxn, "keep-alive") || isErrorCodeClose(code);
 	// TODO: add close to paramters !!!
+	_request.setCGIServerVars(*_location, getIP());
 	if (code)
 		buff = &_response.GetBadRequestResponse(_request, const_cast<Location&>(*_location), code); //TODO: THIS IS UGLY!!!!
 	else

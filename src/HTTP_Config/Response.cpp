@@ -3,13 +3,12 @@
 /*                                                        :::      ::::::::   */
 /*   Response.cpp                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: tderwedu <tderwedu@student.s19.be>         +#+  +:+       +#+        */
+/*   By: mdesalle <mdesalle@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2022/03/09 17:07:23 by mdesalle          #+#    #+#             */
-/*   Updated: 2022/03/11 13:52:50 by mdesalle         ###   ########.fr       */
+/*   Created: 2022/03/11 13:57:28 by mdesalle          #+#    #+#             */
+/*   Updated: 2022/03/11 13:57:34 by mdesalle         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
-
 
 #include "Response.hpp"
 

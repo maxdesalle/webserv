@@ -6,7 +6,7 @@
 /*   By: ldelmas <ldelmas@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/01/26 14:59:17 by ldelmas           #+#    #+#             */
-/*   Updated: 2022/03/09 11:50:53 by ldelmas          ###   ########.fr       */
+/*   Updated: 2022/03/10 14:12:03 by ldelmas          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,7 +27,7 @@ std::string const Request::_fieldNames[32] = {"Cache-Control", "Expect", "Host",
 										"Received", "Warning", "Keep-Alive",
 										"Upgrade", "Content-Type", ""};
 
-std::string const Request::_cgiSerVarNames[ENV_NUM] = {"SERVER_SOFTWARE", "SERVER-NAME",
+std::string const Request::_cgiSerVarNames[ENV_NUM] = {"SERVER_SOFTWARE", "SERVER_NAME",
 												"GATEWAY_INTERFACE", "SERVER_PROTOCOL",
 												"SERVER_PORT", "REQUEST_METHOD",
 												"PATH_INFO", "PATH_TRANSLATED",
@@ -152,7 +152,7 @@ void				Request::setBody(std::string &body)
 		-What happens if wrong PORT, wrong server name, wrong path?
 */
 
-void				Request::setCGIServerVars(Location &CGILocation, in_addr_t addr)
+void				Request::setCGIServerVars(Location const &CGILocation, in_addr_t addr)
 {
 	this->_cgiSerVars["SERVER_SOFTWARE"] = "WEBSERV/1.0";
 	this->_cgiSerVars["SERVER_NAME"] = Header::_parseHost(this->_headerFields["Host"]);
@@ -163,17 +163,15 @@ void				Request::setCGIServerVars(Location &CGILocation, in_addr_t addr)
 	this->_cgiSerVars["REQUEST_METHOD"] = this->_method;
 	this->_cgiSerVars["PATH_INFO"] = Header::_parseAbsPath(this->_target);
 	this->_cgiSerVars["PATH_TRANSLATED"] = CGILocation.GetRoot() + this->_cgiSerVars["PATH_INFO"];
-	this->_cgiSerVars["SCRIPT_NAME"] = CGILocation.GetPass();
 	if (this->_cgiSerVars["PATH_INFO"][this->_cgiSerVars["PATH_INFO"].length()] == '?')
 		this->_cgiSerVars["QUERY_STRING"] = Header::_parseQuery(this->_target, this->_cgiSerVars["PATH_INFO"].length()+1);
-	this->_cgiSerVars["REMOTE_HOST"] = this->_headerFields["Referer"];
 	// in_addr_t addr = Client.getIP();
 	char buff[16];
 	inet_ntop(AF_INET, &addr, buff, INET_ADDRSTRLEN);
 	this->_cgiSerVars["REMOTE_ADDR"] = buff;
 	this->_cgiSerVars["CONTENT_TYPE"] = this->_headerFields["Content-Type"];
 	this->_cgiSerVars["CONTENT_LENGTH"] = this->_headerFields["Content-Length"];
-
+	this->_cgiSerVars["SCRIPT_NAME"] = CGILocation.GetPass();
 
 	/*IF SERVER DOESN'T SUPPORT USER AUTHENTIFICATION*/
 	this->_cgiSerVars["AUTH_TYPE"] = "";
