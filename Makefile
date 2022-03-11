@@ -6,7 +6,7 @@
 #    By: tderwedu <tderwedu@student.s19.be>         +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2022/01/18 10:08:26 by maxdesall         #+#    #+#              #
-#    Updated: 2022/03/10 12:26:42 by mdesalle         ###   ########.fr        #
+#    Updated: 2022/03/11 13:40:39 by mdesalle         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -16,7 +16,7 @@ DEBUG			:= 0
 # =============================== COMPILATION ================================ #
 
 CC			:= clang++
-CFLAGS		:= -Wall -Wextra -Werror -std=c++98 #-fsanitize=address -g3
+CFLAGS		:= -Wall -Wextra -Werror -std=c++98 -fsanitize=address -g3
 
 # ================================== FILES =================================== #
 

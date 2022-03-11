@@ -6,7 +6,7 @@
 /*   By: tderwedu <tderwedu@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/09 17:07:23 by mdesalle          #+#    #+#             */
-/*   Updated: 2022/03/10 13:05:52 by tderwedu         ###   ########.fr       */
+/*   Updated: 2022/03/11 13:52:50 by mdesalle         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -183,7 +183,7 @@ std::string	const	&Response::GetBadRequestResponse(Request &HTTPRequest, Locatio
 	_HeaderResponse += "Content-Length: " + oss.str() + "\r\n\r\n";
 	_HeaderResponse += Body;
 
-	// std::cout << _HeaderResponse << std::endl;
+	std::cout << _HeaderResponse << std::endl;
 	return (_HeaderResponse);
 }
 
@@ -238,7 +238,6 @@ std::string	const	&Response::HandleRedirection(Request &HTTPRequest, Location &H
 	_HeaderResponse += "Location: " + RootURL + "\r\n";
 	_HeaderResponse += "Content-Length: 0\r\n\r\n";
 
-	// std::cout << _HeaderResponse << std::endl;
 	return (_HeaderResponse);
 }
 
@@ -265,13 +264,19 @@ std::string const		&Response::GetHeaderResponse(Request &HTTPRequest, Location &
 
 	GenerateResponse(Body, &StatusCode);
 
-	// std::cout << _HeaderResponse << std::endl;
+	std::cout << _HeaderResponse << std::endl;
 	return (_HeaderResponse);
 }
 
 std::string	Response::GetErrorPagePath(Location &HTTPLocation, unsigned int *StatusCode)
 {
 	std::string	Path;
+
+	if (&HTTPLocation == nullptr)
+	{
+		*StatusCode = 500;
+		return ("");
+	}
 
 	try
 	{
@@ -288,7 +293,14 @@ std::string	Response::GetErrorPagePath(Location &HTTPLocation, unsigned int *Sta
 	catch (...)
 	{
 		*StatusCode = 500;
-		return ("");
+		try
+		{
+			return (HTTPLocation.GetRoot() + HTTPLocation.GetPath() + HTTPLocation.GetErrorPage().at(*StatusCode));
+		}
+		catch (...)
+		{
+			return ("");
+		}
 	}
 }
 
