@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   CGI.cpp                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ldelmas <ldelmas@student.42.fr>            +#+  +:+       +#+        */
+/*   By: tderwedu <tderwedu@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/09 13:44:34 by ldelmas           #+#    #+#             */
-/*   Updated: 2022/03/11 11:37:53 by ldelmas          ###   ########.fr       */
+/*   Updated: 2022/03/11 15:26:44 by tderwedu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,7 +18,7 @@
 int main(int ac, char **av, char **env)
 {
 	char	*exec[2];
-	exec[1] = nullptr;
+	exec[1] = NULL;
 	for (int i = 0; env[i]; i++)
 	{
 		// std::cout << env[i] << std::endl;

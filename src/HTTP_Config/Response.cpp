@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Response.cpp                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mdesalle <mdesalle@student.s19.be>         +#+  +:+       +#+        */
+/*   By: tderwedu <tderwedu@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/11 13:57:28 by mdesalle          #+#    #+#             */
-/*   Updated: 2022/03/11 14:10:53 by mdesalle         ###   ########.fr       */
+/*   Updated: 2022/03/11 16:43:58 by tderwedu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -271,11 +271,11 @@ std::string	Response::GetErrorPagePath(Location &HTTPLocation, unsigned int *Sta
 {
 	std::string	Path;
 
-	if (&HTTPLocation == nullptr)
-	{
-		*StatusCode = 500;
-		return ("");
-	}
+	// if (HTTPLocation == NULL)			tderwedu: ne compile pas car une reference ne peut pas etre NULL
+	// {
+	// 	*StatusCode = 500;
+	// 	return ("");
+	// }
 
 	try
 	{
@@ -432,7 +432,7 @@ std::string	Response::HandleGETRequest(Request &HTTPRequest, Location &HTTPLocat
 
 	if (FindValueInVector(HTTPLocation.GetLimitExcept(), "GET") == false)
 	{
-		*StatusCode = 403;
+		*StatusCode = 405;
 		return (ReturnError(HTTPRequest, HTTPLocation, StatusCode));
 	}
 
@@ -456,7 +456,7 @@ std::string	Response::HandlePOSTRequest(Request &HTTPRequest, Location &HTTPLoca
 {
 	if (FindValueInVector(HTTPLocation.GetLimitExcept(), "POST") == false)
 	{
-		*StatusCode = 403;
+		*StatusCode = 405;
 		return (ReturnError(HTTPRequest, HTTPLocation, StatusCode));
 	}
 
@@ -506,7 +506,7 @@ std::string	Response::HandleDELETERequest(Request &HTTPRequest, Location &HTTPLo
 
 	if (FindValueInVector(HTTPLocation.GetLimitExcept(), "DELETE") == false)
 	{
-		*StatusCode = 403;
+		*StatusCode = 405;
 		return (ReturnError(HTTPRequest, HTTPLocation, StatusCode));
 	}
 

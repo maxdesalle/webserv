@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   ClientSocket.cpp                                   :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ldelmas <ldelmas@student.42.fr>            +#+  +:+       +#+        */
+/*   By: tderwedu <tderwedu@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/23 10:55:52 by tderwedu          #+#    #+#             */
-/*   Updated: 2022/03/11 11:44:02 by ldelmas          ###   ########.fr       */
+/*   Updated: 2022/03/11 15:40:49 by tderwedu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -154,7 +154,7 @@ int				ClientSocket::_getRequest(void)
 	n = recv(_pollfd.fd, _buff, RECV_BUFF_SIZE, 0);
 	_buff[n] = '\0';
 #ifdef DEBUG
-	/* std::cout << "\e[31m-------------------\n\e[0m" << _buff << "\e[31m-------------------\e[0m" << std::endl; */
+	std::cout << "\e[31m-------------------\n\e[0m" << _buff << "\e[31m-------------------\e[0m" << std::endl;
 #endif
 	_timer.start();
 	std::string		buff = std::string(_buff);
@@ -327,10 +327,9 @@ int				ClientSocket::_findLocation(void)
 		}
 	}
 	_location = candidate;
+	std::cout << "PATH: " << path << std::endl; //TODO:remove
 	if (!_location)
 		return 404;
-	else if (path[path.size() - 1] != '/')
-		return 301;
 	else
 		return 0;
 }

@@ -6,7 +6,7 @@
 /*   By: tderwedu <tderwedu@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/23 10:58:04 by tderwedu          #+#    #+#             */
-/*   Updated: 2022/03/10 15:08:02 by tderwedu         ###   ########.fr       */
+/*   Updated: 2022/03/11 15:38:14 by tderwedu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -118,23 +118,6 @@ void				Webserv::runWebserv(void)
 {
 	while (true)
 	{
-	// 	/*----------------------------*/
-	// 	std::cout << "RunWebserv: " << std::endl;
-	// 	size_t	j = 0;
-	// 	std::cout << "pollFd: ";
-	// 	while (j < _nbrPollMax)
-	// 	{
-	// 		std::cout << _pollfd[j].fd << " ";
-	// 		++j;
-	// 	}
-	// 	std::cout << "\e[31m";
-	// 	while (j <= (_nbrPollMax + 5))
-	// 	{
-	// 		std::cout << _pollfd[j].fd << " ";
-	// 		++j;
-	// 	}
-	// 	std::cout << "\e[0m" << std::endl;
-	// /*----------------------------*/
 		___debug_before_poll___();
 		___debug_poll___();
 		_nbrPoll = poll(_pollfd, _nbrPollMax + 1, 0);
@@ -143,7 +126,7 @@ void				Webserv::runWebserv(void)
 		_checkListenSockets();
 		___debug_section___("Client Sockets");
 		_checkClientSockets();
-#ifdef DEBUG
+#ifdef DEBUG2
 		sleep(1);
 #endif
 	}
@@ -182,7 +165,7 @@ void				Webserv::_setNetworkSockets(void)
 		}
 	}
 	_nbrPorts = ports.size();
-#ifdef DEBUG
+#ifdef DEBUG2
 	std::cout << " Listening Sockets: \e[31m" << _nbrPorts << "\e[0m" << std::endl;
 #endif
 	for (std::set<int>::const_iterator port = ports.begin(); port != ports.end(); ++port)
@@ -231,7 +214,7 @@ void				Webserv::_addNetworkSocket(int port, int nbr_queue)
 	_listenSocks.push_back(ListenSocket(port, htonl(INADDR_ANY), _pollfd[_nbrPollMax]));
 	++_nbrPollMax;
 	++_fdInUse;
-#ifdef DEBUG
+#ifdef DEBUG2
 	std::cout << _listenSocks.back() << std::endl;
 #endif
 }
@@ -256,7 +239,7 @@ void				Webserv::_checkListenSockets(void)
 		}
 		else if (revents & POLLIN)
 		{
-#ifdef DEBUG
+#ifdef DEBUG2
 			std::cout << "\e[35m ===> New connection from PORT: \e[0m" << it->getPort() << std::endl;
 #endif
 			socklen = sizeof(sockaddr);
@@ -268,7 +251,7 @@ void				Webserv::_checkListenSockets(void)
 			fcntl(fd_client, F_SETFL, O_NONBLOCK);
 			addr = sockaddr.sin_addr.s_addr;
 			_clientSocks.push_back(ClientSocket(it->getPort(), addr, _pushPollfd(fd_client), *this));
-#ifdef DEBUG
+#ifdef DEBUG2
 			std::cout << _clientSocks.back() << std::endl;
 #endif
 			if (_fdInUse == open_max)
@@ -284,7 +267,7 @@ void				Webserv::_checkClientSockets(void)
 	client = _clientSocks.begin();
 	while (client != _clientSocks.end())
 	{
-#ifdef DEBUG
+#ifdef DEBUG2
 		std::cout << *client << std::endl;
 #endif
 		if (client->handleSocket(_fdInUse == open_max))
