@@ -6,7 +6,7 @@
 /*   By: tderwedu <tderwedu@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/23 10:58:04 by tderwedu          #+#    #+#             */
-/*   Updated: 2022/03/11 15:38:14 by tderwedu         ###   ########.fr       */
+/*   Updated: 2022/03/11 16:52:41 by tderwedu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -290,8 +290,6 @@ t_poll&				Webserv::_pushPollfd(int fd_client)
 	{
 		while (_pollfd[i].fd > 0)
 			++i;
-		if (i >= _nbrPollMax)
-			std::cout << "ERROR ERRO ERROR ERROR" << std::endl; // TODO: remove
 	}
 	_pollfd[i].fd = fd_client;
 	_pollfd[i].events = POLL_FLAGS;
@@ -302,7 +300,6 @@ t_poll&				Webserv::_pushPollfd(int fd_client)
 
 void				Webserv::_popPollfd(t_poll&	pollfd)
 {
-	// int	tmp = pollfd.fd; // TODO:remove
 	pollfd.fd = -1;
 	--_fdInUse;
 	while (_pollfd[_nbrPollMax - 1].fd < 1)

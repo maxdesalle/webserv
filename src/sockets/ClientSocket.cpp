@@ -6,7 +6,7 @@
 /*   By: tderwedu <tderwedu@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/23 10:55:52 by tderwedu          #+#    #+#             */
-/*   Updated: 2022/03/11 15:40:49 by tderwedu         ###   ########.fr       */
+/*   Updated: 2022/03/11 16:52:26 by tderwedu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -175,7 +175,7 @@ int				ClientSocket::_getRequest(void)
 	if (_sockState == HALF_CLOSED)
 		return 0;
 	ret = _request.parseRequest(buff);
-	if (ret == 100) // TODO: improve
+	if (ret == 100)
 	{
 		_sendContinue();
 		return 0;
@@ -218,7 +218,7 @@ void			ClientSocket::_sendResponse(int code, bool close)
 	// Check if the connection should be closed after sending the response
 	std::string	cxn = _request.getField("Connection");
 	close = close || !ci_equal(cxn, "keep-alive") || isErrorCodeClose(code);
-	// TODO: add close to paramters !!!
+	// TODO: add close to parameters !!!
 	_request.setCGIServerVars(*_location, getIP());
 	if (code)
 		buff = &_response.GetBadRequestResponse(_request, const_cast<Location&>(*_location), code); //TODO: THIS IS UGLY!!!!
@@ -327,7 +327,6 @@ int				ClientSocket::_findLocation(void)
 		}
 	}
 	_location = candidate;
-	std::cout << "PATH: " << path << std::endl; //TODO:remove
 	if (!_location)
 		return 404;
 	else
