@@ -14,9 +14,9 @@ A lightweight HTTP server implemented in C++.
 	- [x] Send response for `Expect: 100-continue`
 	- [x] Check allowed trailer header-fields
 	- [x] `getPath()` return a `std::string const&`
-	- [ ] Clean `utils.?pp`
- - [ ] Create a default error page
- - [ ] Create a POC static website
+	- [x] Clean `utils.?pp`
+ - [x] Create default error pages
+ - [x] Create a POC static website
  - [ ] Create a POC CGI content
  - [x] Update default config file to match POC website
  - [x] Refactoring: move headers file to `include`
@@ -28,13 +28,13 @@ A lightweight HTTP server implemented in C++.
 - [x] Check method is valid or not.
 - [ ] One READ or WRITE per client per select!
 - [x] Error: Host header with port number is not working
-- [ ] Error: `POST` with an invalid target => `500 Internal Server Error`
-- [ ] Error: when `POST` is not allowed => `500 Internal Server Error`
+- [x] Error: `POST` with an invalid target => `500 Internal Server Error`
+- [x] Error: when `POST` is not allowed => `500 Internal Server Error`
 - [ ] Error: `DELETE` with an invalid target => `500 Internal Server Error`
-- [ ] Error: when `DELETE` is not allowed => `500 Internal Server Error`
+- [x] Error: when `DELETE` is not allowed => `500 Internal Server Error`
 - [ ] Error: `GET` with an invalid target in `LOCATION` where `POST` is allowed => `500 Internal Server Error`
-- [ ] Error: `error_page` does not work with error `405`
-- [ ] Error: `error_page` does not work with error `500`
+- [x] Error: `error_page` does not work with error `405`
+- [x] Error: `error_page` does not work with error `500`
 
 ## Ressources
 
