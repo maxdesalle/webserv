@@ -37,9 +37,9 @@ A lightweight HTTP server implemented in C++.
 - [x] Error: `error_page` does not work with error `405`
 - [x] Error: `error_page` does not work with error `500`
 - [x] One READ or WRITE per client per select!
-- [ ] Error: `DELETE` with an invalid target => `500 Internal Server Error`
-- [ ] Error: `GET` with an invalid target in `LOCATION` where `POST` is allowed => `500 Internal Server Error`
-- [ ] Setup the same port multiple times should not work (at least with the same server names).
+- [x] Error: `DELETE` with an invalid target => `500 Internal Server Error`
+- [x] Error: `GET` with an invalid target in `LOCATION` where `POST` is allowed => `500 Internal Server Error`
+- [x] Setup the same port multiple times should not work (at least with the same server names).
 
 ## Testing
  - [ ] Check for memory leaks
