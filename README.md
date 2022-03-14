@@ -17,24 +17,45 @@ A lightweight HTTP server implemented in C++.
 	- [x] Clean `utils.?pp`
  - [x] Create default error pages
  - [x] Create a POC static website
- - [ ] Create a POC CGI content
  - [x] Update default config file to match POC website
  - [x] Refactoring: move headers file to `include`
+ - [x] Default error pages
+ - [ ] Create a POC CGI content
+ - [ ] BIG FAT HUGE REFACTORING
+	 - [ ] gather header files in `include`
+	 - [ ] remove useless files directories
+ - [ ] Make POC website ready to use
 
 ---
 
 ## Change Request
-- [ ] Setup the same port multiple times should not work (at least with the same server names).
 - [x] Check method is valid or not.
-- [ ] One READ or WRITE per client per select!
 - [x] Error: Host header with port number is not working
 - [x] Error: `POST` with an invalid target => `500 Internal Server Error`
 - [x] Error: when `POST` is not allowed => `500 Internal Server Error`
-- [ ] Error: `DELETE` with an invalid target => `500 Internal Server Error`
 - [x] Error: when `DELETE` is not allowed => `500 Internal Server Error`
-- [ ] Error: `GET` with an invalid target in `LOCATION` where `POST` is allowed => `500 Internal Server Error`
 - [x] Error: `error_page` does not work with error `405`
 - [x] Error: `error_page` does not work with error `500`
+- [x] One READ or WRITE per client per select!
+- [ ] Error: `DELETE` with an invalid target => `500 Internal Server Error`
+- [ ] Error: `GET` with an invalid target in `LOCATION` where `POST` is allowed => `500 Internal Server Error`
+- [ ] Setup the same port multiple times should not work (at least with the same server names).
+
+## Testing
+ - [ ] Check for memory leaks
+ - [ ] Check with `server_names` defined or not.
+		- [x] defined
+		- [ ] NOT defined
+ - [ ] Check with default server without `default_server` directive.
+ - [ ] Check limit client body size.
+ - [ ] CGI
+	- [ ] GET request
+	- [ ] POST request
+	- [ ] DELETE request
+ - [ ] Try the 42's `tester`
+ - [ ] Try the 42's `cgi_tester`
+ - [ ] upload some file and get it back
+ - [ ] Try with a methode which is NOT allowed
 
 ## Ressources
 

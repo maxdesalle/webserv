@@ -6,7 +6,7 @@
 /*   By: tderwedu <tderwedu@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/01/26 11:48:07 by ldelmas           #+#    #+#             */
-/*   Updated: 2022/03/09 16:58:10 by mdesalle         ###   ########.fr       */
+/*   Updated: 2022/03/14 11:08:09 by tderwedu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,6 +23,7 @@
 # include <sstream>
 # include <string>
 # include <time.h>
+# include <map>
 # include "Header.hpp"
 # include "Request.hpp"
 # include "../cgi/CommonGatewayInterface.hpp"
