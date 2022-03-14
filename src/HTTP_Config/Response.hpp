@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Response.hpp                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: tderwedu <tderwedu@student.s19.be>         +#+  +:+       +#+        */
+/*   By: mdesalle <mdesalle@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2022/01/26 11:48:07 by ldelmas           #+#    #+#             */
-/*   Updated: 2022/03/14 13:45:00 by mdesalle         ###   ########.fr       */
+/*   Created: 2022/03/14 13:56:38 by mdesalle          #+#    #+#             */
+/*   Updated: 2022/03/14 13:56:40 by mdesalle         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,6 +23,7 @@
 # include <sstream>
 # include <string>
 # include <time.h>
+# include <map>
 # include "Header.hpp"
 # include "Request.hpp"
 # include "../cgi/CommonGatewayInterface.hpp"

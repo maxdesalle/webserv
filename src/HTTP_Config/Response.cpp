@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Response.cpp                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: tderwedu <tderwedu@student.s19.be>         +#+  +:+       +#+        */
+/*   By: mdesalle <mdesalle@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2022/03/11 13:57:28 by mdesalle          #+#    #+#             */
-/*   Updated: 2022/03/14 13:50:20 by mdesalle         ###   ########.fr       */
+/*   Created: 2022/03/14 13:56:52 by mdesalle          #+#    #+#             */
+/*   Updated: 2022/03/14 13:57:58 by mdesalle         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -272,59 +272,41 @@ std::string const		&Response::GetHeaderResponse(Request &HTTPRequest, Location *
 
 std::string	Response::GetErrorPagePath(Location *HTTPLocation, unsigned int *StatusCode)
 {
-	std::string	Path;
+	std::string										Path;
+	std::map<size_t, std::string> const&			error_pages = HTTPLocation->GetErrorPage();
+	std::map<size_t, std::string>::const_iterator	it;
 
-	if (HTTPLocation == NULL)
-	{
-		*StatusCode = 500;
-	 	return ("");
-	}
-
-	try
-	{
-		if (*StatusCode < 1000)
-			return (HTTPLocation->GetRoot() + HTTPLocation->GetPath() + HTTPLocation->GetErrorPage().at(*StatusCode));
-		else
-		{
-			*StatusCode /= 10;
-			Path = HTTPLocation->GetRoot() + HTTPLocation->GetErrorPage().at(*StatusCode);
-			*StatusCode *= 10;
-			return (Path);
-		}
-	}
-	catch (...)
-	{
-		*StatusCode = 500;
-		try
-		{
-			return (HTTPLocation->GetRoot() + HTTPLocation->GetPath() + HTTPLocation->GetErrorPage().at(*StatusCode));
-		}
-		catch (...)
-		{
-			return ("");
-		}
-	}
+	it = error_pages.find(*StatusCode);
+	if (it != error_pages.end())
+		return HTTPLocation->GetRoot() + HTTPLocation->GetPath() + it->second;
+	else
+		return std::string();
 }
 
 std::string Response::ReturnError(Request &HTTPRequest, Location *HTTPLocation, unsigned int *StatusCode)
 {
 	std::string			FileContent;
-	std::string			Path = GetErrorPagePath(HTTPLocation, StatusCode);
-	std::ifstream		File(Path.c_str());
 	std::stringstream	Buffer;
+	std::string			Path = GetErrorPagePath(HTTPLocation, StatusCode);
+	std::string			error;
 
-	if (!File)
-	{
-		if (*StatusCode == 500)
-			return ("500 Internal Server Error");
-		else if (*StatusCode >= 1000)
-			*StatusCode = 500;
-		else
-			*StatusCode *= 10;
-		return (ReturnError(HTTPRequest, HTTPLocation, StatusCode));
+	(void)HTTPRequest;
+	if (!Path.empty()) {
+		std::ifstream		File(Path.c_str());
+		Buffer << File.rdbuf();
+		FileContent = Buffer.str();
+	} else {
+		Buffer << *StatusCode;
+		error += Buffer.str();
+		error += " ";
+		error += FindStatusMessage(StatusCode);
+		FileContent += "<html>\n\t<head>\n\t\t<title>\n\t\t\t";
+		FileContent += error;
+		FileContent += "\n\t\t</title>\n\t</head>\n\t<body>\n\t\t<center>\n\t\t\t<h1>\n<br>\n\t\t\t\t";
+		FileContent += error;
+		FileContent += "\n\t\t\t</h1>\n<br><br><hr>\n\t\t\t<footer>\n\t\t\t\tWebserv<br><small>";
+		FileContent += "by ldelmas, mdesalle and tderwedu</small>\n\t\t\t</footer>\n\t\t</center>\n\t</body>\n</html>";
 	}
-	Buffer << File.rdbuf();
-	FileContent = Buffer.str();
 	return (FileContent);
 }
 
