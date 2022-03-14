@@ -6,7 +6,7 @@
 /*   By: tderwedu <tderwedu@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/11 13:57:28 by mdesalle          #+#    #+#             */
-/*   Updated: 2022/03/14 11:56:48 by tderwedu         ###   ########.fr       */
+/*   Updated: 2022/03/14 12:01:08 by tderwedu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -170,7 +170,7 @@ std::string	const	&Response::GetBadRequestResponse(Request &HTTPRequest, Locatio
 		Body = "Method Not Allowed";
 	}
 	else
-		Body = ReturnError(HTTPRequest, HTTPLocation, &StatusCode);
+		Body = ReturnError(HTTPLocation, &StatusCode);
 	oss << std::dec << StatusCode;
 	_HeaderResponse = "HTTP/1.1 " + oss.str() + " " + FindStatusMessage(&StatusCode)+ "\r\n";
 	_HeaderResponse += "Date: " + GetCurrentFormattedTime() + "\r\n";
@@ -248,7 +248,7 @@ std::string const		&Response::GetHeaderResponse(Request &HTTPRequest, Location &
 	if (HTTPRequest.getMethod() != "GET" && HTTPRequest.getMethod() != "POST" && HTTPRequest.getMethod() != "DELETE")
 	{
 		StatusCode = 405;
-		Body = ReturnError(HTTPRequest, HTTPLocation, &StatusCode);
+		Body = ReturnError(HTTPLocation, &StatusCode);
 	}
 
 	if (RedirectionExists(HTTPLocation))
@@ -280,14 +280,13 @@ std::string	Response::GetErrorPagePath(Location &HTTPLocation, unsigned int *Sta
 		return std::string();
 }
 
-std::string Response::ReturnError(Request &HTTPRequest, Location &HTTPLocation, unsigned int *StatusCode)
+std::string Response::ReturnError(Location &HTTPLocation, unsigned int *StatusCode)
 {
 	std::string			FileContent;
 	std::stringstream	Buffer;
 	std::string			Path = GetErrorPagePath(HTTPLocation, StatusCode);
 	std::string			error;
 
-	(void)HTTPRequest;
 	if (!Path.empty()) {
 		std::ifstream		File(Path.c_str());
 		Buffer << File.rdbuf();
@@ -362,7 +361,7 @@ std::string	Response::HandleGETCGIRequest(Request &HTTPRequest, Location &HTTPLo
 	if (HTTPLocation.GetPass().empty())
 	{
 		*StatusCode = 500;
-		return (ReturnError(HTTPRequest, HTTPLocation, StatusCode));
+		return (ReturnError(HTTPLocation, StatusCode));
 	}
 
 	CommonGatewayInterface	CGI(HTTPRequest);
@@ -383,7 +382,7 @@ std::string	Response::HandleGETRequestFile(Request &HTTPRequest, Location &HTTPL
 	if (FindValueInVector(HTTPLocation.GetLimitExcept(), "GET") == false)
 	{
 		*StatusCode = 403;
-		return (ReturnError(HTTPRequest, HTTPLocation, StatusCode));
+		return (ReturnError(HTTPLocation, StatusCode));
 	}
 
 	if (!File)
@@ -415,7 +414,7 @@ std::string	Response::HandleGETRequest(Request &HTTPRequest, Location &HTTPLocat
 	if (FindValueInVector(HTTPLocation.GetLimitExcept(), "GET") == false)
 	{
 		*StatusCode = 405;
-		return (ReturnError(HTTPRequest, HTTPLocation, StatusCode));
+		return (ReturnError(HTTPLocation, StatusCode));
 	}
 
 	if (!File)
@@ -425,7 +424,7 @@ std::string	Response::HandleGETRequest(Request &HTTPRequest, Location &HTTPLocat
 		else
 		{
 			*StatusCode = 404;
-			return (ReturnError(HTTPRequest, HTTPLocation, StatusCode));
+			return (ReturnError(HTTPLocation, StatusCode));
 		}
 	}
 	Buffer << File.rdbuf();
@@ -439,7 +438,7 @@ std::string	Response::HandlePOSTRequest(Request &HTTPRequest, Location &HTTPLoca
 	if (FindValueInVector(HTTPLocation.GetLimitExcept(), "POST") == false)
 	{
 		*StatusCode = 405;
-		return (ReturnError(HTTPRequest, HTTPLocation, StatusCode));
+		return (ReturnError(HTTPLocation, StatusCode));
 	}
 
 	if (HTTPRequest.getField("Content-Type").substr(0, 11) == "application")
@@ -456,7 +455,7 @@ std::string	Response::HandleNormalPostRequest(Request &HTTPRequest, Location &HT
 	if (!File)
 	{
 		*StatusCode = 500;
-		return (ReturnError(HTTPRequest, HTTPLocation, StatusCode));
+		return (ReturnError(HTTPLocation, StatusCode));
 	}
 	*StatusCode = 200;
 	File << HTTPRequest.getBody();
@@ -489,13 +488,13 @@ std::string	Response::HandleDELETERequest(Request &HTTPRequest, Location &HTTPLo
 	if (FindValueInVector(HTTPLocation.GetLimitExcept(), "DELETE") == false)
 	{
 		*StatusCode = 405;
-		return (ReturnError(HTTPRequest, HTTPLocation, StatusCode));
+		return (ReturnError(HTTPLocation, StatusCode));
 	}
 
 	if (remove(Path.c_str()) != 0)
 	{
 		*StatusCode = 404;
-		return (ReturnError(HTTPRequest, HTTPLocation, StatusCode));
+		return (ReturnError(HTTPLocation, StatusCode));
 	}
 
 	*StatusCode = 200;

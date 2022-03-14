@@ -6,7 +6,7 @@
 /*   By: tderwedu <tderwedu@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/01/26 11:48:07 by ldelmas           #+#    #+#             */
-/*   Updated: 2022/03/14 11:08:09 by tderwedu         ###   ########.fr       */
+/*   Updated: 2022/03/14 12:00:37 by tderwedu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -61,7 +61,7 @@ class Response : public Header
 		std::string const	&GetHeaderResponse(Request &HTTPRequest, Location &HTTPLocation);
 		std::string const	&GetBadRequestResponse(Request &HTTPRequest, Location &HTTPLocation, unsigned int StatusCode);
 		std::string			GetErrorPagePath(Location &HTTPLocation, unsigned int *StatusCode);
-		std::string 		ReturnError(Request &HTTPRequest, Location &HTTPLocation, unsigned int *StatusCode);
+		std::string 		ReturnError(Location &HTTPLocation, unsigned int *StatusCode);
 		std::string			HandleGETRequest(Request &HTTPRequest, Location &HTTPLocation, unsigned int *StatusCode, unsigned int i);
 		std::string			HandleGETRequestFile(Request &HTTPRequest, Location &HTTPLocation, unsigned int *StatusCode);
 		std::string			CheckIfFileOrFolder(Request &HTTPRequest, Location &HTTPLocation, unsigned int *StatusCode);
