@@ -6,7 +6,7 @@
 #    By: tderwedu <tderwedu@student.s19.be>         +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2022/01/18 10:08:26 by maxdesall         #+#    #+#              #
-#    Updated: 2022/03/14 11:56:01 by mdesalle         ###   ########.fr        #
+#    Updated: 2022/03/14 15:29:45 by tderwedu         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -20,6 +20,9 @@ CFLAGS		:= -Wall -Wextra -Werror -std=c++98 -fsanitize=address -g3
 
 # ================================== FILES =================================== #
 
+BIN_DIR		:= .bin/
+SRC_DIR		:= src/
+INC_DIR		:= include/
 
 MAIN		:= Webserv.cpp
 CONFIG		:= ConfigHandler.cpp \
@@ -37,19 +40,21 @@ UTILS		:= Timer.cpp \
 			   utils.cpp
 CGI			:= CommonGatewayInterface.cpp \
 
-# INCLUDES	:= -I ./${SRC_DIR} -I ./${TEST_DIR}
+INCLUDES	= -I ./${INC_DIR}
+INCLUDES	+= -I $(addprefix $(INC_DIR), config)
+INCLUDES	+= -I $(addprefix $(INC_DIR), HTTP_Config)
+INCLUDES	+= -I $(addprefix $(INC_DIR), sockets)
+INCLUDES	+= -I $(addprefix $(INC_DIR), cgi)
+INCLUDES	+= -I $(addprefix $(INC_DIR), utils)
 
-BIN_DIR		:= .bin/
-SRC_DIR		:= src/
 MAIN_DIR	:= $(addprefix src/, $(MAIN))
-UTILS		:= $(addprefix src/utils/, $(UTILS))
-CONFIG_DIR	:= $(addprefix src/config/, $(CONFIG))
-SOCKETS		:= $(addprefix src/sockets/, $(SOCKETS))
+CONFIG		:= $(addprefix src/config/, $(CONFIG))
 HTTP		:= $(addprefix src/HTTP_Config/, $(HTTP))
+SOCKETS		:= $(addprefix src/sockets/, $(SOCKETS))
 CGI			:= $(addprefix src/cgi/, $(CGI))
+UTILS		:= $(addprefix src/utils/, $(UTILS))
 
-SRC			:= $(MAIN_DIR) $(UTILS) $(CONFIG_DIR) $(HTTP) $(SOCKETS) $(CGI)
-# SRC			:= $(MAIN_DIR) $(CONFIG_DIR)
+SRC			:= $(MAIN_DIR) $(CONFIG) $(HTTP) $(SOCKETS) $(CGI) $(UTILS)
 OBJ			:= $(subst ${SRC_DIR},${BIN_DIR}, ${SRC:.cpp=.o})
 
 # ================================== RULES =================================== #

@@ -6,7 +6,7 @@
 /*   By: tderwedu <tderwedu@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/11 13:57:28 by mdesalle          #+#    #+#             */
-/*   Updated: 2022/03/14 14:29:55 by tderwedu         ###   ########.fr       */
+/*   Updated: 2022/03/14 14:52:16 by tderwedu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -290,7 +290,7 @@ std::string Response::ReturnError(Location *HTTPLocation, unsigned int *StatusCo
 	std::string			Path = GetErrorPagePath(HTTPLocation, StatusCode);
 	std::string			error;
 
-	if (!Path.empty() && !is_file(Path)) {
+	if (!Path.empty() && is_file(Path)) {
 		std::ifstream		File(Path.c_str());
 		Buffer << File.rdbuf();
 		FileContent = Buffer.str();
