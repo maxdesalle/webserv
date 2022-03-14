@@ -6,7 +6,7 @@
 /*   By: tderwedu <tderwedu@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/01/26 11:48:07 by ldelmas           #+#    #+#             */
-/*   Updated: 2022/03/14 14:13:00 by tderwedu         ###   ########.fr       */
+/*   Updated: 2022/03/14 14:29:15 by tderwedu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,6 +28,7 @@
 # include "Request.hpp"
 # include "../cgi/CommonGatewayInterface.hpp"
 # include "../config/Location.hpp"
+# include "../utils/utils.hpp"
 
 class Request;
 

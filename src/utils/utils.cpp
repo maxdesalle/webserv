@@ -6,7 +6,7 @@
 /*   By: tderwedu <tderwedu@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/14 15:31:19 by tderwedu          #+#    #+#             */
-/*   Updated: 2022/03/11 16:54:46 by tderwedu         ###   ########.fr       */
+/*   Updated: 2022/03/14 14:28:45 by tderwedu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,4 +22,13 @@ bool	ci_equal(const std::string &s1, const std::string &s2)
 			return false;
 	}
 	return true;
+}
+
+bool	is_file(const std::string &path)
+{
+	struct stat s_stat;
+
+	if (!stat(path.c_str(), &s_stat))
+		return (S_IFREG & s_stat.st_mode);
+	return false;
 }
