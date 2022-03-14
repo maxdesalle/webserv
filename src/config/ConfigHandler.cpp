@@ -6,7 +6,7 @@
 /*   By: tderwedu <tderwedu@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/01/18 18:04:43 by maxdesall         #+#    #+#             */
-/*   Updated: 2022/03/04 12:03:19 by tderwedu         ###   ########.fr       */
+/*   Updated: 2022/03/14 16:52:50 by mdesalle         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,6 +40,70 @@ static std::string				&Trim(std::string &str)
     return (str);
 }
 
+static bool						ServerNameInVector(const std::vector<std::string> &ServerNames, const std::string &ServerName)
+{
+	for (size_t i = 0; i < ServerNames[i].size(); i += 1)
+	{
+		if (ServerNames[i] == ServerName)
+			return (true);
+	}
+	return (false);
+}
+
+static void						SearchForIPandPort(const vecServer &Servers, const std::vector<std::string> &ServerNames, const std::string &IP, size_t Port)
+{
+	int														Check = 0;
+	std::map<std::string, std::vector<size_t> >				ListenIPandPorts;
+	std::map<std::string, std::vector<size_t> >::iterator 	it;
+
+	for (size_t i = 0; i < Servers.size(); i += 1)
+	{
+		for (size_t j = 0; j < ServerNames[j].size(); j += 1)
+		{
+			if (ServerNameInVector(Servers[i].GetServerNames(), ServerNames[j]) == true)
+			{
+				ListenIPandPorts = Servers[i].GetListenIPandPorts();
+				for (it = ListenIPandPorts.begin(); it != ListenIPandPorts.end(); it++)
+				{
+					if (it->first == IP)
+					{
+						for (size_t k = 0; k < it->second.size(); k += 1)
+						{
+							if (it->second[k] == Port && Check == 1)
+							{
+								std::cout << "Config file error" << std::endl;
+								exit(1);
+							}
+							else if (it->second[k] == Port && Check != 1)
+							{
+								Check += 1;
+								break ;
+							}
+						}
+					}
+				}
+				break ;
+			}
+		}
+	}
+}
+
+static void						DoublePortForSameServerNameCheck(const vecServer &Servers)
+{
+	std::map<std::string, std::vector<size_t> >	ListenIPandPorts;
+	std::map<std::string, std::vector<size_t> >::iterator it;
+
+	for (size_t i = 0; i < Servers.size(); i += 1)
+	{
+		ListenIPandPorts = Servers[i].GetListenIPandPorts();
+		for (it = ListenIPandPorts.begin(); it != ListenIPandPorts.end(); it++)
+		{
+			for (size_t j = 0; j < it->second.size(); j += 1)
+				SearchForIPandPort(Servers, Servers[i].GetServerNames(), it->first, it->second[j]);
+		}
+	}
+}
+
 /*
  * Returns a vector with a Server object for each server block in the provided config file
  */
@@ -69,8 +133,9 @@ vecServer				ConfigHandler(std::string ConfigFileName)
 			ServerContent.push_back(Line);
 	}
 	Servers.push_back(CreateServerObject(ServerContent));
-
 	File.close();
+
+	DoublePortForSameServerNameCheck(Servers);
 	return (Servers);
 }
 
