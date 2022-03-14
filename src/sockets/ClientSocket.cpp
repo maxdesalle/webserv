@@ -6,7 +6,7 @@
 /*   By: tderwedu <tderwedu@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/23 10:55:52 by tderwedu          #+#    #+#             */
-/*   Updated: 2022/03/11 16:52:26 by tderwedu         ###   ########.fr       */
+/*   Updated: 2022/03/14 11:20:44 by mdesalle         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -221,9 +221,9 @@ void			ClientSocket::_sendResponse(int code, bool close)
 	// TODO: add close to parameters !!!
 	_request.setCGIServerVars(*_location, getIP());
 	if (code)
-		buff = &_response.GetBadRequestResponse(_request, const_cast<Location&>(*_location), code); //TODO: THIS IS UGLY!!!!
+		buff = &_response.GetBadRequestResponse(_request, const_cast<Location*>(_location), code);
 	else
-		buff = &_response.GetHeaderResponse(_request, const_cast<Location&>(*_location)); //TODO: THIS IS UGLY!!!!
+		buff = &_response.GetHeaderResponse(_request, const_cast<Location*>(_location)); //TODO: THIS IS UGLY!!!!
 	// TODO: DEBUG ==> How to handle 'Response' error ? !!!
 	if (buff->empty())
 	{

@@ -6,7 +6,7 @@
 /*   By: tderwedu <tderwedu@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/11 13:57:28 by mdesalle          #+#    #+#             */
-/*   Updated: 2022/03/11 16:43:58 by tderwedu         ###   ########.fr       */
+/*   Updated: 2022/03/14 13:50:20 by mdesalle         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -157,7 +157,7 @@ std::string	Response::FindStatusMessage(unsigned int *StatusCode)
 	return ("Internal Server Error");
 }
 
-std::string	const	&Response::GetBadRequestResponse(Request &HTTPRequest, Location &HTTPLocation, unsigned int StatusCode)
+std::string	const	&Response::GetBadRequestResponse(Request &HTTPRequest, Location *HTTPLocation, unsigned int StatusCode)
 {
 	std::string			Body;
 	std::ostringstream	oss;
@@ -191,6 +191,9 @@ std::string const		&Response::GenerateResponse(std::string &Body, unsigned int *
 	std::ostringstream	oss;
 
 	oss << std::dec << *StatusCode;
+	
+	if (!_HeaderResponse.empty())
+		return (_HeaderResponse);
 
 	_HeaderResponse =  "HTTP/1.1 " + oss.str() + " " + FindStatusMessage(StatusCode) + "\r\n";
 	_HeaderResponse += "Date: " + GetCurrentFormattedTime() + "\r\n";
@@ -206,11 +209,11 @@ std::string const		&Response::GenerateResponse(std::string &Body, unsigned int *
 	return (_HeaderResponse);
 }
 
-bool					Response::RedirectionExists(Location &HTTPLocation)
+bool					Response::RedirectionExists(Location *HTTPLocation)
 {
 	try
 	{
-		if (!HTTPLocation.GetReturn().at(301).empty())
+		if (!HTTPLocation->GetReturn().at(301).empty())
 			return (true);
 	}
 	catch (...)
@@ -220,10 +223,10 @@ bool					Response::RedirectionExists(Location &HTTPLocation)
 	return (false);
 }
 
-std::string	const	&Response::HandleRedirection(Request &HTTPRequest, Location &HTTPLocation)
+std::string	const	&Response::HandleRedirection(Request &HTTPRequest, Location *HTTPLocation)
 {
 	size_t	Split;
-	std::string		RootURL = HTTPLocation.GetReturn().at(301);
+	std::string		RootURL = HTTPLocation->GetReturn().at(301);
 
 	if ((Split = RootURL.find('$')) != std::string::npos)
 	{
@@ -240,7 +243,7 @@ std::string	const	&Response::HandleRedirection(Request &HTTPRequest, Location &H
 	return (_HeaderResponse);
 }
 
-std::string const		&Response::GetHeaderResponse(Request &HTTPRequest, Location &HTTPLocation)
+std::string const		&Response::GetHeaderResponse(Request &HTTPRequest, Location *HTTPLocation)
 {
 	std::string			Body;
 	unsigned int		StatusCode = 0;
@@ -267,24 +270,24 @@ std::string const		&Response::GetHeaderResponse(Request &HTTPRequest, Location &
 	return (_HeaderResponse);
 }
 
-std::string	Response::GetErrorPagePath(Location &HTTPLocation, unsigned int *StatusCode)
+std::string	Response::GetErrorPagePath(Location *HTTPLocation, unsigned int *StatusCode)
 {
 	std::string	Path;
 
-	// if (HTTPLocation == NULL)			tderwedu: ne compile pas car une reference ne peut pas etre NULL
-	// {
-	// 	*StatusCode = 500;
-	// 	return ("");
-	// }
+	if (HTTPLocation == NULL)
+	{
+		*StatusCode = 500;
+	 	return ("");
+	}
 
 	try
 	{
 		if (*StatusCode < 1000)
-			return (HTTPLocation.GetRoot() + HTTPLocation.GetPath() + HTTPLocation.GetErrorPage().at(*StatusCode));
+			return (HTTPLocation->GetRoot() + HTTPLocation->GetPath() + HTTPLocation->GetErrorPage().at(*StatusCode));
 		else
 		{
 			*StatusCode /= 10;
-			Path = HTTPLocation.GetRoot() + HTTPLocation.GetErrorPage().at(*StatusCode);
+			Path = HTTPLocation->GetRoot() + HTTPLocation->GetErrorPage().at(*StatusCode);
 			*StatusCode *= 10;
 			return (Path);
 		}
@@ -294,7 +297,7 @@ std::string	Response::GetErrorPagePath(Location &HTTPLocation, unsigned int *Sta
 		*StatusCode = 500;
 		try
 		{
-			return (HTTPLocation.GetRoot() + HTTPLocation.GetPath() + HTTPLocation.GetErrorPage().at(*StatusCode));
+			return (HTTPLocation->GetRoot() + HTTPLocation->GetPath() + HTTPLocation->GetErrorPage().at(*StatusCode));
 		}
 		catch (...)
 		{
@@ -303,7 +306,7 @@ std::string	Response::GetErrorPagePath(Location &HTTPLocation, unsigned int *Sta
 	}
 }
 
-std::string Response::ReturnError(Request &HTTPRequest, Location &HTTPLocation, unsigned int *StatusCode)
+std::string Response::ReturnError(Request &HTTPRequest, Location *HTTPLocation, unsigned int *StatusCode)
 {
 	std::string			FileContent;
 	std::string			Path = GetErrorPagePath(HTTPLocation, StatusCode);
@@ -331,16 +334,16 @@ std::string const	&Response::Handle301Redirect(Request &HTTPRequest)
 	_HeaderResponse += "Location: " + HTTPRequest.getTarget() + "/" + "\r\n";
 	_HeaderResponse += "Date: " + GetCurrentFormattedTime() + "\r\n";
 	_HeaderResponse += "Server: " + GetServerVersion() + "\r\n";
-
 	_HeaderResponse += "Content-Length: 0\r\n\r\n";
+	_Body = "";
 
-	return (_HeaderResponse);
+	return (_Body);
 }
 
-std::string Response::CheckIfFileOrFolder(Request &HTTPRequest, Location &HTTPLocation, unsigned int *StatusCode)
+std::string Response::CheckIfFileOrFolder(Request &HTTPRequest, Location *HTTPLocation, unsigned int *StatusCode)
 {
 	struct				stat s;
-	std::string			Path = HTTPLocation.GetRoot() + HTTPRequest.getTarget();
+	std::string			Path = HTTPLocation->GetRoot() + HTTPRequest.getTarget();
 
 	if (stat(Path.c_str(),&s) == 0)
 	{
@@ -356,10 +359,10 @@ std::string Response::CheckIfFileOrFolder(Request &HTTPRequest, Location &HTTPLo
 	return (HandleGETRequest(HTTPRequest, HTTPLocation, StatusCode, 0));
 }
 
-std::string const &Response::CheckIfFileOrFolderConst(Request &HTTPRequest, Location &HTTPLocation)
+std::string const &Response::CheckIfFileOrFolderConst(Request &HTTPRequest, Location *HTTPLocation)
 {
 	struct				stat s;
-	std::string			Path = HTTPLocation.GetRoot() + HTTPRequest.getTarget();
+	std::string			Path = HTTPLocation->GetRoot() + HTTPRequest.getTarget();
 
 	if (stat(Path.c_str(),&s) == 0)
 	{
@@ -375,9 +378,9 @@ std::string const &Response::CheckIfFileOrFolderConst(Request &HTTPRequest, Loca
 	return (GetHeaderResponse(HTTPRequest, HTTPLocation));
 }
 
-std::string	Response::HandleGETCGIRequest(Request &HTTPRequest, Location &HTTPLocation, unsigned int *StatusCode)
+std::string	Response::HandleGETCGIRequest(Request &HTTPRequest, Location *HTTPLocation, unsigned int *StatusCode)
 {
-	if (HTTPLocation.GetPass().empty())
+	if (HTTPLocation->GetPass().empty())
 	{
 		*StatusCode = 500;
 		return (ReturnError(HTTPRequest, HTTPLocation, StatusCode));
@@ -388,17 +391,17 @@ std::string	Response::HandleGETCGIRequest(Request &HTTPRequest, Location &HTTPLo
 	return (CGI.getBody());
 }
 
-std::string	Response::HandleGETRequestFile(Request &HTTPRequest, Location &HTTPLocation, unsigned int *StatusCode)
+std::string	Response::HandleGETRequestFile(Request &HTTPRequest, Location *HTTPLocation, unsigned int *StatusCode)
 {
 	std::string			FileContent;
-	std::string			Path = HTTPLocation.GetRoot() + HTTPRequest.getTarget();
+	std::string			Path = HTTPLocation->GetRoot() + HTTPRequest.getTarget();
 	std::ifstream		File(Path.c_str());
 	std::stringstream	Buffer;
 
 	if (HTTPRequest.getField("Content-Type").substr(0, 11) == "application")
 		return (HandleGETCGIRequest(HTTPRequest, HTTPLocation, StatusCode));
 
-	if (FindValueInVector(HTTPLocation.GetLimitExcept(), "GET") == false)
+	if (FindValueInVector(HTTPLocation->GetLimitExcept(), "GET") == false)
 	{
 		*StatusCode = 403;
 		return (ReturnError(HTTPRequest, HTTPLocation, StatusCode));
@@ -414,15 +417,15 @@ std::string	Response::HandleGETRequestFile(Request &HTTPRequest, Location &HTTPL
 	return (FileContent);
 }
 
-std::string	Response::GetPath(Request &HTTPRequest, Location &HTTPLocation, unsigned int i)
+std::string	Response::GetPath(Request &HTTPRequest, Location *HTTPLocation, unsigned int i)
 {
-	if (!HTTPLocation.GetRoot().empty() && !HTTPRequest.getTarget().empty() && HTTPLocation.GetIndex().size() > 0)
-		return (HTTPLocation.GetRoot() + HTTPRequest.getTarget() + HTTPLocation.GetIndex()[i]);
+	if (!HTTPLocation->GetRoot().empty() && !HTTPRequest.getTarget().empty() && HTTPLocation->GetIndex().size() > 0)
+		return (HTTPLocation->GetRoot() + HTTPRequest.getTarget() + HTTPLocation->GetIndex()[i]);
 	else
 		return ("");
 }
 
-std::string	Response::HandleGETRequest(Request &HTTPRequest, Location &HTTPLocation, unsigned int *StatusCode, unsigned int i)
+std::string	Response::HandleGETRequest(Request &HTTPRequest, Location *HTTPLocation, unsigned int *StatusCode, unsigned int i)
 {
 	std::string			FileContent;
 	std::string			Path = GetPath(HTTPRequest, HTTPLocation, i);
@@ -430,7 +433,7 @@ std::string	Response::HandleGETRequest(Request &HTTPRequest, Location &HTTPLocat
 	std::stringstream	Buffer;
 
 
-	if (FindValueInVector(HTTPLocation.GetLimitExcept(), "GET") == false)
+	if (FindValueInVector(HTTPLocation->GetLimitExcept(), "GET") == false)
 	{
 		*StatusCode = 405;
 		return (ReturnError(HTTPRequest, HTTPLocation, StatusCode));
@@ -438,7 +441,7 @@ std::string	Response::HandleGETRequest(Request &HTTPRequest, Location &HTTPLocat
 
 	if (!File)
 	{
-		if (HTTPLocation.GetIndex().size() > (i + 1))
+		if (HTTPLocation->GetIndex().size() > (i + 1))
 			return (HandleGETRequest(HTTPRequest, HTTPLocation, StatusCode, i + 1));
 		else
 		{
@@ -452,9 +455,9 @@ std::string	Response::HandleGETRequest(Request &HTTPRequest, Location &HTTPLocat
 	return (FileContent);
 }
 
-std::string	Response::HandlePOSTRequest(Request &HTTPRequest, Location &HTTPLocation, unsigned int *StatusCode)
+std::string	Response::HandlePOSTRequest(Request &HTTPRequest, Location *HTTPLocation, unsigned int *StatusCode)
 {
-	if (FindValueInVector(HTTPLocation.GetLimitExcept(), "POST") == false)
+	if (FindValueInVector(HTTPLocation->GetLimitExcept(), "POST") == false)
 	{
 		*StatusCode = 405;
 		return (ReturnError(HTTPRequest, HTTPLocation, StatusCode));
@@ -466,9 +469,9 @@ std::string	Response::HandlePOSTRequest(Request &HTTPRequest, Location &HTTPLoca
 		return (HandleNormalPostRequest(HTTPRequest, HTTPLocation, StatusCode));
 }
 
-std::string	Response::HandleNormalPostRequest(Request &HTTPRequest, Location &HTTPLocation, unsigned int *StatusCode)
+std::string	Response::HandleNormalPostRequest(Request &HTTPRequest, Location *HTTPLocation, unsigned int *StatusCode)
 {
-	std::string		Path = HTTPLocation.GetRoot() + HTTPRequest.getTarget();
+	std::string		Path = HTTPLocation->GetRoot() + HTTPRequest.getTarget();
 	std::ofstream	File(Path.c_str());
 
 	if (!File)
@@ -499,12 +502,12 @@ bool		Response::FindValueInVector(std::vector<std::string> Haystack, std::string
 	return (false);
 }
 
-std::string	Response::HandleDELETERequest(Request &HTTPRequest, Location &HTTPLocation, unsigned int *StatusCode)
+std::string	Response::HandleDELETERequest(Request &HTTPRequest, Location *HTTPLocation, unsigned int *StatusCode)
 {
-	std::string	Path = HTTPLocation.GetRoot() + HTTPRequest.getTarget();
+	std::string	Path = HTTPLocation->GetRoot() + HTTPRequest.getTarget();
 
 
-	if (FindValueInVector(HTTPLocation.GetLimitExcept(), "DELETE") == false)
+	if (FindValueInVector(HTTPLocation->GetLimitExcept(), "DELETE") == false)
 	{
 		*StatusCode = 405;
 		return (ReturnError(HTTPRequest, HTTPLocation, StatusCode));
