@@ -3,10 +3,10 @@
 #                                                         :::      ::::::::    #
 #    Makefile                                           :+:      :+:    :+:    #
 #                                                     +:+ +:+         +:+      #
-#    By: tderwedu <tderwedu@student.s19.be>         +#+  +:+       +#+         #
+#    By: mdesalle <mdesalle@student.s19.be>         +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
-#    Created: 2022/01/18 10:08:26 by maxdesall         #+#    #+#              #
-#    Updated: 2022/03/14 15:29:45 by tderwedu         ###   ########.fr        #
+#    Created: 2022/03/14 16:55:18 by mdesalle          #+#    #+#              #
+#    Updated: 2022/03/14 16:55:22 by mdesalle         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -16,7 +16,7 @@ DEBUG			:= 0
 # =============================== COMPILATION ================================ #
 
 CC			:= clang++
-CFLAGS		:= -Wall -Wextra -Werror -std=c++98 -fsanitize=address -g3
+CFLAGS		:= -Wall -Wextra -Werror -std=c++98 #-fsanitize=address -g3
 
 # ================================== FILES =================================== #
 

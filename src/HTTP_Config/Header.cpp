@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Header.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: tderwedu <tderwedu@student.s19.be>         +#+  +:+       +#+        */
+/*   By: lucas <lucas@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/01/26 14:57:25 by ldelmas           #+#    #+#             */
-/*   Updated: 2022/03/01 09:54:00 by tderwedu         ###   ########.fr       */
+/*   Updated: 2022/03/14 15:45:22 by lucas            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,7 +30,7 @@ std::string const	Header::custom_pchar = Header::unreserved + Header::sub_delims
 	Other methods will be considered as random string of chars.
 */
 
-std::string const 	Header::authorizedMethods[4] = {"GET", "POST", "DELETE", ""};
+std::string const 	Header::authorizedMethods[5] = {"GET", "POST", "DELETE", "HEAD", ""};
 
 
 

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Request.cpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ldelmas <ldelmas@student.42.fr>            +#+  +:+       +#+        */
+/*   By: lucas <lucas@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/01/26 14:59:17 by ldelmas           #+#    #+#             */
-/*   Updated: 2022/03/10 14:12:03 by ldelmas          ###   ########.fr       */
+/*   Updated: 2022/03/14 16:25:50 by lucas            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -154,6 +154,8 @@ void				Request::setBody(std::string &body)
 
 void				Request::setCGIServerVars(Location const &CGILocation, in_addr_t addr)
 {
+	if (this->_state != DONE)
+		return ;
 	this->_cgiSerVars["SERVER_SOFTWARE"] = "WEBSERV/1.0";
 	this->_cgiSerVars["SERVER_NAME"] = Header::_parseHost(this->_headerFields["Host"]);
 	this->_cgiSerVars["GATEWAY_INTERFACE"] = "CGI/1.1";
@@ -175,7 +177,7 @@ void				Request::setCGIServerVars(Location const &CGILocation, in_addr_t addr)
 
 	/*IF SERVER DOESN'T SUPPORT USER AUTHENTIFICATION*/
 	this->_cgiSerVars["AUTH_TYPE"] = "";
-	this->_cgiSerVars["REMOTE_USER"] = "";	
+	this->_cgiSerVars["REMOTE_USER"] = "";
 	this->_cgiSerVars["REMOTE_IDENT"] = "";
 	/*ELSE*/
 	//->get the auth-scheme part
