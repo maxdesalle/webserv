@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Header.hpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: tderwedu <tderwedu@student.s19.be>         +#+  +:+       +#+        */
+/*   By: lucas <lucas@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/01/19 15:31:16 by ldelmas           #+#    #+#             */
-/*   Updated: 2022/03/01 09:54:00 by tderwedu         ###   ########.fr       */
+/*   Updated: 2022/03/14 15:24:10 by lucas            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,7 +32,7 @@ class Header
 	public:
 		static std::string const alpha, digit, unreserved, sub_delims,
 								gen_delims, reserved, hexdig, custom_pchar;
-		static std::string const authorizedMethods[4];
+		static std::string const authorizedMethods[5];
 		/*
 			All of the protected methods used to parse the request
 		*/
