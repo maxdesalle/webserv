@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Response.cpp                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: tderwedu <tderwedu@student.s19.be>         +#+  +:+       +#+        */
+/*   By: mdesalle <mdesalle@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2022/03/11 13:57:28 by mdesalle          #+#    #+#             */
-/*   Updated: 2022/03/14 15:24:41 by mdesalle         ###   ########.fr       */
+/*   Created: 2022/03/14 16:55:31 by mdesalle          #+#    #+#             */
+/*   Updated: 2022/03/14 16:55:36 by mdesalle         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -292,7 +292,7 @@ std::string Response::ReturnError(Location *HTTPLocation, unsigned int *StatusCo
 	std::string			Path = GetErrorPagePath(HTTPLocation, StatusCode);
 	std::string			error;
 
-	if (!Path.empty() && !is_file(Path)) {
+	if (!Path.empty() && is_file(Path)) {
 		std::ifstream		File(Path.c_str());
 		Buffer << File.rdbuf();
 		FileContent = Buffer.str();

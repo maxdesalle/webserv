@@ -1,2 +1,0 @@
-service nginx start
-bash

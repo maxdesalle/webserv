@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   URI.cpp                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: tderwedu <tderwedu@student.s19.be>         +#+  +:+       +#+        */
+/*   By: lucas <lucas@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/08 17:02:27 by ldelmas           #+#    #+#             */
-/*   Updated: 2022/02/23 18:08:52 by tderwedu         ###   ########.fr       */
+/*   Updated: 2022/03/14 15:45:25 by lucas            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,11 +33,15 @@ URI::URI(std::string const &httpURI) : _HTTPForm(httpURI), _normalizedForm(""),
 									_auth(""), _path(""), _hpType(UNDEFINED),
 									_status(UNCHECKED)
 {
-	this->_uriFormating();
-	if (this->_uriNormalization())
-		this->_status = WRONG_SYNTAX;
-	else
-		this->_status = NORMALIZED;	
+	try
+	{
+		this->_uriFormating();
+		if (this->_uriNormalization())
+			this->_status = WRONG_SYNTAX;
+		else
+			this->_status = NORMALIZED;	
+	}
+	catch (std::exception& e) {this->_status = WRONG_SYNTAX;}
 }
 
 URI::URI(URI const &src) {*this = src;}
