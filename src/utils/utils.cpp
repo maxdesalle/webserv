@@ -6,7 +6,7 @@
 /*   By: tderwedu <tderwedu@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/14 15:31:19 by tderwedu          #+#    #+#             */
-/*   Updated: 2022/03/04 12:43:32 by tderwedu         ###   ########.fr       */
+/*   Updated: 2022/03/14 17:32:55 by tderwedu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -66,11 +66,12 @@ bool			is_dir(const std::string &path)
 * /!\ path MUST be the URI's TARGET
 * /!\ The Working Directory MUST be the Location's ROOT
 */
-std::string		get_autoindex(const std::string &path)
+std::string		get_autoindex(std::string const& path, std::string const& target)
 {
 	char								d_buff[18];
 	std::string							autoindex;
 	std::string							str_name;
+	std::string							entry_path;
 	struct tm							*date;
 	struct stat							s_stat;
 	struct dirent						*entry; // statically allocate struct
@@ -80,23 +81,22 @@ std::string		get_autoindex(const std::string &path)
 	std::deque<std::string>::iterator	it;
 	std::deque<std::string>::iterator	ite;
 
-	if (!is_dir(path))
-		return std::string();
 	autoindex.append("<html>\n<head>\n<title>Index of ");
-	autoindex.append(path); // Target
+	autoindex.append(target); // Target
 	autoindex.append("</title>\n</head>\n<body bgcolor=\"white\">\n<h1>Index of ");
-	autoindex.append(path); // Target
+	autoindex.append(target); // Target
 	autoindex.append("</h1>\n<hr><pre>\n");
 	DIR*	directory = opendir(path.c_str());
 	while ((entry = readdir(directory)))
 	{
+		buff.str("");
 		str_name = std::string(entry->d_name);
 		if (str_name == ".")
 			continue ;
 		// clear the stringstream
-		buff.str(std::string());
 		// To get the date of Last Modification and File Type
-		stat(str_name.c_str(), &s_stat);
+		entry_path = path + str_name;
+		stat(entry_path.c_str(), &s_stat);
 		date = gmtime(&s_stat.st_mtime);
 		strftime(d_buff, 18, "%d-%b-%Y %R", date);
 		if (S_IFREG & s_stat.st_mode)
@@ -124,6 +124,7 @@ std::string		get_autoindex(const std::string &path)
 			buff << "-";
 			buff << "\n";
 			directories.push_back(buff.str());
+
 		}
 	}
 	// Sort and then Append Directories
@@ -138,6 +139,9 @@ std::string		get_autoindex(const std::string &path)
 	ite = files.end();
 	for (; it< ite; ++it)
 		autoindex.append(*it);
-	autoindex.append("</pre><hr>\n</body>\n</html>\n");
+	autoindex.append("</pre><hr>\n");
+	autoindex.append("<center><footer>Webserv<br>\n<small>");
+	autoindex.append("by ldelmas, mdesalle and tderwedu</small></center>\n");
+	autoindex.append("</footer>\n</body>\n</html>\n");
 	return autoindex;
 }

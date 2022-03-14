@@ -6,7 +6,7 @@
 /*   By: tderwedu <tderwedu@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/11 13:57:28 by mdesalle          #+#    #+#             */
-/*   Updated: 2022/03/14 14:52:16 by tderwedu         ###   ########.fr       */
+/*   Updated: 2022/03/14 17:32:43 by tderwedu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -182,7 +182,7 @@ std::string	const	&Response::GetBadRequestResponse(Request &HTTPRequest, Locatio
 	_HeaderResponse += "Content-Length: " + oss.str() + "\r\n\r\n";
 	_HeaderResponse += Body;
 
-	std::cout << _HeaderResponse << std::endl;
+	// std::cout << _HeaderResponse << std::endl;
 	return (_HeaderResponse);
 }
 
@@ -266,7 +266,7 @@ std::string const		&Response::GetHeaderResponse(Request &HTTPRequest, Location *
 
 	GenerateResponse(Body, &StatusCode);
 
-	std::cout << _HeaderResponse << std::endl;
+	// std::cout << _HeaderResponse << std::endl;
 	return (_HeaderResponse);
 }
 
@@ -278,7 +278,7 @@ std::string	Response::GetErrorPagePath(Location *HTTPLocation, unsigned int *Sta
 
 	it = error_pages.find(*StatusCode);
 	if (it != error_pages.end())
-		return HTTPLocation->GetRoot() + HTTPLocation->GetPath() + it->second;
+		return HTTPLocation->GetRoot() + '/' + it->second;
 	else
 		return std::string();
 }
@@ -426,8 +426,14 @@ std::string	Response::HandleGETRequest(Request &HTTPRequest, Location *HTTPLocat
 			return (HandleGETRequest(HTTPRequest, HTTPLocation, StatusCode, i + 1));
 		else
 		{
-			*StatusCode = 404;
-			return (ReturnError(HTTPLocation, StatusCode));
+			Path = HTTPLocation->GetRoot() + HTTPRequest.getTarget();
+			if (HTTPLocation->GetAutoIndex() && is_dir(Path))
+				return (get_autoindex(Path, HTTPRequest.getTarget()));
+			else
+			{
+				*StatusCode = 404;
+				return (ReturnError(HTTPLocation, StatusCode));
+			}
 		}
 	}
 	Buffer << File.rdbuf();
