@@ -6,7 +6,7 @@
 /*   By: tderwedu <tderwedu@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/11 13:57:28 by mdesalle          #+#    #+#             */
-/*   Updated: 2022/03/15 14:21:48 by mdesalle         ###   ########.fr       */
+/*   Updated: 2022/03/15 14:55:12 by mdesalle         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -255,18 +255,20 @@ std::string const		&Response::GetHeaderResponse(Request &HTTPRequest, Location *
 	std::string			Body;
 	unsigned int		StatusCode = 0;
 
+	std::cout << "test: " << HTTPRequest.getBody() << std::endl;
+
 	if (HTTPRequest.getMethod() != "GET" && HTTPRequest.getMethod() != "POST" && HTTPRequest.getMethod() != "DELETE")
 	{
 		StatusCode = 405;
 		Body = ReturnError(HTTPLocation, &StatusCode);
 	}
 
-	std::cout << HTTPRequest.getBody().size() << std::endl;
+	// std::cout << HTTPRequest.getBody().size() << std::endl;
 
 	if (HTTPRequest.getBody().size() > HTTPLocation->GetClientMaxBodySize() && HTTPLocation->GetClientMaxBodySize() != std::string::npos)
 		StatusCode = 413;
 
-	std::cout << StatusCode << std::endl;
+	// std::cout << StatusCode << std::endl;
 
 	// std::cout << HTTPRequest.getBody() << std::endl;
 
