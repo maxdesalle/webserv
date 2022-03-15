@@ -6,7 +6,7 @@
 /*   By: tderwedu <tderwedu@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/01/18 18:04:43 by maxdesall         #+#    #+#             */
-/*   Updated: 2022/03/15 10:42:39 by mdesalle         ###   ########.fr       */
+/*   Updated: 2022/03/15 11:12:19 by mdesalle         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -95,12 +95,18 @@ static void						DoublePortForSameServerNameCheck(const vecServer &Servers)
 
 	for (size_t i = 0; i < Servers.size(); i += 1)
 	{
-		ListenIPandPorts = Servers[i].GetListenIPandPorts();
+		if (!Servers[i].GetListenIPandPorts().empty())
+			ListenIPandPorts = Servers[i].GetListenIPandPorts();
+		else
+		{
+			std::cout << "Config file error" << std::endl;
+			exit(1);
+		}
 		for (it = ListenIPandPorts.begin(); it != ListenIPandPorts.end(); it++)
 		{
 			for (size_t j = 0; j < it->second.size(); j += 1)
 			{
-				if (Servers[i].GetServerNames().empty())
+				if (Servers[i].GetServerNames().empty() || Servers[i].GetLocations().empty())
 				{
 					std::cout << "Config file error" << std::endl;
 					exit(1);
