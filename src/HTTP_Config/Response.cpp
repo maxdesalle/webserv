@@ -6,7 +6,7 @@
 /*   By: tderwedu <tderwedu@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/11 13:57:28 by mdesalle          #+#    #+#             */
-/*   Updated: 2022/03/15 11:29:02 by mdesalle         ###   ########.fr       */
+/*   Updated: 2022/03/15 14:21:48 by mdesalle         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -162,15 +162,22 @@ std::string	const	&Response::GetBadRequestResponse(Request &HTTPRequest, Locatio
 	std::string			Body;
 	std::ostringstream	oss;
 
-	if (StatusCode == 301)
-		return (CheckIfFileOrFolderConst(HTTPRequest, HTTPLocation));
-	if (HTTPRequest.getMethod() != "GET" && HTTPRequest.getMethod() != "POST" && HTTPRequest.getMethod() != "DELETE")
-	{
-		StatusCode = 405;
-		Body = "Method Not Allowed";
-	}
-	else
+	if (!HTTPLocation)
 		Body = ReturnError(HTTPLocation, &StatusCode);
+	else
+	{
+		if (HTTPRequest.getBody().size() > HTTPLocation->GetClientMaxBodySize() && HTTPLocation->GetClientMaxBodySize() != std::string::npos)
+			StatusCode = 413;
+		if (StatusCode == 301)
+			return (CheckIfFileOrFolderConst(HTTPRequest, HTTPLocation));
+		if (HTTPRequest.getMethod() != "GET" && HTTPRequest.getMethod() != "POST" && HTTPRequest.getMethod() != "DELETE")
+		{
+			StatusCode = 405;
+			Body = "Method Not Allowed";
+		}
+		else
+			Body = ReturnError(HTTPLocation, &StatusCode);
+	}
 	oss << std::dec << StatusCode;
 	_HeaderResponse = "HTTP/1.1 " + oss.str() + " " + FindStatusMessage(&StatusCode)+ "\r\n";
 	_HeaderResponse += "Date: " + GetCurrentFormattedTime() + "\r\n";
@@ -253,6 +260,13 @@ std::string const		&Response::GetHeaderResponse(Request &HTTPRequest, Location *
 		StatusCode = 405;
 		Body = ReturnError(HTTPLocation, &StatusCode);
 	}
+
+	std::cout << HTTPRequest.getBody().size() << std::endl;
+
+	if (HTTPRequest.getBody().size() > HTTPLocation->GetClientMaxBodySize() && HTTPLocation->GetClientMaxBodySize() != std::string::npos)
+		StatusCode = 413;
+
+	std::cout << StatusCode << std::endl;
 
 	// std::cout << HTTPRequest.getBody() << std::endl;
 
@@ -493,6 +507,7 @@ bool		Response::FindValueInVector(std::vector<std::string> Haystack, std::string
 
 std::string	Response::HandleDELETERequest(Request &HTTPRequest, Location *HTTPLocation, unsigned int *StatusCode)
 {
+	std::string	FileContent;
 	std::string	Path = HTTPLocation->GetRoot() + HTTPRequest.getTarget();
 
 
@@ -510,7 +525,14 @@ std::string	Response::HandleDELETERequest(Request &HTTPRequest, Location *HTTPLo
 
 	*StatusCode = 200;
 
-	return ("File deleted.");
+	FileContent += "<html>\n\t<head>\n\t\t<title>\n\t\t\t";
+	FileContent += "File deleted";
+	FileContent += "\n\t\t</title>\n\t</head>\n\t<body>\n\t\t<center>\n\t\t\t<h1>\n<br>\n\t\t\t\t";
+	FileContent += "File deleted: " + Path;
+	FileContent += "\n\t\t\t</h1>\n<br><br><hr>\n\t\t\t<footer>\n\t\t\t\tWebserv<br><small>";
+	FileContent += "by ldelmas, mdesalle and tderwedu</small>\n\t\t\t</footer>\n\t\t</center>\n\t</body>\n</html>";
+
+	return (FileContent);
 }
 
 std::string	Response::GetCurrentFormattedTime(void)
