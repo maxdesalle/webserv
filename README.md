@@ -43,10 +43,8 @@ A lightweight HTTP server implemented in C++.
 
 ## Testing
  - [ ] Check for memory leaks
- - [ ] Check with `server_names` defined or not.
-		- [x] defined
-		- [ ] NOT defined
- - [ ] Check with default server without `default_server` directive.
+ - [x] Check with `server_names` defined or not.
+ - [x] Check with default server without `default_server` directive.
  - [ ] Check limit client body size.
  - [ ] CGI
 	- [ ] GET request
@@ -54,8 +52,8 @@ A lightweight HTTP server implemented in C++.
 	- [ ] DELETE request
  - [ ] Try the 42's `tester`
  - [ ] Try the 42's `cgi_tester`
- - [ ] upload some file and get it back
- - [ ] Try with a methode which is NOT allowed
+ - [x] upload some file and get it back
+ - [x] Try with a methode which is NOT allowed
 
 ## Ressources
 

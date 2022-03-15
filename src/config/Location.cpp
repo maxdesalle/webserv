@@ -6,7 +6,7 @@
 /*   By: tderwedu <tderwedu@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/01/28 14:30:39 by mdesalle          #+#    #+#             */
-/*   Updated: 2022/03/07 15:35:52 by mdesalle         ###   ########.fr       */
+/*   Updated: 2022/03/15 14:06:12 by mdesalle         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,6 +22,8 @@ Location::Location(std::string LocationContent)
 	i = FindPath(LocationContent);
 	_ClientMaxBodySize = 0;
 	_AutoIndex = false;
+	if (LocationContent.find("client_max_body_size") == std::string::npos)
+		_ClientMaxBodySize = std::string::npos;
 	for (; i < LocationContent.size() - 1; i += 1)
 	{
 		KeyValue = FindKeyValue(LocationContent, i);
@@ -268,7 +270,7 @@ void		Location::Assignator(std::string Key, std::string Value)
 	else if (Key == "limit_except")
 		SaveLimitExcept(Value);
 	else if (Key == "client_max_body_size")
-		_ClientMaxBodySize = size_t(atoi(Value.c_str()));
+		_ClientMaxBodySize = size_t(atoi(Value.c_str()) * 1048576);
 	else if (Key == "return")
 		SaveReturn(Value);
 	else if (Key == "error_page")
