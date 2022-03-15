@@ -6,7 +6,7 @@
 /*   By: tderwedu <tderwedu@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/23 10:58:04 by tderwedu          #+#    #+#             */
-/*   Updated: 2022/03/15 12:01:13 by tderwedu         ###   ########.fr       */
+/*   Updated: 2022/03/15 15:40:26 by tderwedu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -116,7 +116,7 @@ void				Webserv::initWebserv(std::string const& config)
 
 void				Webserv::runWebserv(void)
 {
-	std::cout << "\e[0m\n\t is running" << std::endl;
+	std::cout << "\e[0m\t is running\n" << std::endl;
 	while (true)
 	{
 		___debug_before_poll___();

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Request.cpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: lucas <lucas@student.42.fr>                +#+  +:+       +#+        */
+/*   By: tderwedu <tderwedu@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/01/26 14:59:17 by ldelmas           #+#    #+#             */
-/*   Updated: 2022/03/15 14:28:59 by mdesalle         ###   ########.fr       */
+/*   Updated: 2022/03/15 21:44:38 by tderwedu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -270,7 +270,7 @@ int				Request::_getNextLine(std::string const &str, std::string &line)
 	size_t tmp_pos = str.find("\r\n", this->_cursor);
 	if (tmp_pos == std::string::npos)
 	{
-		line = str.substr(this->_cursor);
+		line = str.substr(this->_cursor, std::string::npos);
 		return 0;
 	}
 	line = str.substr(this->_cursor, tmp_pos - this->_cursor);
@@ -287,17 +287,22 @@ int				Request::_getNextLine(std::string const &str, std::string &line)
 
 int				Request::_getNextField(std::string const &str, std::string &line)
 {
-	size_t pos = str.find("\r\n", this->_cursor);
-	// if (pos == std::string::npos || !str[pos] || str[pos] == ' ' || str[pos] == '	')
-	// {
-	// 	line = str.substr(this->_cursor);
-	// 	return 0;
-	// }
-	line = str.substr(this->_cursor, pos - this->_cursor);
-	if (line.empty())
+	size_t		pos;
+
+	pos = str.find("\r\n", _cursor);
+	if (pos == std::string::npos)
+	{
+		_remain = str.substr(_cursor, std::string::npos);
+		_cursor = 0;
 		return 0;
-	this->_cursor = pos+2;
-	return 1;
+	}
+	line = str.substr(_cursor, pos - _cursor);
+	_cursor = pos + 2;
+	if (!line.empty())
+		return 1;
+	_remain = str.substr(_cursor, std::string::npos);
+	_cursor = 0;
+	return 2;
 }
 
 /*
@@ -390,16 +395,17 @@ int				Request::_parseHeaderField(std::string const &line)
 
 int				Request::parseRequest(std::string const &request)
 {
-	std::string line;
-	this->_cursor = 0;
-	std::string full = this->_remain + request;
+	int				ret;
+	std::string		line;
+	std::string		full = this->_remain + request;
 
+	this->_cursor = 0;
 	if (this->_state == STARTLINE)
 	{
 		if (!this->_getNextLine(full, line))
 		{
 			this->_remain = line;
-			return 1;
+			return 0;
 		}
 		if (this->_parseRequestLine(line))
 			return 400;
@@ -407,13 +413,14 @@ int				Request::parseRequest(std::string const &request)
 	}
 	if (this->_state == HEADERS)
 	{
-		int ret = 0;
-		while ((ret = this->_getNextField(full, line)))
+		ret = 0;
+		while ((ret = this->_getNextField(full, line)) == 1)
 		{
-			if (this->_parseHeaderField(line))
-				return 400;
+			if ((ret = this->_parseHeaderField(line)))
+				return ret;
 		}
-		this->_cursor += 2;
+		if (!ret)
+			return 0;
 		if ((ret = this->_findBodyType()))
 			return ret;
 	}
@@ -462,66 +469,75 @@ int			Request::_getBody(std::string const &buff)
 {
 	int				ret = 0;
 	char			*ptr = NULL;
+	size_t			pos;
 	std::string		line;
 
-	if (this->_type == LEN) // Content-Length
+	if (_type == LEN) // Content-Length
 	{
-		// this->_getNextLine(buff, line);
-		// if (line.empty())
-		// 	return 0;
-		if (buff.size() < this->_body_size)
+		if (buff.size() <_body_size)
 		{
-			this->_remain = buff;
+			_remain = buff;
 			return 0;
 		}
-		this->_body = buff.substr(0, this->_body_size);
-		this->_state = DONE;
+		_body = buff.substr(_cursor, _body_size);
+		_state = DONE;
 		return 0;
 	}
-	else if (this->_chunk < TE) // Chunked : payload
+	else if (_chunk < TE) // Chunked : payload
 	{
-		while ((ret = this->_getNextField(buff, line)) && (this->_chunk < TE))
+		while (_cursor < buff.size())
 		{
-			if (this->_chunk == SIZE)
+			if (_chunk == SIZE)
 			{
-				errno = 0;
-				this->_body_size = strtol(line.c_str(), &ptr, 16);
-				if (this->_body_size < 0 || ptr <= line.c_str() || errno)
-					return 400;
-				if (this->_body_size)
-					this->_chunk = DATA;
-				else
+				pos = buff.find("\r\n", this->_cursor);
+				if (pos == std::string::npos)
 				{
-					this->_chunk = TE;
-					this->_body_size = this->_body.size();
-				}
-			}
-			else if (this->_chunk == DATA)
-			{
-				if (line.size() < this->_body_size)
-				{
-					this->_remain = line;
+					_remain = buff.substr(_cursor, std::string::npos);
+					_cursor = 0;
 					return 0;
 				}
-				this->_body.append(line);
-				this->_chunk = SIZE;
+				errno = 0;
+				_body_size = strtol(buff.c_str() + _cursor, &ptr, 16);
+				if (_body_size < 0 || ptr[0] != '\r' || errno)
+					return 400;
+				_cursor = pos + 2;
+				if (_body_size)
+					_chunk = DATA;
+				else
+				{
+					_chunk = TE;
+					_body_size = _body.size();
+					break ;
+				}
+			}
+			if (_chunk == DATA)
+			{
+				if ((buff.size() - _cursor) < (_body_size + 2))
+				{
+					_remain = buff.substr(_cursor, std::string::npos);
+					return 0;
+				}
+				_body.append(buff, _cursor, _body_size);
+				_cursor += _body_size + 2;
+				_chunk = SIZE;
 			}
 		}
-		if (this->_chunk < TE)
+		if (_chunk < TE)
 		{
-			this->_remain = line;
+			_remain = buff.substr(_cursor, std::string::npos);
+			_cursor = 0;
 			return 0;
 		}
 	}
 	// Chunked : Trailer
-	while ((ret = this->_getNextField(buff, line)))
+	while ((ret = _getNextLine(buff, line)))
 		; // Chunked Trailer Part is ignored
 	if (ret)
 	{
-		this->_remain = line;
+		_remain = line;
 		return 0;
 	}
-	this->_state = DONE;
+	_state = DONE;
 	return 0;
 }
 
@@ -541,7 +557,7 @@ std::ostream&	operator<<(std::ostream& stream, Request const& req)
 	}
 	if (!req._body.empty())
 	{
-		stream	<< "\n\e[36m  Body \e[0m";
+		stream	<< "\n\e[36m  Body \e[0m" << req._body.size() << " Bytes";
 		if (req._type)
 			stream	<< " (" << body_type[req._type] << ")";
 		stream	<< "\n" << req._body ;

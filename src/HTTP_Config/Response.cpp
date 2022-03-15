@@ -6,7 +6,7 @@
 /*   By: tderwedu <tderwedu@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/11 13:57:28 by mdesalle          #+#    #+#             */
-/*   Updated: 2022/03/15 14:47:00 by tderwedu         ###   ########.fr       */
+/*   Updated: 2022/03/15 16:31:04 by tderwedu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -172,8 +172,6 @@ void			Response::setTargetPath(Request &HTTPRequest, Location *HTTPLocation)
 	pos = dir.size() - (dir[dir.size() - 1] == '/');
 	_target_path = HTTPLocation->GetRoot();
 	_target_path.append(_target, pos, std::string::npos);
-	std::cout << "     _target: " << _target << std::endl; //TODO: remove
-	std::cout << "_target_path: " << _target_path << std::endl; //TODO: remove
 	return ;
 }
 
@@ -282,12 +280,8 @@ std::string const		&Response::GetHeaderResponse(Request &HTTPRequest, Location *
 		Body = ReturnError(HTTPLocation, &StatusCode);
 	}
 
-	std::cout << HTTPRequest.getBody().size() << std::endl;
-
 	if (HTTPRequest.getBody().size() > HTTPLocation->GetClientMaxBodySize() && HTTPLocation->GetClientMaxBodySize() != std::string::npos)
 		StatusCode = 413;
-
-	std::cout << StatusCode << std::endl;
 
 	// std::cout << HTTPRequest.getBody() << std::endl;
 
@@ -441,12 +435,8 @@ std::string	Response::HandleGETRequestFile(Request &HTTPRequest, Location *HTTPL
 
 std::string	Response::GetPath(Location *HTTPLocation, unsigned int i)
 {
-	std::cout << i << " : " << HTTPLocation->GetIndex().size() << std::endl; //TODO:remove
 	if (i < HTTPLocation->GetIndex().size())
-	{
-		std::cout << "Index " << i << " : " << _target_path + HTTPLocation->GetIndex()[i] << std::endl; //TODO:remove
 		return (_target_path + HTTPLocation->GetIndex()[i]);
-	}
 	else
 		return ("");
 }

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   ClientSocket.cpp                                   :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: lucas <lucas@student.42.fr>                +#+  +:+       +#+        */
+/*   By: tderwedu <tderwedu@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/23 10:55:52 by tderwedu          #+#    #+#             */
-/*   Updated: 2022/03/15 14:22:54 by mdesalle         ###   ########.fr       */
+/*   Updated: 2022/03/15 19:10:17 by tderwedu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -154,10 +154,11 @@ int				ClientSocket::_getRequest(void)
 	n = recv(_pollfd.fd, _buff, RECV_BUFF_SIZE, 0);
 	_buff[n] = '\0';
 #ifdef DEBUG
-	std::cout << "\e[31m-------------------\n\e[0m" << _buff << "\e[31m-------------------\e[0m" << std::endl;
+	// std::cout << "_buff's len: " << n << std::endl; //TODO: remove
+	// std::cout << "\e[31m-------------------\n\e[0m" << _buff << "\e[31m-------------------\e[0m" << std::endl;
 #endif
 	_timer.start();
-	std::string		buff = std::string(_buff);
+	std::string		buff = std::string(_buff, n);
 	// Error => Should already be handled by 'handleSocket()'
 	if (n < 0)
 	{
@@ -361,7 +362,7 @@ inline void		ClientSocket::_sendContinue(void)
 
 inline void				ClientSocket::___debug_request___(int code) const
 {
-#ifdef DEBUG
+// #ifdef DEBUG
 	std::cout	<< "\e[32m"	<< " \t------------------- \n" \
 							<< " \t-     Request     - \n" \
 							<< " \t------------------- \e[0m" << std::endl;
@@ -382,9 +383,9 @@ inline void				ClientSocket::___debug_request___(int code) const
 	else
 		std::cout	<< "\e[31m NULL \e[0m" << std::endl;
 	std::cout	<< "\e[32m"	<< " \t------------------- \e[0m" << std::endl;
-#else
-	(void)code;
-#endif
+// #else
+// 	(void)code;
+// #endif
 }
 
 /*

@@ -50,7 +50,7 @@
 		</li>
 		<li>
 			<code id="inline">www.webserv.be</code> with port <code id="inline">8080</code>: <br>
-			<code>sh
+			<code>
 				curl -v -X GET http:// www.webserv.be:8080/ --resolve www.webserv.be:8080:127.0.0.1
 			</code>
 		</li>
@@ -66,13 +66,13 @@
 	<ul>
 		<li>
 			Without any transfer encoding and body's input as a string: <br>
-			<code>sh
+			<code>
 				curl -v -X POST http://www.webserv.be:8080/uploads/file.txt --resolve www.webserv.be:8080:127.0.0.1 -d "BODY IS HERE"
 			</code>
 		</li>
 		<li>
 			With <code id="inline">chunked</code> transfer encoding and body's input as a file: <br>
-			<code>sh
+			<code>
 				curl -v -X POST http://www.webserv.be:8080/uploads/file_2048.txt --resolve www.webserv.be:8080:127.0.0.1 -H "Transfer-Encoding: chunked" -T "./file_2048.txt"
 			</code>
 		</li>
@@ -81,7 +81,7 @@
 	<h3>DELETE</h3>
 	<ul>
 		<li>
-			<code>sh
+			<code>
 			curl -v -X DELETE http://www.webserv.be:8080/delete/delete_me.txt --resolve www.webserv.be:8080:127.0.0.1
 			</code>
 		</li>
