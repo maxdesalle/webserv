@@ -6,7 +6,7 @@
 /*   By: tderwedu <tderwedu@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/11 13:57:28 by mdesalle          #+#    #+#             */
-/*   Updated: 2022/03/14 17:34:42 by tderwedu         ###   ########.fr       */
+/*   Updated: 2022/03/15 11:29:02 by mdesalle         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -254,7 +254,7 @@ std::string const		&Response::GetHeaderResponse(Request &HTTPRequest, Location *
 		Body = ReturnError(HTTPLocation, &StatusCode);
 	}
 
-	std::cout << HTTPRequest.getBody() << std::endl;
+	// std::cout << HTTPRequest.getBody() << std::endl;
 
 	if (RedirectionExists(HTTPLocation))
 		return (HandleRedirection(HTTPRequest, HTTPLocation));

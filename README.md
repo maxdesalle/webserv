@@ -52,8 +52,8 @@ A lightweight HTTP server implemented in C++.
 	- [ ] DELETE request
  - [ ] Try the 42's `tester`
  - [ ] Try the 42's `cgi_tester`
- - [ ] upload some file and get it back
- - [ ] Try with a methode which is NOT allowed
+ - [x] upload some file and get it back
+ - [x] Try with a methode which is NOT allowed
 
 ## Ressources
 
