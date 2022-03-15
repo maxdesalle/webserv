@@ -6,7 +6,7 @@
 /*   By: tderwedu <tderwedu@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/23 10:58:04 by tderwedu          #+#    #+#             */
-/*   Updated: 2022/03/11 16:52:41 by tderwedu         ###   ########.fr       */
+/*   Updated: 2022/03/15 12:01:13 by tderwedu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,12 +14,12 @@
 
 inline static void		___error_msg___(char const *fct, char const *msg)
 {
-	std::cerr << "\e[31m error " << fct << "\e[0m: " << msg << std::endl; 
+	std::cerr << "\e[31m error \e[0m" << fct << ": " << msg << std::endl; 
 }
 
 inline static void		___error_msg___(char const *fct, char const *msg, int port)
 {
-	std::cerr	<< "\e[31m error " << fct << "\e[0m: " << msg << "\e[31m" \
+	std::cerr	<< "\e[31m error \e[0m" << fct << ": " << msg << "\e[31m" \
 				<< port << "\e[0m" << std::endl; 
 }
 
@@ -116,6 +116,7 @@ void				Webserv::initWebserv(std::string const& config)
 
 void				Webserv::runWebserv(void)
 {
+	std::cout << "\e[0m\n\t is running" << std::endl;
 	while (true)
 	{
 		___debug_before_poll___();
@@ -181,7 +182,7 @@ void				Webserv::_addNetworkSocket(int port, int nbr_queue)
 	opt = 1;
 	if ((fd_sock = socket(AF_INET, SOCK_STREAM, 0)) < 1)
 	{
-		___error_msg___("socket", "some system call failure occured!");
+		___error_msg___("socket", strerror(errno));
 		exit(EXIT_FAILURE);
 	}
 	// Set NON-BLOCKING and SO_REUSEADDR
@@ -199,13 +200,13 @@ void				Webserv::_addNetworkSocket(int port, int nbr_queue)
 		if (errno == EACCES)
 			___error_msg___("bin", "need superuser privileges for port ", port);
 		else
-			___error_msg___("bin", "some system call failure occured!");
+			___error_msg___("bin", strerror(errno));
 		exit(EXIT_FAILURE);
 	}
 	nbr_queue = (nbr_queue > SOMAXCONN ? SOMAXCONN : nbr_queue);
 	if (listen(fd_sock, nbr_queue))
 	{
-		___error_msg___("listen", "some system call failure occured!");
+		___error_msg___("listen", strerror(errno));
 		exit(EXIT_FAILURE);
 	}
 	_pollfd[_nbrPollMax].fd = fd_sock;
