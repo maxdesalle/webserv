@@ -6,7 +6,7 @@
 /*   By: tderwedu <tderwedu@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/01/18 17:28:20 by maxdesall         #+#    #+#             */
-/*   Updated: 2022/03/14 15:32:20 by tderwedu         ###   ########.fr       */
+/*   Updated: 2022/03/15 12:00:55 by tderwedu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,7 +25,7 @@ int	main(int argc, char **argv)
 				<< " \t##########################################################\n" \
 				<< " \t#                      W E B S E R V                     #\n" \
 				<< " \t##########################################################" \
-				<< "\e[0m\n\t is running" << std::endl;
+				<< std::endl;
 
 	if (argc != 2)
 		server.initWebserv("default/website.conf");
