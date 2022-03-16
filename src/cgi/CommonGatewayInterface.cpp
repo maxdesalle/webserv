@@ -6,7 +6,7 @@
 /*   By: ldelmas <ldelmas@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/09 14:38:27 by mdesalle          #+#    #+#             */
-/*   Updated: 2022/03/11 11:41:41 by ldelmas          ###   ########.fr       */
+/*   Updated: 2022/03/16 13:06:22 by ldelmas          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -88,6 +88,8 @@ unsigned int		CommonGatewayInterface::ExecuteCGIScript(void)
 	waitpid(0, &status, 0);
 	if (status/256 == 1)
 		return 404;
+	else if (status/256)
+		return 500;
 	this->_makeBody(fds);
 	delete[] argv[0];
 	delete[] argv;

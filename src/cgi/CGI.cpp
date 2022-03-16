@@ -3,17 +3,17 @@
 /*                                                        :::      ::::::::   */
 /*   CGI.cpp                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: tderwedu <tderwedu@student.s19.be>         +#+  +:+       +#+        */
+/*   By: ldelmas <ldelmas@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/09 13:44:34 by ldelmas           #+#    #+#             */
-/*   Updated: 2022/03/11 15:26:44 by tderwedu         ###   ########.fr       */
+/*   Updated: 2022/03/16 13:22:14 by ldelmas          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <string>
 #include <unistd.h>
 
-// #include <iostream>
+#include <iostream>
 
 int main(int ac, char **av, char **env)
 {
@@ -21,7 +21,7 @@ int main(int ac, char **av, char **env)
 	exec[1] = NULL;
 	for (int i = 0; env[i]; i++)
 	{
-		// std::cout << env[i] << std::endl;
+		std::cerr << env[i] << std::endl;
 		if (std::string(env[i]).substr(0, 16) == "PATH_TRANSLATED=")
 		{
 			std::string sexec = std::string(env[i]).substr(16);
