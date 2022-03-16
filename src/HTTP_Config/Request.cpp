@@ -6,7 +6,7 @@
 /*   By: ldelmas <ldelmas@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/01/26 14:59:17 by ldelmas           #+#    #+#             */
-/*   Updated: 2022/03/16 16:58:58 by ldelmas          ###   ########.fr       */
+/*   Updated: 2022/03/16 17:23:26 by ldelmas          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -181,7 +181,6 @@ void				Request::setCGIServerVars(Location const &CGILocation, in_addr_t addr)
 	this->_cgiSerVars["CGI_PATH"] = CGILocation.GetPass();
 	this->_cgiSerVars["SCRIPT_NAME"] = Header::_parseAbsPath(this->_target);
 	this->_cgiSerVars["REQUEST_URI"] = this->_target;
-	std::cerr << this->_cgiSerVars["SCRIPT_NAME"] << std::endl;
 
 	/*IF SERVER DOESN'T SUPPORT USER AUTHENTIFICATION*/
 	this->_cgiSerVars["AUTH_TYPE"] = "";
