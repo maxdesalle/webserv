@@ -6,7 +6,7 @@
 /*   By: tderwedu <tderwedu@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/23 10:55:52 by tderwedu          #+#    #+#             */
-/*   Updated: 2022/03/15 19:10:17 by tderwedu         ###   ########.fr       */
+/*   Updated: 2022/03/16 10:42:58 by tderwedu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -154,7 +154,7 @@ int				ClientSocket::_getRequest(void)
 	n = recv(_pollfd.fd, _buff, RECV_BUFF_SIZE, 0);
 	_buff[n] = '\0';
 #ifdef DEBUG
-	// std::cout << "_buff's len: " << n << std::endl; //TODO: remove
+	// std::cout << "_buff's len: " << n << std::endl;
 	// std::cout << "\e[31m-------------------\n\e[0m" << _buff << "\e[31m-------------------\e[0m" << std::endl;
 #endif
 	_timer.start();
@@ -219,13 +219,11 @@ void			ClientSocket::_sendResponse(int code, bool close)
 	// Check if the connection should be closed after sending the response
 	std::string	cxn = _request.getField("Connection");
 	close = close || !ci_equal(cxn, "keep-alive") || isErrorCodeClose(code);
-	// TODO: add close to parameters !!!
 	_request.setCGIServerVars(*_location, getIP());
 	if (code)
 		buff = &_response.GetBadRequestResponse(_request, const_cast<Location*>(_location), code);
 	else
-		buff = &_response.GetHeaderResponse(_request, const_cast<Location*>(_location)); //TODO: THIS IS UGLY!!!!
-	// TODO: DEBUG ==> How to handle 'Response' error ? !!!
+		buff = &_response.GetHeaderResponse(_request, const_cast<Location*>(_location));
 	if (buff->empty())
 	{
 		___debug_msg___("RESPONSE EMPTY !");
@@ -362,7 +360,7 @@ inline void		ClientSocket::_sendContinue(void)
 
 inline void				ClientSocket::___debug_request___(int code) const
 {
-// #ifdef DEBUG
+#ifdef DEBUG
 	std::cout	<< "\e[32m"	<< " \t------------------- \n" \
 							<< " \t-     Request     - \n" \
 							<< " \t------------------- \e[0m" << std::endl;
@@ -383,9 +381,9 @@ inline void				ClientSocket::___debug_request___(int code) const
 	else
 		std::cout	<< "\e[31m NULL \e[0m" << std::endl;
 	std::cout	<< "\e[32m"	<< " \t------------------- \e[0m" << std::endl;
-// #else
-// 	(void)code;
-// #endif
+#else
+	(void)code;
+#endif
 }
 
 /*
