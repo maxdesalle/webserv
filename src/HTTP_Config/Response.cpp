@@ -6,7 +6,7 @@
 /*   By: tderwedu <tderwedu@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/15 14:59:05 by mdesalle          #+#    #+#             */
-/*   Updated: 2022/03/15 21:49:07 by tderwedu         ###   ########.fr       */
+/*   Updated: 2022/03/16 09:35:49 by mdesalle         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -281,19 +281,23 @@ std::string const		&Response::GetHeaderResponse(Request &HTTPRequest, Location *
 	}
 
 	if (HTTPRequest.getBody().size() > HTTPLocation->GetClientMaxBodySize() && HTTPLocation->GetClientMaxBodySize() != std::string::npos)
+	{
 		StatusCode = 413;
-
-	// std::cout << HTTPRequest.getBody() << std::endl;
+		Body = ReturnError(HTTPLocation, &StatusCode);
+	}
 
 	if (RedirectionExists(HTTPLocation))
 		return (HandleRedirection(HTTPRequest, HTTPLocation));
 
-	if (HTTPRequest.getMethod() == "GET")
-		Body = CheckIfFileOrFolder(HTTPRequest, HTTPLocation, &StatusCode);
-	else if (HTTPRequest.getMethod() == "POST")
-		Body = HandlePOSTRequest(HTTPRequest, HTTPLocation, &StatusCode);
-	else if (HTTPRequest.getMethod() == "DELETE")
-		Body = HandleDELETERequest(HTTPLocation, &StatusCode);
+	if (Body.empty())
+	{
+		if (HTTPRequest.getMethod() == "GET")
+			Body = CheckIfFileOrFolder(HTTPRequest, HTTPLocation, &StatusCode);
+		else if (HTTPRequest.getMethod() == "POST")
+			Body = HandlePOSTRequest(HTTPRequest, HTTPLocation, &StatusCode);
+		else if (HTTPRequest.getMethod() == "DELETE")
+			Body = HandleDELETERequest(HTTPLocation, &StatusCode);
+	}
 
 	GenerateResponse(Body, &StatusCode);
 
