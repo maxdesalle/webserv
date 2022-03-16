@@ -6,7 +6,7 @@
 /*   By: tderwedu <tderwedu@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/01/28 14:30:39 by mdesalle          #+#    #+#             */
-/*   Updated: 2022/03/15 14:06:12 by mdesalle         ###   ########.fr       */
+/*   Updated: 2022/03/16 14:46:54 by tderwedu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -163,6 +163,14 @@ bool		Location::SubStringCompare(std::string KeyValue)
 	return (false);
 }
 
+static void		isMethodHandled(std::string const& method)
+{
+	if (method == "GET" || method == "POST" || method == "DELETE")
+		return ;
+	std::cerr << "\e[0mError: Webserv does not handle " << method << " method!" << std::endl;
+	exit(EXIT_FAILURE);
+}
+
 /*
  * Saves the limit_except value(s)
  */
@@ -174,6 +182,7 @@ void		Location::SaveLimitExcept(std::string Value)
 	if ((EndOfWord = Value.find_first_of(' ', 0)) == std::string::npos)
 	{
 		_LimitExcept.push_back(Value);
+		isMethodHandled(_LimitExcept.back());
 		return ;
 	}
 	for (size_t i = 0; i < Value.size(); i += 1)
@@ -189,6 +198,7 @@ void		Location::SaveLimitExcept(std::string Value)
 			break ;
 		}
 	}
+	isMethodHandled(_LimitExcept.back());
 }
 
 /*
@@ -319,7 +329,8 @@ bool		Location::isMethodValid(const std::string &method)	const
 std::ostream&	operator<<(std::ostream& stream, Location const& loc)
 {
 	stream << "\t\e[34m Location : \e[0m" << std::endl;
-	stream << "\t  - Path : " << "\e[31m>>\e[0m"<< loc._Path << "\e[31m<<\e[0m"<< std::endl;
-	stream << "\t  - Root : " << "\e[31m>>\e[0m" << loc._Root << "\e[31m<<\e[0m" << std::endl;
+	stream << "\t  - Path      : " << "\e[31m>>\e[0m"<< loc._Path << "\e[31m<<\e[0m"<< std::endl;
+	stream << "\t  - Root      : " << "\e[31m>>\e[0m" << loc._Root << "\e[31m<<\e[0m" << std::endl;
+	stream << "\t  - AutoIndex : " << (loc._AutoIndex ? "True" : "False") << std::endl;
 	return stream;
 }

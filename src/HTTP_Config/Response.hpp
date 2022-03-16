@@ -6,7 +6,7 @@
 /*   By: tderwedu <tderwedu@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/01/26 11:48:07 by ldelmas           #+#    #+#             */
-/*   Updated: 2022/03/15 12:23:56 by tderwedu         ###   ########.fr       */
+/*   Updated: 2022/03/16 14:38:11 by tderwedu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,6 +23,7 @@
 # include <sstream>
 # include <string>
 # include <time.h>
+# include <vector>
 # include <map>
 # include "Header.hpp"
 # include "Request.hpp"

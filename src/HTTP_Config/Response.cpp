@@ -6,7 +6,7 @@
 /*   By: tderwedu <tderwedu@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/15 14:59:05 by mdesalle          #+#    #+#             */
-/*   Updated: 2022/03/16 09:35:49 by mdesalle         ###   ########.fr       */
+/*   Updated: 2022/03/16 14:38:52 by tderwedu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -153,8 +153,8 @@ std::string	Response::FindStatusMessage(unsigned int *StatusCode)
 		default:
 			break ;
 	}
-	*StatusCode = 500;
-	return ("Internal Server Error");
+	*StatusCode = 200;
+	return ("OK");
 }
 
 void			Response::setTargetPath(Request &HTTPRequest, Location *HTTPLocation)
@@ -180,19 +180,20 @@ std::string	const	&Response::GetBadRequestResponse(Request &HTTPRequest, Locatio
 	std::string			Body;
 	std::ostringstream	oss;
 
-	if (!HTTPLocation)
+	// if (HTTPRequest.getMethod() != "GET" && HTTPRequest.getMethod() != "POST" && HTTPRequest.getMethod() != "DELETE")
+	if (!HTTPLocation->isMethodValid(HTTPRequest.getMethod()))
+	{
+		StatusCode = 405;
+		Body = "Method Not Allowed";
+	}
+	if (!HTTPLocation && Body.empty())
 		Body = ReturnError(HTTPLocation, &StatusCode);
-	else
+	if (Body.empty())
 	{
 		if (HTTPRequest.getBody().size() > HTTPLocation->GetClientMaxBodySize() && HTTPLocation->GetClientMaxBodySize() != std::string::npos)
 			StatusCode = 413;
 		if (StatusCode == 301)
 			return (CheckIfFileOrFolderConst(HTTPRequest, HTTPLocation));
-		if (HTTPRequest.getMethod() != "GET" && HTTPRequest.getMethod() != "POST" && HTTPRequest.getMethod() != "DELETE")
-		{
-			StatusCode = 405;
-			Body = "Method Not Allowed";
-		}
 		else
 			Body = ReturnError(HTTPLocation, &StatusCode);
 	}
@@ -268,13 +269,15 @@ std::string	const	&Response::HandleRedirection(Request &HTTPRequest, Location *H
 	return (_HeaderResponse);
 }
 
+
 std::string const		&Response::GetHeaderResponse(Request &HTTPRequest, Location *HTTPLocation)
 {
 	std::string			Body;
-	unsigned int		StatusCode = 0;
+	unsigned int		StatusCode = 200;
 
 	setTargetPath(HTTPRequest, HTTPLocation);
-	if (HTTPRequest.getMethod() != "GET" && HTTPRequest.getMethod() != "POST" && HTTPRequest.getMethod() != "DELETE")
+	// if (HTTPRequest.getMethod() != "GET" && HTTPRequest.getMethod() != "POST" && HTTPRequest.getMethod() != "DELETE")
+	if (!HTTPLocation->isMethodValid(HTTPRequest.getMethod()))
 	{
 		StatusCode = 405;
 		Body = ReturnError(HTTPLocation, &StatusCode);
@@ -301,25 +304,22 @@ std::string const		&Response::GetHeaderResponse(Request &HTTPRequest, Location *
 
 	GenerateResponse(Body, &StatusCode);
 
-	// std::cout << _HeaderResponse << std::endl;
+	// std::cout << _HeaderResponse << std::endl; //TODO:remove
 	return (_HeaderResponse);
 }
 
 std::string	Response::GetErrorPagePath(Location *HTTPLocation, unsigned int *StatusCode)
 {
-	std::string										Path;
 	std::map<size_t, std::string> const&			error_pages = HTTPLocation->GetErrorPage();
 	std::map<size_t, std::string>::const_iterator	it;
 
-	it = error_pages.find(*StatusCode);
+	if (HTTPLocation != NULL)
+		it = error_pages.find(*StatusCode);
+	else
+		return ("");
 	if (it != error_pages.end())
-	{
-		Path = HTTPLocation->GetRoot();
-		if (it->second[it->second.size() - 1] != '/')
-			Path.append("/");
-		Path.append(it->second);
-	}
-	return Path;
+		return it->second;
+	return ("");
 }
 
 std::string Response::ReturnError(Location *HTTPLocation, unsigned int *StatusCode)
@@ -363,7 +363,6 @@ std::string const	&Response::Handle301Redirect(void)
 std::string Response::CheckIfFileOrFolder(Request &HTTPRequest, Location *HTTPLocation, unsigned int *StatusCode)
 {
 	struct				stat s;
-	// std::string			Path = HTTPLocation->GetRoot() + HTTPRequest.getTarget(); //TODO:remove
 
 	if (stat(_target_path.c_str(), &s) == 0)
 	{
@@ -382,7 +381,6 @@ std::string Response::CheckIfFileOrFolder(Request &HTTPRequest, Location *HTTPLo
 std::string const &Response::CheckIfFileOrFolderConst(Request &HTTPRequest, Location *HTTPLocation)
 {
 	struct				stat s;
-	// std::string			Path = HTTPLocation->GetRoot() + HTTPRequest.getTarget(); //TODO:remove
 
 	if (stat(_target_path.c_str(),&s) == 0)
 	{
@@ -414,7 +412,6 @@ std::string	Response::HandleGETCGIRequest(Request &HTTPRequest, Location *HTTPLo
 std::string	Response::HandleGETRequestFile(Request &HTTPRequest, Location *HTTPLocation, unsigned int *StatusCode)
 {
 	std::string			FileContent;
-	// std::string			Path = HTTPLocation->GetRoot() + HTTPRequest.getTarget(); //TODO:remove
 	std::ifstream		File(_target_path.c_str());
 	std::stringstream	Buffer;
 
@@ -465,7 +462,6 @@ std::string	Response::HandleGETRequest(Request &HTTPRequest, Location *HTTPLocat
 			return (HandleGETRequest(HTTPRequest, HTTPLocation, StatusCode, i + 1));
 		else
 		{
-			// Path = HTTPLocation->GetRoot() + HTTPRequest.getTarget(); TODO:remove
 			if (HTTPLocation->GetAutoIndex() && is_dir(_target_path))
 				return (get_autoindex(_target_path, _target));
 			else
@@ -485,7 +481,11 @@ std::string	Response::HandlePOSTRequest(Request &HTTPRequest, Location *HTTPLoca
 {
 	if (FindValueInVector(HTTPLocation->GetLimitExcept(), "POST") == false)
 	{
-		*StatusCode = 405;
+		// std::cout << HTTPRequest.getTarget() << ": " << HTTPRequest.getTarget()[HTTPRequest.getTarget().size() + 1] << std::endl;
+		if (HTTPRequest.getTarget()[HTTPRequest.getTarget().size() + 1] != '/')
+			*StatusCode = 400;
+		else
+			*StatusCode = 405;
 		return (ReturnError(HTTPLocation, StatusCode));
 	}
 
@@ -497,7 +497,6 @@ std::string	Response::HandlePOSTRequest(Request &HTTPRequest, Location *HTTPLoca
 
 std::string	Response::HandleNormalPostRequest(Request &HTTPRequest, Location *HTTPLocation, unsigned int *StatusCode)
 {
-	// std::string		Path = HTTPLocation->GetRoot() + HTTPRequest.getTarget(); //TODO:remove
 	std::ofstream	File(_target_path.c_str());
 
 	if (!File)
