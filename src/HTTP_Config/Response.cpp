@@ -6,7 +6,7 @@
 /*   By: tderwedu <tderwedu@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/15 14:59:05 by mdesalle          #+#    #+#             */
-/*   Updated: 2022/03/15 21:49:07 by tderwedu         ###   ########.fr       */
+/*   Updated: 2022/03/16 10:54:47 by tderwedu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -153,8 +153,8 @@ std::string	Response::FindStatusMessage(unsigned int *StatusCode)
 		default:
 			break ;
 	}
-	*StatusCode = 500;
-	return ("Internal Server Error");
+	*StatusCode = 200;
+	return ("OK");
 }
 
 void			Response::setTargetPath(Request &HTTPRequest, Location *HTTPLocation)
@@ -271,7 +271,7 @@ std::string	const	&Response::HandleRedirection(Request &HTTPRequest, Location *H
 std::string const		&Response::GetHeaderResponse(Request &HTTPRequest, Location *HTTPLocation)
 {
 	std::string			Body;
-	unsigned int		StatusCode = 0;
+	unsigned int		StatusCode = 200;
 
 	setTargetPath(HTTPRequest, HTTPLocation);
 	if (HTTPRequest.getMethod() != "GET" && HTTPRequest.getMethod() != "POST" && HTTPRequest.getMethod() != "DELETE")
@@ -283,7 +283,9 @@ std::string const		&Response::GetHeaderResponse(Request &HTTPRequest, Location *
 	if (HTTPRequest.getBody().size() > HTTPLocation->GetClientMaxBodySize() && HTTPLocation->GetClientMaxBodySize() != std::string::npos)
 		StatusCode = 413;
 
-	// std::cout << HTTPRequest.getBody() << std::endl;
+	std::cout << " ==0== GetHeaderResponse ==0== " << std::endl;
+	std::cout << "StatusCode: " << StatusCode << std::endl;
+	std::cout << HTTPRequest.getBody() << std::endl;
 
 	if (RedirectionExists(HTTPLocation))
 		return (HandleRedirection(HTTPRequest, HTTPLocation));
@@ -295,9 +297,10 @@ std::string const		&Response::GetHeaderResponse(Request &HTTPRequest, Location *
 	else if (HTTPRequest.getMethod() == "DELETE")
 		Body = HandleDELETERequest(HTTPLocation, &StatusCode);
 
+	std::cout << "StatusCode: " << StatusCode << std::endl;
 	GenerateResponse(Body, &StatusCode);
 
-	// std::cout << _HeaderResponse << std::endl;
+	std::cout << _HeaderResponse << std::endl;
 	return (_HeaderResponse);
 }
 
@@ -359,7 +362,6 @@ std::string const	&Response::Handle301Redirect(void)
 std::string Response::CheckIfFileOrFolder(Request &HTTPRequest, Location *HTTPLocation, unsigned int *StatusCode)
 {
 	struct				stat s;
-	// std::string			Path = HTTPLocation->GetRoot() + HTTPRequest.getTarget(); //TODO:remove
 
 	if (stat(_target_path.c_str(), &s) == 0)
 	{
@@ -378,7 +380,6 @@ std::string Response::CheckIfFileOrFolder(Request &HTTPRequest, Location *HTTPLo
 std::string const &Response::CheckIfFileOrFolderConst(Request &HTTPRequest, Location *HTTPLocation)
 {
 	struct				stat s;
-	// std::string			Path = HTTPLocation->GetRoot() + HTTPRequest.getTarget(); //TODO:remove
 
 	if (stat(_target_path.c_str(),&s) == 0)
 	{
@@ -410,7 +411,6 @@ std::string	Response::HandleGETCGIRequest(Request &HTTPRequest, Location *HTTPLo
 std::string	Response::HandleGETRequestFile(Request &HTTPRequest, Location *HTTPLocation, unsigned int *StatusCode)
 {
 	std::string			FileContent;
-	// std::string			Path = HTTPLocation->GetRoot() + HTTPRequest.getTarget(); //TODO:remove
 	std::ifstream		File(_target_path.c_str());
 	std::stringstream	Buffer;
 
@@ -461,7 +461,6 @@ std::string	Response::HandleGETRequest(Request &HTTPRequest, Location *HTTPLocat
 			return (HandleGETRequest(HTTPRequest, HTTPLocation, StatusCode, i + 1));
 		else
 		{
-			// Path = HTTPLocation->GetRoot() + HTTPRequest.getTarget(); TODO:remove
 			if (HTTPLocation->GetAutoIndex() && is_dir(_target_path))
 				return (get_autoindex(_target_path, _target));
 			else
@@ -493,7 +492,6 @@ std::string	Response::HandlePOSTRequest(Request &HTTPRequest, Location *HTTPLoca
 
 std::string	Response::HandleNormalPostRequest(Request &HTTPRequest, Location *HTTPLocation, unsigned int *StatusCode)
 {
-	// std::string		Path = HTTPLocation->GetRoot() + HTTPRequest.getTarget(); //TODO:remove
 	std::ofstream	File(_target_path.c_str());
 
 	if (!File)
