@@ -6,7 +6,7 @@
 /*   By: tderwedu <tderwedu@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/15 14:59:05 by mdesalle          #+#    #+#             */
-/*   Updated: 2022/03/16 10:57:07 by tderwedu         ###   ########.fr       */
+/*   Updated: 2022/03/16 12:36:44 by tderwedu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -172,6 +172,9 @@ void			Response::setTargetPath(Request &HTTPRequest, Location *HTTPLocation)
 	pos = dir.size() - (dir[dir.size() - 1] == '/');
 	_target_path = HTTPLocation->GetRoot();
 	_target_path.append(_target, pos, std::string::npos);
+	std::cout << "        ROOT: " << HTTPLocation->GetRoot() << std::endl; //TODO:remove
+	std::cout << "     _target: " << _target << std::endl; //TODO:remove
+	std::cout << "_target_path: " << _target_path << std::endl; //TODO:remove
 	return ;
 }
 
@@ -301,13 +304,12 @@ std::string const		&Response::GetHeaderResponse(Request &HTTPRequest, Location *
 
 	GenerateResponse(Body, &StatusCode);
 
-	std::cout << _HeaderResponse << std::endl;
+	// std::cout << _HeaderResponse << std::endl;
 	return (_HeaderResponse);
 }
 
 std::string	Response::GetErrorPagePath(Location *HTTPLocation, unsigned int *StatusCode)
 {
-	std::string										Path;
 	std::map<size_t, std::string> const&			error_pages = HTTPLocation->GetErrorPage();
 	std::map<size_t, std::string>::const_iterator	it;
 
@@ -316,13 +318,8 @@ std::string	Response::GetErrorPagePath(Location *HTTPLocation, unsigned int *Sta
 	else
 		return ("");
 	if (it != error_pages.end())
-	{
-		Path = HTTPLocation->GetRoot();
-		if (it->second[it->second.size() - 1] != '/')
-			Path.append("/");
-		Path.append(it->second);
-	}
-	return Path;
+		return it->second;
+	return ("");
 }
 
 std::string Response::ReturnError(Location *HTTPLocation, unsigned int *StatusCode)
@@ -484,7 +481,7 @@ std::string	Response::HandlePOSTRequest(Request &HTTPRequest, Location *HTTPLoca
 {
 	if (FindValueInVector(HTTPLocation->GetLimitExcept(), "POST") == false)
 	{
-		std::cout << HTTPRequest.getTarget() << ": " << HTTPRequest.getTarget()[HTTPRequest.getTarget().size() + 1] << std::endl;
+		// std::cout << HTTPRequest.getTarget() << ": " << HTTPRequest.getTarget()[HTTPRequest.getTarget().size() + 1] << std::endl;
 		if (HTTPRequest.getTarget()[HTTPRequest.getTarget().size() + 1] != '/')
 			*StatusCode = 400;
 		else

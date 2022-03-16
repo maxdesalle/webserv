@@ -6,7 +6,7 @@
 /*   By: tderwedu <tderwedu@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/01/28 14:30:39 by mdesalle          #+#    #+#             */
-/*   Updated: 2022/03/15 14:06:12 by mdesalle         ###   ########.fr       */
+/*   Updated: 2022/03/16 12:23:46 by tderwedu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -319,7 +319,8 @@ bool		Location::isMethodValid(const std::string &method)	const
 std::ostream&	operator<<(std::ostream& stream, Location const& loc)
 {
 	stream << "\t\e[34m Location : \e[0m" << std::endl;
-	stream << "\t  - Path : " << "\e[31m>>\e[0m"<< loc._Path << "\e[31m<<\e[0m"<< std::endl;
-	stream << "\t  - Root : " << "\e[31m>>\e[0m" << loc._Root << "\e[31m<<\e[0m" << std::endl;
+	stream << "\t  - Path      : " << "\e[31m>>\e[0m"<< loc._Path << "\e[31m<<\e[0m"<< std::endl;
+	stream << "\t  - Root      : " << "\e[31m>>\e[0m" << loc._Root << "\e[31m<<\e[0m" << std::endl;
+	stream << "\t  - AutoIndex : " << (loc._AutoIndex ? "True" : "False") << std::endl;
 	return stream;
 }
