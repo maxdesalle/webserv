@@ -6,7 +6,7 @@
 /*   By: tderwedu <tderwedu@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/15 14:59:05 by mdesalle          #+#    #+#             */
-/*   Updated: 2022/03/16 12:36:44 by tderwedu         ###   ########.fr       */
+/*   Updated: 2022/03/16 14:38:52 by tderwedu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -172,9 +172,6 @@ void			Response::setTargetPath(Request &HTTPRequest, Location *HTTPLocation)
 	pos = dir.size() - (dir[dir.size() - 1] == '/');
 	_target_path = HTTPLocation->GetRoot();
 	_target_path.append(_target, pos, std::string::npos);
-	std::cout << "        ROOT: " << HTTPLocation->GetRoot() << std::endl; //TODO:remove
-	std::cout << "     _target: " << _target << std::endl; //TODO:remove
-	std::cout << "_target_path: " << _target_path << std::endl; //TODO:remove
 	return ;
 }
 
@@ -183,7 +180,8 @@ std::string	const	&Response::GetBadRequestResponse(Request &HTTPRequest, Locatio
 	std::string			Body;
 	std::ostringstream	oss;
 
-	if (HTTPRequest.getMethod() != "GET" && HTTPRequest.getMethod() != "POST" && HTTPRequest.getMethod() != "DELETE")
+	// if (HTTPRequest.getMethod() != "GET" && HTTPRequest.getMethod() != "POST" && HTTPRequest.getMethod() != "DELETE")
+	if (!HTTPLocation->isMethodValid(HTTPRequest.getMethod()))
 	{
 		StatusCode = 405;
 		Body = "Method Not Allowed";
@@ -271,13 +269,15 @@ std::string	const	&Response::HandleRedirection(Request &HTTPRequest, Location *H
 	return (_HeaderResponse);
 }
 
+
 std::string const		&Response::GetHeaderResponse(Request &HTTPRequest, Location *HTTPLocation)
 {
 	std::string			Body;
 	unsigned int		StatusCode = 200;
 
 	setTargetPath(HTTPRequest, HTTPLocation);
-	if (HTTPRequest.getMethod() != "GET" && HTTPRequest.getMethod() != "POST" && HTTPRequest.getMethod() != "DELETE")
+	// if (HTTPRequest.getMethod() != "GET" && HTTPRequest.getMethod() != "POST" && HTTPRequest.getMethod() != "DELETE")
+	if (!HTTPLocation->isMethodValid(HTTPRequest.getMethod()))
 	{
 		StatusCode = 405;
 		Body = ReturnError(HTTPLocation, &StatusCode);
@@ -304,7 +304,7 @@ std::string const		&Response::GetHeaderResponse(Request &HTTPRequest, Location *
 
 	GenerateResponse(Body, &StatusCode);
 
-	// std::cout << _HeaderResponse << std::endl;
+	// std::cout << _HeaderResponse << std::endl; //TODO:remove
 	return (_HeaderResponse);
 }
 

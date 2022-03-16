@@ -6,7 +6,7 @@
 /*   By: tderwedu <tderwedu@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/23 10:55:52 by tderwedu          #+#    #+#             */
-/*   Updated: 2022/03/16 11:25:21 by tderwedu         ###   ########.fr       */
+/*   Updated: 2022/03/16 14:20:53 by tderwedu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -154,8 +154,8 @@ int				ClientSocket::_getRequest(void)
 	n = recv(_pollfd.fd, _buff, RECV_BUFF_SIZE, 0);
 	_buff[n] = '\0';
 #ifdef DEBUG
-	// std::cout << "_buff's len: " << n << std::endl;
-	// std::cout << "\e[31m-------------------\n\e[0m" << _buff << "\e[31m-------------------\e[0m" << std::endl;
+	std::cout << "_buff's len: " << n << std::endl;
+	std::cout << "\e[31m-------------------\n\e[0m" << _buff << "\e[31m-------------------\e[0m" << std::endl;
 #endif
 	_timer.start();
 	std::string		buff = std::string(_buff, n);
