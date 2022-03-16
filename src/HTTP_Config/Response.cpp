@@ -6,7 +6,7 @@
 /*   By: tderwedu <tderwedu@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/15 14:59:05 by mdesalle          #+#    #+#             */
-/*   Updated: 2022/03/16 09:35:49 by mdesalle         ###   ########.fr       */
+/*   Updated: 2022/03/16 10:52:00 by mdesalle         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -180,19 +180,19 @@ std::string	const	&Response::GetBadRequestResponse(Request &HTTPRequest, Locatio
 	std::string			Body;
 	std::ostringstream	oss;
 
-	if (!HTTPLocation)
+	if (HTTPRequest.getMethod() != "GET" && HTTPRequest.getMethod() != "POST" && HTTPRequest.getMethod() != "DELETE")
+	{
+		StatusCode = 405;
+		Body = "Method Not Allowed";
+	}
+	if (!HTTPLocation && Body.empty())
 		Body = ReturnError(HTTPLocation, &StatusCode);
-	else
+	if (Body.empty())
 	{
 		if (HTTPRequest.getBody().size() > HTTPLocation->GetClientMaxBodySize() && HTTPLocation->GetClientMaxBodySize() != std::string::npos)
 			StatusCode = 413;
 		if (StatusCode == 301)
 			return (CheckIfFileOrFolderConst(HTTPRequest, HTTPLocation));
-		if (HTTPRequest.getMethod() != "GET" && HTTPRequest.getMethod() != "POST" && HTTPRequest.getMethod() != "DELETE")
-		{
-			StatusCode = 405;
-			Body = "Method Not Allowed";
-		}
 		else
 			Body = ReturnError(HTTPLocation, &StatusCode);
 	}
@@ -311,7 +311,10 @@ std::string	Response::GetErrorPagePath(Location *HTTPLocation, unsigned int *Sta
 	std::map<size_t, std::string> const&			error_pages = HTTPLocation->GetErrorPage();
 	std::map<size_t, std::string>::const_iterator	it;
 
-	it = error_pages.find(*StatusCode);
+	if (HTTPLocation != NULL)
+		it = error_pages.find(*StatusCode);
+	else
+		return ("");
 	if (it != error_pages.end())
 	{
 		Path = HTTPLocation->GetRoot();
@@ -485,7 +488,11 @@ std::string	Response::HandlePOSTRequest(Request &HTTPRequest, Location *HTTPLoca
 {
 	if (FindValueInVector(HTTPLocation->GetLimitExcept(), "POST") == false)
 	{
-		*StatusCode = 405;
+		std::cout << HTTPRequest.getTarget() << ": " << HTTPRequest.getTarget()[HTTPRequest.getTarget().size() + 1] << std::endl;
+		if (HTTPRequest.getTarget()[HTTPRequest.getTarget().size() + 1] != '/')
+			*StatusCode = 400;
+		else
+			*StatusCode = 405;
 		return (ReturnError(HTTPLocation, StatusCode));
 	}
 
