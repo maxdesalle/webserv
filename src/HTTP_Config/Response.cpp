@@ -6,7 +6,7 @@
 /*   By: tderwedu <tderwedu@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/15 14:59:05 by mdesalle          #+#    #+#             */
-/*   Updated: 2022/03/16 14:38:52 by tderwedu         ###   ########.fr       */
+/*   Updated: 2022/03/17 13:00:04 by mdesalle         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -514,7 +514,7 @@ std::string	Response::HandleCGIPOSTRequest(Request &HTTPRequest, unsigned int *S
 	CommonGatewayInterface	CGI(HTTPRequest);
 
 	*StatusCode = CGI.ExecuteCGIScript();
-	return ("");
+	return (CGI.getBody());
 }
 
 bool		Response::FindValueInVector(std::vector<std::string> Haystack, std::string Needle)
