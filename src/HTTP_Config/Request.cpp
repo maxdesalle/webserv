@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Request.cpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: lucas <lucas@student.42.fr>                +#+  +:+       +#+        */
+/*   By: ldelmas <ldelmas@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/01/26 14:59:17 by ldelmas           #+#    #+#             */
-/*   Updated: 2022/03/17 12:36:55 by lucas            ###   ########.fr       */
+/*   Updated: 2022/03/17 12:52:00 by ldelmas          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -179,7 +179,10 @@ void				Request::setCGIServerVars(Location const &CGILocation, in_addr_t addr)
 	this->_cgiSerVars["CONTENT_TYPE"] = this->_headerFields["Content-Type"];
 	this->_cgiSerVars["CONTENT_LENGTH"] = this->_headerFields["Content-Length"];
 	this->_cgiSerVars["CGI_PATH"] = CGILocation.GetPass();
-	this->_cgiSerVars["SCRIPT_NAME"] = '.' + Header::_parseAbsPath(this->_target);
+	if (this->_target[0] != '.')
+		this->_cgiSerVars["SCRIPT_NAME"] = '.' + Header::_parseAbsPath(this->_target);
+	else
+		this->_cgiSerVars["SCRIPT_NAME"] = Header::_parseAbsPath(this->_target);
 	this->_cgiSerVars["REQUEST_URI"] = this->_target;
 
 	/*IF SERVER DOESN'T SUPPORT USER AUTHENTIFICATION*/
