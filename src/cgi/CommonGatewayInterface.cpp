@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   CommonGatewayInterface.cpp                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ldelmas <ldelmas@student.42.fr>            +#+  +:+       +#+        */
+/*   By: lucas <lucas@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/09 14:38:27 by mdesalle          #+#    #+#             */
-/*   Updated: 2022/03/16 17:23:50 by ldelmas          ###   ########.fr       */
+/*   Updated: 2022/03/17 12:25:16 by lucas            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -81,6 +81,7 @@ unsigned int		CommonGatewayInterface::ExecuteCGIScript(void)
 			delete[] env[i];
 		delete[] env;
 		delete[] argv[0];
+		delete[] argv[1];
 		delete[] argv;
 		exit(EXIT_FAILURE);
 	}
@@ -120,10 +121,14 @@ char				**CommonGatewayInterface::_makeArgv(void)
 {
 	size_t		scriptLength = this->_envMap["CGI_PATH"].length();
 	const char	*cscript = this->_envMap["CGI_PATH"].c_str();
-	char		**argv = new char *[2];
+	char		**argv = new char *[3];
 	argv[0] = new char[scriptLength+1];
 	argv[0] = strcpy(argv[0], cscript);
-	argv[1] = NULL;
+	scriptLength = this->_envMap["SCRIPT_NAME"].length();
+	cscript = this->_envMap["SCRIPT_NAME"].c_str();
+	argv[1] = new char[scriptLength+1];
+	argv[1] = strcpy(argv[1], cscript);
+	argv[2] = NULL;
 	return argv;
 }
 
