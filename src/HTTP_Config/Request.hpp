@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Request.hpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: tderwedu <tderwedu@student.s19.be>         +#+  +:+       +#+        */
+/*   By: ldelmas <ldelmas@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/01/26 11:47:16 by ldelmas           #+#    #+#             */
-/*   Updated: 2022/03/11 16:15:29 by tderwedu         ###   ########.fr       */
+/*   Updated: 2022/03/16 16:43:40 by ldelmas          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,7 +25,7 @@
 # include "../utils/utils.hpp"
 
 /*Number of CGI's environment variables*/
-# define ENV_NUM 18
+# define ENV_NUM 20
 # define FIELDNAME_MAX 1024
 
 /*

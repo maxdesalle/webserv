@@ -6,7 +6,7 @@
 /*   By: ldelmas <ldelmas@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/01/26 14:59:17 by ldelmas           #+#    #+#             */
-/*   Updated: 2022/03/16 15:36:22 by ldelmas          ###   ########.fr       */
+/*   Updated: 2022/03/16 17:23:26 by ldelmas          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,7 +35,8 @@ std::string const Request::_cgiSerVarNames[ENV_NUM] = {"SERVER_SOFTWARE", "SERVE
 												"REMOTE_HOST", "REMOTE_ADDR",
 												"AUTH_TYPE", "REMOTE_USER",
 												"AUTH_USER", "REMOTE_IDENT",
-												"CONTENT_TYPE", "CONTENT_LENGTH"};
+												"CONTENT_TYPE", "CONTENT_LENGTH", "CGI_PATH",
+												"REQUEST_URI"};
 
 
 /*CONSTRUCTORS AND DESTRUCTORS*/
@@ -163,19 +164,23 @@ void				Request::setCGIServerVars(Location const &CGILocation, in_addr_t addr)
 	if (this->_headerFields["Host"][this->_cgiSerVars["SERVER_NAME"].length()] == ':')
 		this->_cgiSerVars["SERVER_PORT"] = Header::_parsePort(this->_headerFields["Host"], this->_cgiSerVars["SERVER_NAME"].length()+1);
 	this->_cgiSerVars["REQUEST_METHOD"] = this->_method;
-	this->_cgiSerVars["PATH_INFO"] = Header::_parseAbsPath(this->_target);
-	this->_cgiSerVars["PATH_TRANSLATED"] = CGILocation.GetRoot() + this->_cgiSerVars["PATH_INFO"];
+	this->_cgiSerVars["PATH_INFO"] = "";
+	this->_cgiSerVars["PATH_TRANSLATED"] = "";
+	// this->_cgiSerVars["PATH_INFO"] = Header::_parseAbsPath(this->_target);
+	// this->_cgiSerVars["PATH_TRANSLATED"] = CGILocation.GetRoot() + this->_cgiSerVars["PATH_INFO"];
 	if (this->_method == "GET" && this->_cgiSerVars["PATH_INFO"][this->_cgiSerVars["PATH_INFO"].length()] == '?')
 		this->_cgiSerVars["QUERY_STRING"] = Header::_parseQuery(this->_target, this->_cgiSerVars["PATH_INFO"].length()+1);
 	else if (this->_method == "POST")
-		this->_cgiSerVars["QUERT_STRING"] = this->_body;
+		this->_cgiSerVars["QUERY_STRING"] = this->_body;
 	// in_addr_t addr = Client.getIP();
 	char buff[16];
 	inet_ntop(AF_INET, &addr, buff, INET_ADDRSTRLEN);
 	this->_cgiSerVars["REMOTE_ADDR"] = buff;
 	this->_cgiSerVars["CONTENT_TYPE"] = this->_headerFields["Content-Type"];
 	this->_cgiSerVars["CONTENT_LENGTH"] = this->_headerFields["Content-Length"];
-	this->_cgiSerVars["SCRIPT_NAME"] = CGILocation.GetPass();
+	this->_cgiSerVars["CGI_PATH"] = CGILocation.GetPass();
+	this->_cgiSerVars["SCRIPT_NAME"] = Header::_parseAbsPath(this->_target);
+	this->_cgiSerVars["REQUEST_URI"] = this->_target;
 
 	/*IF SERVER DOESN'T SUPPORT USER AUTHENTIFICATION*/
 	this->_cgiSerVars["AUTH_TYPE"] = "";

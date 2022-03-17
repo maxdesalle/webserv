@@ -6,7 +6,7 @@
 /*   By: ldelmas <ldelmas@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/09 14:38:27 by mdesalle          #+#    #+#             */
-/*   Updated: 2022/03/16 13:06:22 by ldelmas          ###   ########.fr       */
+/*   Updated: 2022/03/16 17:23:50 by ldelmas          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -75,6 +75,7 @@ unsigned int		CommonGatewayInterface::ExecuteCGIScript(void)
 		close(fds[1]);
 		char *const *env = this->_makeEnv();
 		execve(argv[0], argv, env);
+		std::cerr << argv[0] << std::endl;
 		close(STDOUT_FILENO);
 		for (size_t i = 0; env[i]; i++)
 			delete[] env[i];
@@ -108,7 +109,7 @@ char *const			*CommonGatewayInterface::_makeEnv(void)
 	{
 		std::string var(it->first + "=" + it->second);
 		const char *cstr = var.c_str();
-		env[i] = new char[var.length()];
+		env[i] = new char[var.length()+1];
 		strcpy(env[i], cstr);
 	}
 	env[this->_envMap.size()] = NULL;
@@ -117,10 +118,10 @@ char *const			*CommonGatewayInterface::_makeEnv(void)
 
 char				**CommonGatewayInterface::_makeArgv(void)
 {
-	size_t		scriptLength = this->_envMap["SCRIPT_NAME"].length();
-	const char	*cscript = this->_envMap["SCRIPT_NAME"].c_str();
+	size_t		scriptLength = this->_envMap["CGI_PATH"].length();
+	const char	*cscript = this->_envMap["CGI_PATH"].c_str();
 	char		**argv = new char *[2];
-	argv[0] = new char[scriptLength];
+	argv[0] = new char[scriptLength+1];
 	argv[0] = strcpy(argv[0], cscript);
 	argv[1] = NULL;
 	return argv;
