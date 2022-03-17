@@ -6,7 +6,7 @@
 /*   By: ldelmas <ldelmas@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/01/26 14:59:17 by ldelmas           #+#    #+#             */
-/*   Updated: 2022/03/17 14:24:46 by ldelmas          ###   ########.fr       */
+/*   Updated: 2022/03/17 14:41:40 by ldelmas          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -182,9 +182,6 @@ void				Request::setCGIServerVars(Location const &CGILocation, in_addr_t addr)
 		this->_cgiSerVars["QUERY_STRING"] = Header::_parseQuery(this->_target, this->_cgiSerVars["SCRIPT_NAME"].length());
 	else if (this->_method == "POST")
 		this->_cgiSerVars["QUERY_STRING"] = this->_body;
-	std::cerr << "QUERY STRING" << std::endl;
-	std::cerr << this->_cgiSerVars["QUERY_STRING"] << std::endl;
-	std::cerr << "QUERY STRING" << std::endl;
 	// in_addr_t addr = Client.getIP();
 	char buff[16];
 	inet_ntop(AF_INET, &addr, buff, INET_ADDRSTRLEN);

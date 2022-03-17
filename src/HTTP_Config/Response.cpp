@@ -6,7 +6,7 @@
 /*   By: ldelmas <ldelmas@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/15 14:59:05 by mdesalle          #+#    #+#             */
-/*   Updated: 2022/03/17 14:28:05 by ldelmas          ###   ########.fr       */
+/*   Updated: 2022/03/17 17:25:37 by ldelmas          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -182,13 +182,13 @@ std::string	const	&Response::GetBadRequestResponse(Request &HTTPRequest, Locatio
 	std::ostringstream	oss;
 
 	// if (HTTPRequest.getMethod() != "GET" && HTTPRequest.getMethod() != "POST" && HTTPRequest.getMethod() != "DELETE")
-	if (!HTTPLocation->isMethodValid(HTTPRequest.getMethod()))
+	if (!HTTPLocation && Body.empty())
+		Body = ReturnError(HTTPLocation, &StatusCode);
+	if (HTTPLocation && !HTTPLocation->isMethodValid(HTTPRequest.getMethod()))
 	{
 		StatusCode = 405;
 		Body = "Method Not Allowed";
 	}
-	if (!HTTPLocation && Body.empty())
-		Body = ReturnError(HTTPLocation, &StatusCode);
 	if (Body.empty())
 	{
 		if (HTTPRequest.getBody().size() > HTTPLocation->GetClientMaxBodySize() && HTTPLocation->GetClientMaxBodySize() != std::string::npos)

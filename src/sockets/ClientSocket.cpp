@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   ClientSocket.cpp                                   :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: tderwedu <tderwedu@student.s19.be>         +#+  +:+       +#+        */
+/*   By: ldelmas <ldelmas@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/23 10:55:52 by tderwedu          #+#    #+#             */
-/*   Updated: 2022/03/16 14:20:53 by tderwedu         ###   ########.fr       */
+/*   Updated: 2022/03/17 17:29:04 by ldelmas          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -176,7 +176,7 @@ int				ClientSocket::_getRequest(void)
 	if (_sockState == HALF_CLOSED)
 		return 0;
 	ret = _request.parseRequest(buff);
-	if (ret == 100)
+	if (ret == 100 && _pollfd.revents & POLLOUT)
 	{
 		_sendContinue();
 		return 0;
