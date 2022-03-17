@@ -6,7 +6,7 @@
 /*   By: tderwedu <tderwedu@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/01/18 18:04:43 by maxdesall         #+#    #+#             */
-/*   Updated: 2022/03/15 11:12:19 by mdesalle         ###   ########.fr       */
+/*   Updated: 2022/03/17 10:28:16 by tderwedu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,79 +40,88 @@ static std::string				&Trim(std::string &str)
     return (str);
 }
 
-static bool						ServerNameInVector(const std::vector<std::string> &ServerNames, const std::string &ServerName)
-{
-	for (size_t i = 0; i < ServerNames[i].size(); i += 1)
-	{
-		if (ServerNames[i] == ServerName)
-			return (true);
-	}
-	return (false);
-}
+// static bool						ServerNameInVector(const std::vector<std::string> &ServerNames, const std::string &ServerName)
+// {
+// 	for (size_t i = 0; i < ServerNames[i].size(); i += 1)
+// 	{
+// 		if (ServerNames[i] == ServerName)
+// 			return (true);
+// 	}
+// 	return (false);
+// }
 
-static void						SearchForIPandPort(const vecServer &Servers, const std::vector<std::string> &ServerNames, const std::string &IP, size_t Port)
-{
-	int														Check = 0;
-	std::map<std::string, std::vector<size_t> >				ListenIPandPorts;
-	std::map<std::string, std::vector<size_t> >::iterator 	it;
+// static void						SearchForIPandPort(const vecServer &Servers, const std::vector<std::string> &ServerNames, const std::string &IP, size_t Port)
+// {
+// 	int														Check = 0;
+// 	std::map<std::string, std::vector<size_t> >				ListenIPandPorts;
+// 	std::map<std::string, std::vector<size_t> >::iterator 	it;
 
-	for (size_t i = 0; i < Servers.size(); i += 1)
-	{
-		for (size_t j = 0; j < ServerNames[j].size(); j += 1)
-		{
-			if (ServerNameInVector(Servers[i].GetServerNames(), ServerNames[j]) == true)
-			{
-				ListenIPandPorts = Servers[i].GetListenIPandPorts();
-				for (it = ListenIPandPorts.begin(); it != ListenIPandPorts.end(); it++)
-				{
-					if (it->first == IP)
-					{
-						for (size_t k = 0; k < it->second.size(); k += 1)
-						{
-							if (it->second[k] == Port && Check == 1)
-							{
-								std::cout << "Config file error" << std::endl;
-								exit(1);
-							}
-							else if (it->second[k] == Port && Check != 1)
-							{
-								Check += 1;
-								break ;
-							}
-						}
-					}
-				}
-				break ;
-			}
-		}
-	}
-}
+// 	std::cout << "SearchForIPandPort" << std::endl;
+// 	for (size_t i = 0; i < Servers.size(); i += 1)
+// 	{
+// 		std::cout << "FOR Servers" << std::endl;
+// 		for (size_t j = 0; j < ServerNames[j].size(); j += 1)
+// 		{
+// 			std::cout << "FOR Ports" << std::endl;
+// 			if (ServerNameInVector(Servers[i].GetServerNames(), ServerNames[j]) == true)
+// 			{
+// 				ListenIPandPorts = Servers[i].GetListenIPandPorts();
+// 				for (it = ListenIPandPorts.begin(); it != ListenIPandPorts.end(); it++)
+// 				{
+// 					if (it->first == IP)
+// 					{
+// 						for (size_t k = 0; k < it->second.size(); k += 1)
+// 						{
+// 							if (it->second[k] == Port && Check == 1)
+// 							{
+// 								std::cout << "Config file error" << std::endl;
+// 								exit(1);
+// 							}
+// 							else if (it->second[k] == Port && Check != 1)
+// 							{
+// 								Check += 1;
+// 								break ;
+// 							}
+// 						}
+// 					}
+// 				}
+// 				break ;
+// 			}
+// 		}
+// 	}
+// }
 
 static void						DoublePortForSameServerNameCheck(const vecServer &Servers)
 {
-	std::map<std::string, std::vector<size_t> >	ListenIPandPorts;
-	std::map<std::string, std::vector<size_t> >::iterator it;
-
+	mapServer::const_iterator							it_port;
+	vecString::const_iterator							it_name;
+	std::map<size_t, std::set<std::string> >			ports_vs_names;
+	std::map<size_t, std::set<std::string> >::iterator	it_pn;
+	
 	for (size_t i = 0; i < Servers.size(); i += 1)
 	{
-		if (!Servers[i].GetListenIPandPorts().empty())
-			ListenIPandPorts = Servers[i].GetListenIPandPorts();
-		else
+		mapServer const& 	ListenIPandPorts = Servers[i].GetListenIPandPorts();
+		vecString const&	ServerNames = Servers[i].GetServerNames();
+
+		for (it_port = ListenIPandPorts.begin(); it_port != ListenIPandPorts.end(); ++it_port)
 		{
-			std::cout << "Config file error" << std::endl;
-			exit(1);
-		}
-		for (it = ListenIPandPorts.begin(); it != ListenIPandPorts.end(); it++)
-		{
-			for (size_t j = 0; j < it->second.size(); j += 1)
+			for (it_name = ServerNames.begin(); it_name != ServerNames.end(); ++it_name)
 			{
-				if (Servers[i].GetServerNames().empty() || Servers[i].GetLocations().empty())
+				for (size_t j = 0; j < it_port->second.size(); ++j)
 				{
-					std::cout << "Config file error" << std::endl;
-					exit(1);
+					it_pn = ports_vs_names.find(it_port->second[j]);
+					if (it_pn != ports_vs_names.end())
+					{
+						if ((it_pn->second).find(*it_name) != (it_pn->second).end())
+						{
+							std::cerr << "Config file error." << std::endl;
+							std::cerr	<< "Port " << it_port->second[j] << " is used by server '" \
+										<< *it_name << "' at least twice!" << std::endl;
+							exit(EXIT_FAILURE);
+						}
+					}
+					ports_vs_names[it_port->second[j]].insert(*it_name);
 				}
-				else
-					SearchForIPandPort(Servers, Servers[i].GetServerNames(), it->first, it->second[j]);
 			}
 		}
 	}

@@ -6,7 +6,7 @@
 /*   By: tderwedu <tderwedu@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/01/19 11:19:44 by mdesalle          #+#    #+#             */
-/*   Updated: 2022/03/02 22:22:15 by tderwedu         ###   ########.fr       */
+/*   Updated: 2022/03/17 09:36:01 by tderwedu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,8 +19,9 @@
 # include <cstdlib>
 # include <fstream>
 # include <algorithm>
+# include <locale>
 # include <vector>
-#include <locale>
+# include <set>
 # include <map>
 
 # include "Location.hpp"
@@ -36,6 +37,7 @@ typedef std::vector<Location>								vecLocation;
 typedef std::vector<Location>::iterator						itLocation;
 typedef std::vector<Location>::const_iterator				citLocation;
 typedef std::map<std::string, std::vector<size_t> >			mapServer;
+typedef std::vector<std::string>							vecString;
 
 vecServer					ConfigHandler(std::string ConfigFileName);
 std::vector<Server const*>	*FindMatchingServers(vecServer const& Servers, size_t Port, std::string IP);
