@@ -6,7 +6,7 @@
 /*   By: ldelmas <ldelmas@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/01/26 11:47:16 by ldelmas           #+#    #+#             */
-/*   Updated: 2022/03/16 16:43:40 by ldelmas          ###   ########.fr       */
+/*   Updated: 2022/03/17 14:05:39 by ldelmas          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,7 +43,7 @@ class Request : public Header
 	
 		static std::string const _fieldNames[32];
 		static std::string const _cgiSerVarNames[ENV_NUM];
-		std::string		_method, _target, _version, _body, _remain;
+		std::string		_method, _target, _version, _body, _remain, _path;
 		std::map<std::string const, std::string> _cgiSerVars;
 		size_t			_cursor;
 		size_t			_body_size; // tderwedu
@@ -69,6 +69,7 @@ class Request : public Header
 
 		std::string const	&getMethod(void) const;
 		std::string const	&getTarget(void) const;
+		std::string const	&getPath(void) const;
 		std::string const	&getVersion(void) const;
 		std::string const	&getBody(void) const;
 		state				getState(void) const;

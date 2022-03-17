@@ -6,7 +6,7 @@
 /*   By: ldelmas <ldelmas@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/01/26 14:59:17 by ldelmas           #+#    #+#             */
-/*   Updated: 2022/03/17 12:52:00 by ldelmas          ###   ########.fr       */
+/*   Updated: 2022/03/17 14:24:46 by ldelmas          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -65,6 +65,7 @@ Request			&Request::operator=(Request const &right)
 	this->_headerFields = right._headerFields;
 	this->_method = right._method;
 	this->_target = right._target;
+	this->_path = right._path;
 	this->_version = right._version;
 	this->_body = right._body;
 	this->_remain = right._remain;
@@ -92,6 +93,11 @@ std::string const	&Request::getMethod(void) const
 std::string const	&Request::getTarget(void) const
 {
 	return this->_target;
+}
+
+std::string const	&Request::getPath(void) const
+{
+	return this->_path;
 }
 
 std::string const	&Request::getVersion(void) const
@@ -157,6 +163,10 @@ void				Request::setCGIServerVars(Location const &CGILocation, in_addr_t addr)
 {
 	if (this->_state != DONE)
 		return ;
+	if (this->_target[0] != '.')
+		this->_cgiSerVars["SCRIPT_NAME"] = '.' + Header::_parseAbsPath(this->_target);
+	else
+		this->_cgiSerVars["SCRIPT_NAME"] = Header::_parseAbsPath(this->_target);
 	this->_cgiSerVars["SERVER_SOFTWARE"] = "WEBSERV/1.0";
 	this->_cgiSerVars["SERVER_NAME"] = Header::_parseHost(this->_headerFields["Host"]);
 	this->_cgiSerVars["GATEWAY_INTERFACE"] = "CGI/1.1";
@@ -168,10 +178,13 @@ void				Request::setCGIServerVars(Location const &CGILocation, in_addr_t addr)
 	this->_cgiSerVars["PATH_TRANSLATED"] = "";
 	// this->_cgiSerVars["PATH_INFO"] = Header::_parseAbsPath(this->_target);
 	// this->_cgiSerVars["PATH_TRANSLATED"] = CGILocation.GetRoot() + this->_cgiSerVars["PATH_INFO"];
-	if (this->_method == "GET" && this->_cgiSerVars["PATH_INFO"][this->_cgiSerVars["PATH_INFO"].length()] == '?')
-		this->_cgiSerVars["QUERY_STRING"] = Header::_parseQuery(this->_target, this->_cgiSerVars["PATH_INFO"].length()+1);
+	if (this->_method == "GET" && this->_target[this->_cgiSerVars["SCRIPT_NAME"].length()-1] == '?')
+		this->_cgiSerVars["QUERY_STRING"] = Header::_parseQuery(this->_target, this->_cgiSerVars["SCRIPT_NAME"].length());
 	else if (this->_method == "POST")
 		this->_cgiSerVars["QUERY_STRING"] = this->_body;
+	std::cerr << "QUERY STRING" << std::endl;
+	std::cerr << this->_cgiSerVars["QUERY_STRING"] << std::endl;
+	std::cerr << "QUERY STRING" << std::endl;
 	// in_addr_t addr = Client.getIP();
 	char buff[16];
 	inet_ntop(AF_INET, &addr, buff, INET_ADDRSTRLEN);
@@ -179,10 +192,6 @@ void				Request::setCGIServerVars(Location const &CGILocation, in_addr_t addr)
 	this->_cgiSerVars["CONTENT_TYPE"] = this->_headerFields["Content-Type"];
 	this->_cgiSerVars["CONTENT_LENGTH"] = this->_headerFields["Content-Length"];
 	this->_cgiSerVars["CGI_PATH"] = CGILocation.GetPass();
-	if (this->_target[0] != '.')
-		this->_cgiSerVars["SCRIPT_NAME"] = '.' + Header::_parseAbsPath(this->_target);
-	else
-		this->_cgiSerVars["SCRIPT_NAME"] = Header::_parseAbsPath(this->_target);
 	this->_cgiSerVars["REQUEST_URI"] = this->_target;
 
 	/*IF SERVER DOESN'T SUPPORT USER AUTHENTIFICATION*/
@@ -261,6 +270,7 @@ void			Request::reset(void)
 	this->_target = "";
 	this->_version = "";
 	this->_body = "";
+	this->_path = "";
 	this->_remain = "";
 	this->_cursor = 0;
 	this->_expect = false;
@@ -352,6 +362,8 @@ int				Request::_parseRequestLine(std::string const &request)
 		return 400;
 	this->_method = method;
 	this->_target = target;
+	try {this->_path = Header::_parseAbsPath(this->_target);}
+	catch (const std::exception& e) {return 400;}
 	this->_version = version;
 	return 0;
 }

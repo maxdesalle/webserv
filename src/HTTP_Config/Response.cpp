@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Response.cpp                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: tderwedu <tderwedu@student.s19.be>         +#+  +:+       +#+        */
+/*   By: ldelmas <ldelmas@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/15 14:59:05 by mdesalle          #+#    #+#             */
-/*   Updated: 2022/03/17 13:00:04 by mdesalle         ###   ########.fr       */
+/*   Updated: 2022/03/17 14:28:05 by ldelmas          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -161,7 +161,8 @@ void			Response::setTargetPath(Request &HTTPRequest, Location *HTTPLocation)
 {
 	size_t 					pos;
 	
-	_target = HTTPRequest.getTarget();
+	// _target = HTTPRequest.getTarget();
+	_target = HTTPRequest.getPath();
 	if (!HTTPLocation)
 	{
 		_target_path = _target;
@@ -257,7 +258,8 @@ std::string	const	&Response::HandleRedirection(Request &HTTPRequest, Location *H
 	if ((Split = RootURL.find('$')) != std::string::npos)
 	{
 		RootURL = RootURL.substr(0, Split);
-		RootURL += HTTPRequest.getTarget();
+		// RootURL += HTTPRequest.getTarget();
+		RootURL += HTTPRequest.getPath();
 	}
 
 	_HeaderResponse = "HTTP/1.1 301 Moved Permanently\r\n";
@@ -482,7 +484,8 @@ std::string	Response::HandlePOSTRequest(Request &HTTPRequest, Location *HTTPLoca
 	if (FindValueInVector(HTTPLocation->GetLimitExcept(), "POST") == false)
 	{
 		// std::cout << HTTPRequest.getTarget() << ": " << HTTPRequest.getTarget()[HTTPRequest.getTarget().size() + 1] << std::endl;
-		if (HTTPRequest.getTarget()[HTTPRequest.getTarget().size() + 1] != '/')
+		// if (HTTPRequest.getTarget()[HTTPRequest.getTarget().size() + 1] != '/')
+		if (HTTPRequest.getPath()[HTTPRequest.getPath().size() - 1] != '/')
 			*StatusCode = 400;
 		else
 			*StatusCode = 405;
