@@ -6,7 +6,7 @@
 /*   By: ldelmas <ldelmas@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/09 14:38:27 by mdesalle          #+#    #+#             */
-/*   Updated: 2022/03/18 11:54:54 by mdesalle         ###   ########.fr       */
+/*   Updated: 2022/03/18 12:37:36 by ldelmas          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -59,8 +59,9 @@ std::string			CommonGatewayInterface::FindValueInMap(const std::map<const std::s
 	catch (const std::out_of_range&) {return (NULL);}
 }
 
-unsigned int		CommonGatewayInterface::ExecuteCGIScript(void)
+unsigned int		CommonGatewayInterface::ExecuteCGIScript(std::string &targetPath)
 {
+	this->_envMap["SCRIPT_NAME"] = targetPath;
 	char		**argv = this->_makeArgv();
 	int			fds[2];
 	size_t		Pid;

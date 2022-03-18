@@ -6,7 +6,7 @@
 /*   By: ldelmas <ldelmas@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/15 14:59:05 by mdesalle          #+#    #+#             */
-/*   Updated: 2022/03/18 11:40:42 by mdesalle         ###   ########.fr       */
+/*   Updated: 2022/03/18 12:35:37 by ldelmas          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -410,7 +410,7 @@ std::string	Response::HandleGETCGIRequest(Request &HTTPRequest, Location *HTTPLo
 	}
 
 	CommonGatewayInterface	CGI(HTTPRequest);
-	*StatusCode = CGI.ExecuteCGIScript();
+	*StatusCode = CGI.ExecuteCGIScript(this->_target_path);
 	return (CGI.getBody());
 }
 
@@ -519,7 +519,7 @@ std::string	Response::HandleCGIPOSTRequest(Request &HTTPRequest, unsigned int *S
 {
 	CommonGatewayInterface	CGI(HTTPRequest);
 
-	*StatusCode = CGI.ExecuteCGIScript();
+	*StatusCode = CGI.ExecuteCGIScript(this->_target_path);
 	return (CGI.getBody());
 }
 
@@ -576,4 +576,9 @@ std::string	Response::GetCurrentFormattedTime(void)
 void				Response::reset(void)
 {
 	_HeaderResponse.clear();
+}
+
+std::string const		&Response::getTargetPath(void) const
+{
+	return this->_target_path;
 }

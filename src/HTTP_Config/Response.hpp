@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Response.hpp                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: tderwedu <tderwedu@student.s19.be>         +#+  +:+       +#+        */
+/*   By: ldelmas <ldelmas@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/01/26 11:48:07 by ldelmas           #+#    #+#             */
-/*   Updated: 2022/03/16 14:38:11 by tderwedu         ###   ########.fr       */
+/*   Updated: 2022/03/18 12:30:01 by ldelmas          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -80,6 +80,7 @@ class Response : public Header
 		std::string			HandleDELETERequest(Location *HTTPLocation, unsigned int *StatusCode);
 
 		void				setTargetPath(Request &HTTPRequest, Location *HTTPLocation);
+		std::string const	&getTargetPath(void) const;
 };
 
 #endif
