@@ -6,7 +6,7 @@
 /*   By: ldelmas <ldelmas@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/09 14:38:27 by mdesalle          #+#    #+#             */
-/*   Updated: 2022/03/17 13:56:39 by ldelmas          ###   ########.fr       */
+/*   Updated: 2022/03/18 11:54:54 by mdesalle         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -75,7 +75,6 @@ unsigned int		CommonGatewayInterface::ExecuteCGIScript(void)
 		close(fds[1]);
 		char *const *env = this->_makeEnv();
 		execve(argv[0], argv, env);
-		std::cerr << argv[0] << std::endl;
 		close(STDOUT_FILENO);
 		for (size_t i = 0; env[i]; i++)
 			delete[] env[i];

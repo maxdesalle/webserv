@@ -6,7 +6,7 @@
 /*   By: ldelmas <ldelmas@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/15 14:59:05 by mdesalle          #+#    #+#             */
-/*   Updated: 2022/03/17 17:25:37 by ldelmas          ###   ########.fr       */
+/*   Updated: 2022/03/18 11:40:42 by mdesalle         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -279,19 +279,22 @@ std::string const		&Response::GetHeaderResponse(Request &HTTPRequest, Location *
 
 	setTargetPath(HTTPRequest, HTTPLocation);
 	// if (HTTPRequest.getMethod() != "GET" && HTTPRequest.getMethod() != "POST" && HTTPRequest.getMethod() != "DELETE")
-	if (!HTTPLocation->isMethodValid(HTTPRequest.getMethod()))
+	if (!HTTPLocation)
+	{
+		StatusCode = 400;
+		Body = ReturnError(HTTPLocation, &StatusCode);
+	}
+	else if (!HTTPLocation->isMethodValid(HTTPRequest.getMethod()))
 	{
 		StatusCode = 405;
 		Body = ReturnError(HTTPLocation, &StatusCode);
 	}
-
-	if (HTTPRequest.getBody().size() > HTTPLocation->GetClientMaxBodySize() && HTTPLocation->GetClientMaxBodySize() != std::string::npos)
+	else if (HTTPRequest.getBody().size() > HTTPLocation->GetClientMaxBodySize() && HTTPLocation->GetClientMaxBodySize() != std::string::npos)
 	{
 		StatusCode = 413;
 		Body = ReturnError(HTTPLocation, &StatusCode);
 	}
-
-	if (RedirectionExists(HTTPLocation))
+	else if (RedirectionExists(HTTPLocation))
 		return (HandleRedirection(HTTPRequest, HTTPLocation));
 
 	if (Body.empty())
@@ -504,7 +507,7 @@ std::string	Response::HandleNormalPostRequest(Request &HTTPRequest, Location *HT
 
 	if (!File)
 	{
-		*StatusCode = 500;
+		*StatusCode = 400;
 		return (ReturnError(HTTPLocation, StatusCode));
 	}
 	*StatusCode = 200;
