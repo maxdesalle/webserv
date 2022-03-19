@@ -3,58 +3,6 @@ A lightweight HTTP server implemented in C++.
 
 ---
 
-## To-DO-List
-
- - **Webserv**
- 	- [x] Set up a default config file path if none is provided
-	- [x] Check HTTP error code that MUST close the connection
-	- [x] Check `POLLHUP` and `POLLERR` for `ListenSocket`
-	- [x] Check `_fdInUse` to avoid `EMFILE`
-	- [x] add DEBUG variable in Makefile
-	- [x] Send response for `Expect: 100-continue`
-	- [x] Check allowed trailer header-fields
-	- [x] `getPath()` return a `std::string const&`
-	- [x] Clean `utils.?pp`
- - [x] Create default error pages
- - [x] Create a POC static website
- - [x] Update default config file to match POC website
- - [x] Refactoring: move headers file to `include`
- - [x] Default error pages
- - [ ] Create a POC CGI content
- - [ ] BIG FAT HUGE REFACTORING
-	 - [ ] gather header files in `include`
-	 - [ ] remove useless files directories
- - [ ] Make POC website ready to use
-
----
-
-## Change Request
-- [x] Check method is valid or not.
-- [x] Error: Host header with port number is not working
-- [x] Error: `POST` with an invalid target => `500 Internal Server Error`
-- [x] Error: when `POST` is not allowed => `500 Internal Server Error`
-- [x] Error: when `DELETE` is not allowed => `500 Internal Server Error`
-- [x] Error: `error_page` does not work with error `405`
-- [x] Error: `error_page` does not work with error `500`
-- [x] One READ or WRITE per client per select!
-- [x] Error: `DELETE` with an invalid target => `500 Internal Server Error`
-- [x] Error: `GET` with an invalid target in `LOCATION` where `POST` is allowed => `500 Internal Server Error`
-- [x] Setup the same port multiple times should not work (at least with the same server names).
-
-## Testing
- - [ ] Check for memory leaks
- - [x] Check with `server_names` defined or not.
- - [x] Check with default server without `default_server` directive.
- - [ ] Check limit client body size.
- - [ ] CGI
-	- [ ] GET request
-	- [ ] POST request
-	- [ ] DELETE request
- - [ ] Try the 42's `tester`
- - [ ] Try the 42's `cgi_tester`
- - [x] upload some file and get it back
- - [x] Try with a methode which is NOT allowed
-
 ## Ressources
 
 ### RFC
