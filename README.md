@@ -1,8 +1,6 @@
 # webserv
 A lightweight HTTP server implemented in C++.
 
----
-
 ## Ressources
 
 ### RFC
